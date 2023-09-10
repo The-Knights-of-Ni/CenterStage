@@ -109,7 +109,6 @@ public class Robot {
     private final AllianceColor allianceColor;
     public final boolean visionEnabled;
     private final boolean webEnabled;
-    private final boolean visionCorrectionEnabled;
     private final boolean odometryEnabled;
 
     private WebThreadData wtd;
@@ -139,7 +138,6 @@ public class Robot {
         this.allianceColor = allianceColor;
         this.visionEnabled = flags.getOrDefault("vision", true);
         this.webEnabled = flags.getOrDefault("web", false);
-        this.visionCorrectionEnabled = flags.getOrDefault("visionCorrection", false);
         this.odometryEnabled = flags.getOrDefault("odometry", false);
         this.telemetry = telemetry;
         this.gamepad1 = gamepad1;
@@ -206,7 +204,7 @@ public class Robot {
 
         if (visionEnabled) {
             Log.d("init", "Vision subsystem init started");
-            vision = new Vision(telemetry, hardwareMap, allianceColor, visionCorrectionEnabled);
+            vision = new Vision(telemetry, hardwareMap, allianceColor);
             Log.i("init", "Vision subsystem init finished");
         }
         else {

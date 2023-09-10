@@ -32,4 +32,6 @@ dependencies {
     implementation (group: 'org.ftclib.ftclib', name: 'core', version: '2.0.1') // core
     implementation (group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1')
     implementation(group: 'org.apache.commons', name: 'commons-geometry-euclidean', version: '1.0')
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.3'
+    runtimeOnly 'org.tensorflow:tensorflow-lite:2.12.0'
 }

@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -46,7 +45,6 @@ public class Vision extends Subsystem {
     private final AllianceColor allianceColor;
     // Class Members
     private OpenGLMatrix lastLocation;
-    private VuforiaLocalizer vuforia;
 
     private VectorF targetTranslation;
     private Orientation targetRotation;
@@ -56,7 +54,6 @@ public class Vision extends Subsystem {
 
     private int[] viewportContainerIds;
 
-    VisionCorrectionThread visionCorrectionThread;
 
     /**
      * Class instantiation
@@ -68,8 +65,7 @@ public class Vision extends Subsystem {
     public Vision(
             Telemetry telemetry,
             HardwareMap hardwareMap,
-            AllianceColor allianceColor,
-            boolean visionCorrectionEnabled) {
+            AllianceColor allianceColor) {
         super(telemetry, "vision");
         this.hardwareMap = hardwareMap;
         this.allianceColor = allianceColor;
@@ -77,10 +73,6 @@ public class Vision extends Subsystem {
         // Telemetry
         telemetry.addLine("Vision init complete");
         telemetry.update();
-        if (visionCorrectionEnabled) {
-            WebcamName webcamName = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
-            visionCorrectionThread = new VisionCorrectionThread(webcamName);
-        }
     }
 
     private void initDetectionPipeline() {
