@@ -2,11 +2,8 @@ package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
 import java.io.IOException;
@@ -21,12 +18,11 @@ public class Teleop extends LinearOpMode {
     private Robot robot;
 
     private boolean driveHighPower = true;
-    private boolean armDeployed = false;
 
     private void initOpMode() throws IOException {
         // Initialize DC motor objects
         timer = new ElapsedTime();
-        HashMap<String, Boolean> flags = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> flags = new HashMap<>();
         flags.put("vision", false);
         this.robot =  new Robot(hardwareMap, telemetry, timer, AllianceColor.BLUE, gamepad1, gamepad2,flags);
         timeCurrent = timer.nanoseconds();
@@ -70,13 +66,13 @@ public class Teleop extends LinearOpMode {
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
 
-            driveHighPower = robot.gamepads.yButton.toggle;
+            driveHighPower = robot.gamepads.gamepad1.yButton.toggle;
             double[] motorPowers;
             if (driveHighPower) {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.leftStickX * sensitivityHighPower, robot.gamepads.leftStickY * sensitivityHighPower, robot.gamepads.rightStickX * sensitivityHighPower);
+                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.gamepad1.leftStickX * sensitivityHighPower, robot.gamepads.gamepad1.leftStickY * sensitivityHighPower, robot.gamepads.gamepad1.rightStickX * sensitivityHighPower);
             }
             else {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.leftStickX * sensitivityLowPower, robot.gamepads.leftStickY * sensitivityLowPower, robot.gamepads.rightStickX * sensitivityLowPower);
+                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.gamepad1.leftStickX * sensitivityLowPower, robot.gamepads.gamepad1.leftStickY * sensitivityLowPower, robot.gamepads.gamepad1.rightStickX * sensitivityLowPower);
             }
             robot.drive.setDrivePowers(motorPowers);
         }
