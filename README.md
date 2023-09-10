@@ -1,5 +1,5 @@
 [![Android CI](https://github.com/The-Knights-of-Ni/PowerPlay/actions/workflows/build.yml/badge.svg)](https://github.com/The-Knights-of-Ni/FreightFrenzy/actions/workflows/build.yml)
-# CenterStage 2022-2023
+# CenterStage 2023-2024
 
 ## About
 
