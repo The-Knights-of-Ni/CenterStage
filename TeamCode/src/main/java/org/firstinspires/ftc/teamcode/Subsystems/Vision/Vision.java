@@ -20,7 +20,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 /**
  * The Vision Subsystem
  *
- * @see ConeColorPipeline
  * @see <a href="https://github.com/OpenFTC/EasyOpenCV">EasyOpenCV</a>
  */
 public class Vision extends Subsystem {
@@ -49,7 +48,6 @@ public class Vision extends Subsystem {
     private VectorF targetTranslation;
     private Orientation targetRotation;
 
-    private ConeColorPipeline pipeline;
     private OpenCvCamera camera;
 
     private int[] viewportContainerIds;

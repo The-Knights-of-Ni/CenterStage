@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import android.util.Log;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -25,9 +26,9 @@ public class Drive extends Subsystem {
     private static final double COUNTS_PER_MM =
             (MOTOR_TICK_PER_REV_YELLOW_JACKET_312 * DRIVE_GEAR_REDUCTION)
                     / (GOBUILDA_MECANUM_DIAMETER_MM * Math.PI);
-    private static final double WHEEL_DIAMETER_INCHES = 100.0 / mmPerInch; // For calculating circumference
-
     private static final double WHEEL_DIAMETER_MM = 100.0;
+    private static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM / mmPerInch; // For calculating circumference
+
     private static final double COUNTS_PER_INCH =
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double COUNTS_CORRECTION_X = 1.37;
@@ -52,10 +53,10 @@ public class Drive extends Subsystem {
     public final DcMotorEx rearRight;
 
     // PID Controllers
-    public PID flControl;
-    public PID frControl;
-    public PID rlControl;
-    public PID rrControl;
+    public MoveSystem flControl;
+    public MoveSystem frControl;
+    public MoveSystem rlControl;
+    public MoveSystem rrControl;
 
     // State variables for robot position
     private double robotX;
@@ -64,6 +65,8 @@ public class Drive extends Subsystem {
 
     private final ElapsedTime timer;
     private long startTime;
+
+    public final boolean odometryEnabled; // TODO: Implement
 
     /**
      * Initializes the drive subsystem
@@ -75,17 +78,17 @@ public class Drive extends Subsystem {
      * @param telemetry   The telemetry
      * @param elapsedTime The timer for the elapsed time
      */
-    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight, Telemetry telemetry, ElapsedTime elapsedTime) {
+    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight, boolean odometryEnabled, Telemetry telemetry, ElapsedTime elapsedTime) {
         super(telemetry, "drive");
         this.timer = elapsedTime;
-
+        this.odometryEnabled = odometryEnabled;
         // Initialize motors
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.rearLeft = rearLeft;
         this.rearRight = rearRight;
 
-        // Motors will brake/stop when power is set to zero
+        // Motors will brake/stop when power is set to zero (locks the motors so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Initialize robot position
@@ -134,10 +137,7 @@ public class Drive extends Subsystem {
      * Sets all drive motor powers to zero
      */
     private void stop() {
-        this.frontLeft.setPower(0);
-        this.frontRight.setPower(0);
-        this.rearLeft.setPower(0);
-        this.rearRight.setPower(0);
+        setDrivePowers(new double[] {0, 0, 0, 0});
     }
 
     /**
@@ -161,9 +161,9 @@ public class Drive extends Subsystem {
     /**
      * PID motor control program to ensure all four motors are synchronized
      *
-     * @param tickCount
+     * @param tickCount How far each motor should go
      */
-    public void allMotorPIDControl(int[] tickCount) {
+    public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -174,10 +174,10 @@ public class Drive extends Subsystem {
         boolean initialized = false;
 
         // Initialize PID controllers
-        this.flControl = new PID(motorKp, motorKi, motorKd);
-        this.frControl = new PID(motorKp, motorKi, motorKd);
-        this.rlControl = new PID(motorKp, motorKi, motorKd);
-        this.rrControl = new PID(motorKp, motorKi, motorKd);
+        this.flControl = moveSystems[0];
+        this.frControl = moveSystems[1];
+        this.rlControl = moveSystems[2];
+        this.rrControl = moveSystems[3];
 
         // Current motor encoder values
         int currentCountFL;
@@ -228,9 +228,8 @@ public class Drive extends Subsystem {
             frontRight.setPower(DRIVE_SPEED * powerFR);
             rearLeft.setPower(DRIVE_SPEED * powerRL);
             rearRight.setPower(DRIVE_SPEED * powerRR);
-
             // Check for target hit
-            double directionSign;
+            int directionSign;
             directionSign = tickCount[0] / Math.abs(tickCount[0]);
             if (tickCount[0] == 0 || currentCountFL * directionSign >= Math.abs(tickCount[0])) {
                 isMotorFLDone = true;
@@ -294,13 +293,13 @@ public class Drive extends Subsystem {
     }
 
     public void moveVector(Vector v, double turnAngle) {
-        Vector newV = new Vector(v.getX() * COUNTS_PER_MM * COUNTS_CORRECTION_X, v.getY() * COUNTS_PER_MM);
+        Vector newV = new Vector(v.getX() * COUNTS_PER_MM * COUNTS_CORRECTION_X, v.getY() * COUNTS_PER_MM * COUNTS_CORRECTION_Y);
         // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
         // for the strafer chassis to operate properly
-        double distance = Math.hypot(newV.getX(), newV.getY()) * Math.sqrt(2);
+        double distance = newV.distance(Vector2D.ZERO) * Math.sqrt(2);
         double angle = Math.atan2(newV.getY(), newV.getX()) - Math.PI / 4;
 
-        int tickCount[] = new int[4];
+        int[] tickCount = new int[4]; // All tick counts need to be integers
         tickCount[0] = (int)((distance * Math.cos(angle)));
         tickCount[0] -= (int)(turnAngle * COUNTS_PER_DEGREE);
         tickCount[1] = (int)((distance * Math.sin(angle)));
@@ -309,8 +308,8 @@ public class Drive extends Subsystem {
         tickCount[2] -= (int)(turnAngle * COUNTS_PER_DEGREE);
         tickCount[3] = (int)((distance * Math.cos(angle)));
         tickCount[3] += (int)(turnAngle * COUNTS_PER_DEGREE);
-
-        allMotorPIDControl(tickCount);
+        MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
+        allMotorControl(tickCount, pids);
         stop();
     }
 }

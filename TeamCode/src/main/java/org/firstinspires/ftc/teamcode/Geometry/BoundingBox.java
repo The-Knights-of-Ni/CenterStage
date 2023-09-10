@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.DriveControl;
+package org.firstinspires.ftc.teamcode.Geometry;
 
 import org.apache.commons.geometry.euclidean.twod.ConvexArea;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.firstinspires.ftc.teamcode.Util.Coordinate;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class BoundingBox {
         area = bounds;
     }
 
-    public boolean contains(Coordinate coordinate) {
+    public boolean contains(Vector coordinate) {
         Vector2D point = Vector2D.of(coordinate.getX(), coordinate.getY());
         return area.contains(point);
     }

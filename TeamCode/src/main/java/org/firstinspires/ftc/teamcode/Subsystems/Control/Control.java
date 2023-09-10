@@ -16,4 +16,11 @@ public class Control extends Subsystem {
         super(telemetry, "control");
     }
 
+    public void initDevicesAuto() {
+
+    }
+
+    public void initDevicesTeleop() {
+
+    }
 }

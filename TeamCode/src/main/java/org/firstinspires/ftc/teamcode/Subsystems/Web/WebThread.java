@@ -2,26 +2,29 @@ package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
 import android.util.JsonWriter;
 
+import android.util.Log;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.WebLog;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class WebThread extends Subsystem implements Runnable {
     WebThreadData wtd = WebThreadData.getWtd();
-//    Javalin app;
     int port;
+    ServerSocket serverSocket;
 
-    public WebThread(Telemetry telemetry) {
+    public WebThread(Telemetry telemetry) throws IOException {
         super(telemetry, "web");
         init();
         port = 7070;
+        serverSocket = new ServerSocket(port);
     }
 
     public WebThread(Telemetry telemetry, int port) {
@@ -39,6 +42,7 @@ public class WebThread extends Subsystem implements Runnable {
 //                "    \"version\": \"0.0.0\"" +
 //                "\n}"));
 //        app.get("/robot-position", ctx -> ctx.result(getRobotPosition()));
+
     }
 
 
@@ -88,7 +92,13 @@ public class WebThread extends Subsystem implements Runnable {
         StringBuilder json = new StringBuilder("{");
         ArrayList<WebLog> logs = wtd.getLogs();
         for (WebLog log: logs) {
-            json.append("\n{\n" + "\"tag\": ").append(log.TAG).append(",\n\"message\": ").append(log.message).append(",\n\"severity\": ").append(log.severity).append("\n},");
+            json.append("\n{\n" + "\"tag\": ")
+                    .append(log.TAG)
+                    .append(",\n\"message\": ")
+                    .append(log.message)
+                    .append(",\n\"severity\": ")
+                    .append(log.severity)
+                    .append("\n},");
         }
         json = new StringBuilder(json.substring(0, json.length() - 2));
         json.append("}");
@@ -101,6 +111,61 @@ public class WebThread extends Subsystem implements Runnable {
 
     @Override
     public void run() {
-//        app.start(port);
+        while (true) {
+            try {
+                Socket socket = serverSocket.accept();
+                InputStream input = socket.getInputStream();
+                InputStreamReader reader = new InputStreamReader(input);
+                StringBuilder str = new StringBuilder();
+                boolean exit = false;
+                int prev = 0;
+                while (!exit) {
+                    int result = reader.read();
+                    if (result == -1) {
+                        exit = true;
+                    }
+                    else if (result == 13 && prev == 10) {
+                        exit = true;
+                    }
+                    else {
+                        str.append((char) result);
+                    }
+                    prev = result;
+                }
+                List<String> lines = Arrays.stream(str.toString().split("\n")).collect(Collectors.toList());
+                String request = lines.get(0);
+                String[] topSplit = request.split(" ");
+                String method = topSplit[0];
+                String url = topSplit[1];
+                String version = topSplit[2];
+                Log.i("WebThread", request);
+                lines.remove(0);
+                HashMap<String, String> headers = new HashMap<>();
+                for (String header: lines) {
+                    String[] split = header.split(":( )");
+                    headers.put(split[0], split[1]);
+                }
+                OutputStream output = socket.getOutputStream();
+                PrintWriter writer = new PrintWriter(output, true);
+                int statusCode = 200;
+                String resp = "";
+                if (Objects.equals(url, "/")) {
+                    resp = getLogs();
+                } else if (Objects.equals(url, "/robot-position")) {
+                    resp = getRobotPosition();
+                }
+                else {
+                    statusCode = 404;
+                    resp = "{\"error\": \"Resource not Found.\"";
+                }
+                writer.println("HTTP/1.1 " + statusCode + " OK\n" +
+                        "Server: v0.0.0\n" +
+                        "Content-Type: text/json\n" +
+                        "\n\n" + resp);
+                output.close();
+            } catch (Exception e) {
+                Log.e("WebThread", e.toString());
+            }
+        }
     }
 }

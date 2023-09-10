@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import org.firstinspires.ftc.teamcode.Util.Coordinate;
+import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.teamcode.Util.WebLog;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ public class WebThreadData {
     private static WebThreadData wtd;
     private static final ArrayList<WebLog> logs = new ArrayList<>();
 
-    private static Coordinate position = new Coordinate(0,0);
+    private static Vector position = new Vector(0,0);
 
     public static WebThreadData getWtd() {
         return wtd;
@@ -23,11 +23,11 @@ public class WebThreadData {
         wtd.logs.add(log);
     }
 
-    public static Coordinate getPosition() {
+    public static Vector getPosition() {
         return position;
     }
 
-    public void setPosition(Coordinate position) {
+    public void setPosition(Vector position) {
         wtd.position = position;
     }
 }
