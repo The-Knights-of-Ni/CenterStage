@@ -27,10 +27,6 @@ public class Vision extends Subsystem {
     public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
     public static final String WEBCAM_NAME =
             "Webcam 1"; // insert webcam name from configuration if using webcam
-    public static final String VUFORIA_KEY = "AdaaiLz/////AAABmY48m0KCh0LSrL2edcDLhdMoRzt30ceXdmqa4QAa4krhLO2RXrW8IHU" +
-            "MXYoMmg9Jgb9rrD9KMlG/VpOmlMvKA5EEahmlY0Gf6AXH5PIoaVTIcaK6U4PtRBEKIUZ+x6qOhZsLW8j3nI3Rha1NQNxbwV5CAgzODPK" +
-            "G8udq8VrXMnd2LBr46BQvxhZSmLLhJETGg6XKf563hbzGEg+6RO2oXwy10c0tax2vWgjFC4hRMiRf9HK8a7CYCnk7QG15syHv8ksuKBY" +
-            "kG4YOIRfIMaxrq6B1KT709/PFFtdfBLYAYiKfdpu7Wmt6zGO1+dx003WBBDV80OjWRye05i0WcreTxmbGqbknMLxYm7ATIYNetDsG";
     // Since ImageTarget trackable use mm to specify their dimensions, we must use mm for all the
     // physical dimension.
     // Define constants
@@ -39,19 +35,10 @@ public class Vision extends Subsystem {
     final static double CAMERA_FORWARD_DISPLACEMENT = 6.0f * mmPerInch; // TODO: CALIBRATE WHEN ROBOT IS BUILT
     final static double CAMERA_VERTICAL_DISPLACEMENT = 6.5f * mmPerInch;
     final static double CAMERA_LEFT_DISPLACEMENT = -0.75f * mmPerInch;
-    OpenGLMatrix robotFromCamera = null;
     private final HardwareMap hardwareMap;
     private final AllianceColor allianceColor;
-    // Class Members
-    private OpenGLMatrix lastLocation;
 
-    private VectorF targetTranslation;
-    private Orientation targetRotation;
-
-    private OpenCvCamera camera;
-
-    private int[] viewportContainerIds;
-
+    public AprilTagDetectionThread aprilTagDetectionThread;
 
     /**
      * Class instantiation
@@ -67,9 +54,15 @@ public class Vision extends Subsystem {
         super(telemetry, "vision");
         this.hardwareMap = hardwareMap;
         this.allianceColor = allianceColor;
-
+        this.aprilTagDetectionThread = new AprilTagDetectionThread(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        this.aprilTagDetectionThread.run();
         // Telemetry
         telemetry.addLine("Vision init complete");
         telemetry.update();
+    }
+
+    public void stopAprilTagDetection() throws InterruptedException {
+        this.aprilTagDetectionThread.terminate = true;
+        this.aprilTagDetectionThread.wait(2500);
     }
 }
