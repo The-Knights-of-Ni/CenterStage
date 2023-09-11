@@ -8,7 +8,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-public class AprilTagDetectionThread implements Runnable {
+public class AprilTagDetectionThread extends Thread {
     /**
      * The variable to store our instance of the AprilTag processor.
      */
