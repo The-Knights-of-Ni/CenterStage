@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testop;
+package org.firstinspires.ftc.teamcode.Testop.Drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 @Autonomous(name = "Vector Test", group = "Concept")
-public class VectorTest extends Auto {
+public class VectorDriveTest extends Auto {
     /**
      * Override of runOpMode()
      *

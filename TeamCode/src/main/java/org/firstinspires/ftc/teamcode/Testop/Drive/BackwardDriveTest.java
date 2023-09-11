@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testop;
+package org.firstinspires.ftc.teamcode.Testop.Drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-@Autonomous(name = "Vector Test 2", group = "Concept")
-public class VectorTest2 extends Auto {
+@Autonomous(name = "Backward Test", group = "Concept")
+public class BackwardDriveTest extends Auto {
     /**
      * Override of runOpMode()
      *
@@ -18,10 +18,10 @@ public class VectorTest2 extends Auto {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE);
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(24*mmPerInch, 12*mmPerInch));
+        robot.drive.moveVector(new Vector(0*mmPerInch, -24*mmPerInch));
         sleep(2000);
     }
 }
