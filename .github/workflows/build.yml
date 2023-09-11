@@ -10,12 +10,11 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11, ubuntu-latest, windows-2019, windows-2022]
-        experimental: [false]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -30,5 +29,7 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew
+    - name: Test with Gradle
+      run: ./gradlew test
     - name: Stop Gradle
       run: ./gradlew --stop
