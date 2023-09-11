@@ -25,7 +25,6 @@ public class Robot {
     public static final double width = 18.0;
 
     public final ElapsedTime timer;
-    public GamepadManager gamepads;
     // DC Motors
     public DcMotorEx frontLeftDriveMotor;
     public DcMotorEx frontRightDriveMotor;
@@ -33,13 +32,13 @@ public class Robot {
     public DcMotorEx rearLeftDriveMotor;
     //Servos
     // Odometry
-    public List<LynxModule> allHubs;
-    public DigitalChannel odometryRA;
-    public DigitalChannel odometryRB;
-    public DigitalChannel odometryBA;
-    public DigitalChannel odometryBB;
-    public DigitalChannel odometryLA;
-    public DigitalChannel odometryLB;
+//    public List<LynxModule> allHubs;
+//    public DigitalChannel odometryRA;
+//    public DigitalChannel odometryRB;
+//    public DigitalChannel odometryBA;
+//    public DigitalChannel odometryBB;
+//    public DigitalChannel odometryLA;
+//    public DigitalChannel odometryLB;
     public int odRCount = 0;
     public int odBCount = 0;
     public int odLCount = 0;
@@ -56,6 +55,8 @@ public class Robot {
     private WebThreadData wtd;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
+    public GamepadWrapper gamepad1;
+    public GamepadWrapper gamepad2;
 
     /**
      * @param timer         The elapsed time
@@ -81,8 +82,9 @@ public class Robot {
         this.webEnabled = flags.getOrDefault("web", false);
         this.odometryEnabled = flags.getOrDefault("odometry", false);
         this.telemetry = telemetry;
-        this.gamepads = new GamepadManager(gamepad1, gamepad2);
         this.wtd = WebThreadData.getWtd();
+        this.gamepad1 = new GamepadWrapper(gamepad1);
+        this.gamepad2 = new GamepadWrapper(gamepad2);
         init();
     }
 
@@ -165,5 +167,9 @@ public class Robot {
             wtd.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         Log.i(caption, value);
         return resp;
+    }
+    public void updateGamepads() {
+        gamepad1.update();
+        gamepad2.update();
     }
 }

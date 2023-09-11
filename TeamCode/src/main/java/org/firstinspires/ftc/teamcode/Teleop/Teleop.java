@@ -59,22 +59,23 @@ public class Teleop extends LinearOpMode {
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
         final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
 
-        while (opModeIsActive()) { // clearer nomenclature for variables
-            robot.gamepads.update();
+        while (opModeIsActive()) {
+            robot.updateGamepads();
 
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
 
-            driveHighPower = robot.gamepads.gamepad1.yButton.toggle;
+            driveHighPower = robot.gamepad1.yButton.toggle;
             double[] motorPowers;
             if (driveHighPower) {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.gamepad1.leftStickX * sensitivityHighPower, robot.gamepads.gamepad1.leftStickY * sensitivityHighPower, robot.gamepads.gamepad1.rightStickX * sensitivityHighPower);
+                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
             }
             else {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepads.gamepad1.leftStickX * sensitivityLowPower, robot.gamepads.gamepad1.leftStickY * sensitivityLowPower, robot.gamepads.gamepad1.rightStickX * sensitivityLowPower);
+                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
             }
             robot.drive.setDrivePowers(motorPowers);
+            Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)
         }
     }
 }
