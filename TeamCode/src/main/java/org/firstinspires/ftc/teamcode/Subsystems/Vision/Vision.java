@@ -55,7 +55,7 @@ public class Vision extends Subsystem {
         this.hardwareMap = hardwareMap;
         this.allianceColor = allianceColor;
         this.aprilTagDetectionThread = new AprilTagDetectionThread(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        this.aprilTagDetectionThread.run();
+        this.aprilTagDetectionThread.start();
         // Telemetry
         telemetry.addLine("Vision init complete");
         telemetry.update();
