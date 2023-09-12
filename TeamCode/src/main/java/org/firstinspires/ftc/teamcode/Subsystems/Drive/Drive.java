@@ -71,7 +71,7 @@ public class Drive extends Subsystem {
         super(telemetry, "drive");
         this.timer = elapsedTime;
         this.odometryEnabled = odometryEnabled;
-        // Initialize motors
+        // Set motors
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.rearLeft = rearLeft;
@@ -90,6 +90,7 @@ public class Drive extends Subsystem {
      * Uniformly sets zero power behavior of all drive motors
      *
      * @param mode
+     * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
         this.frontLeft.setZeroPowerBehavior(mode);
@@ -102,6 +103,7 @@ public class Drive extends Subsystem {
      * Uniformly sets run mode of all drive motors
      *
      * @param mode
+     * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
         this.frontLeft.setMode(mode);
@@ -114,6 +116,7 @@ public class Drive extends Subsystem {
      * Sets the drive power of each motor individually.
      *
      * @param powers the powers to set each of the motors to
+     * @see DcMotorEx#setPower(double)
      */
     public void setDrivePowers(double[] powers) {
         frontLeft.setPower(powers[0]);
@@ -122,11 +125,15 @@ public class Drive extends Subsystem {
         rearRight.setPower(powers[3]);
     }
 
+    public void setDrivePowers(double power) {
+        setDrivePowers(new double[] {power, power, power, power});
+    }
+
     /**
      * Sets all drive motor powers to zero
      */
     private void stop() {
-        setDrivePowers(new double[] {0, 0, 0, 0});
+        setDrivePowers(0.);
     }
 
     /**
@@ -179,12 +186,6 @@ public class Drive extends Subsystem {
             motor.setPower(DRIVE_SPEED*moveSystem.calculate(targetCount, currentCount));
         }
 
-        public void checkDone() {
-            if (isMotorDone(currentCount, targetCount)) {
-                halt();
-            }
-        }
-
         public void halt() {
             isDone = true;
             isNotMoving = true;
@@ -204,9 +205,15 @@ public class Drive extends Subsystem {
             if (!fRbypass)
                 updateCurrentCount(); // House of cards moment
             setPower();
-            checkDone();
+            checkMotorDone();
             updateIsNotMoving();
             updatePrevCount();
+        }
+
+        public void checkMotorDone() {
+            if (isMotorDone(currentCount, targetCount)) {
+                halt();
+            }
         }
     }
 
