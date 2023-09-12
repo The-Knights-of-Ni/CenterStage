@@ -147,11 +147,6 @@ public class Drive extends Subsystem {
         return new double[]{lfPower, rfPower, lrPower, rrPower};
     }
 
-    static int directionSign(int number) {
-        return number >= 0 ? -1 : 1;
-    }
-
-
     static class MotorControlData {
         DcMotorEx motor;
         MoveSystem moveSystem;
@@ -266,7 +261,7 @@ public class Drive extends Subsystem {
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
-        return currentCount * directionSign(targetCount) >= Math.abs(targetCount);
+        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
     }
 
     public void moveVector(Vector v) {
