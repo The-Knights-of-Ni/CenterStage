@@ -148,10 +148,7 @@ public class Drive extends Subsystem {
     }
 
     static int directionSign(int number) {
-        if (number != 0)
-            return number / Math.abs(number);
-        else
-            return 0; // Zero neither positive nor negative for the purposes of the PID
+        return number >= 0 ? -1 : 1;
     }
 
 
@@ -184,11 +181,11 @@ public class Drive extends Subsystem {
 
         public void checkDone() {
             if (isMotorDone(currentCount, targetCount)) {
-                done();
+                halt();
             }
         }
 
-        public void done() {
+        public void halt() {
             isDone = true;
             isNotMoving = true;
             motor.setPower(0.0);
@@ -221,8 +218,6 @@ public class Drive extends Subsystem {
     public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
         // Refresh motors
         stop();
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // TODO: Why twice, what is being gained?
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
 
@@ -271,7 +266,7 @@ public class Drive extends Subsystem {
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
-        return currentCount * directionSign(targetCount) >= Math.abs(targetCount); // TODO: directionSign also has a math.abs?? can this be simplified
+        return currentCount * directionSign(targetCount) >= Math.abs(targetCount);
     }
 
     public void moveVector(Vector v) {
