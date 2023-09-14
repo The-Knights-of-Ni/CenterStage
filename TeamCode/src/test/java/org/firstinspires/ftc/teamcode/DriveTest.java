@@ -44,9 +44,9 @@ class DriveTest {
         MockedStatic<Log> mocked = mockStatic(Log.class);
         Drive drive = init();
         drive.moveVector(new Vector(0, 1000));
-        assertEquals(drive.frontLeft.getCurrentPosition(), 1782, 500);
-        assertEquals(drive.frontRight.getCurrentPosition(), 1782, 500);
-        assertEquals(drive.rearLeft.getCurrentPosition(), 1782, 500);
-        assertEquals(drive.rearRight.getCurrentPosition(), 1782, 500);
+        assertEquals(1782, drive.frontLeft.getCurrentPosition(), 500);
+        assertEquals(1782, drive.frontRight.getCurrentPosition(), 500);
+        assertEquals(1782, drive.rearLeft.getCurrentPosition(), 500);
+        assertEquals(1782, drive.rearRight.getCurrentPosition(), 500);
     }
 }

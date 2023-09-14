@@ -261,7 +261,7 @@ public class MockDcMotorEx implements DcMotorEx {
     }
 
     private void updateCurrentPosition() {
-        currentPosition += (int) ((currentPower * timer.nanoseconds())/500);
+        currentPosition += (int) ((currentPower * timer.nanoseconds()) / 25000);
         timer.reset();
     }
 }
