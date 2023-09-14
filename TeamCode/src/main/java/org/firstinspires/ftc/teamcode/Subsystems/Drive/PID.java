@@ -36,8 +36,7 @@ public class PID implements MoveSystem {
         previousError = error;
 
         // Cap output at range (-1,1)
-        double cappedOutput = MathUtils.clamp(error * Kp + integralSum * Ki + derivative * Kd, -1, 1);
-        return cappedOutput;
+        return MathUtils.clamp(error * Kp + integralSum * Ki + derivative * Kd, -1, 1);
     }
 
     /**
