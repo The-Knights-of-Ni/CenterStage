@@ -26,9 +26,9 @@ public class FeedForward implements MoveSystem {
      * @return output
      */
     public double calculate(double target, double measured) {
-        double currentVelocity = (measured-previousMeasured)/(timer.seconds()-previousTime);
+        double currentVelocity = (measured - previousMeasured) / (timer.seconds() - previousTime);
         double velocityReference = 0.7; // TODO: Don't hardcode
-        double accelerationReference = velocityReference-currentVelocity+0.1; // TODO: Calibrate
+        double accelerationReference = velocityReference - currentVelocity + 0.1; // TODO: Calibrate
         // Cap output at range (-1,1)
         double cappedOutput = Math.min(1, Math.max(-1, Kv * velocityReference + Ka * accelerationReference));
         previousTime = timer.seconds();
