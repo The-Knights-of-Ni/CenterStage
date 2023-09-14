@@ -12,18 +12,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import java.util.HashMap;
 
 /**
- * Auto creates a robots and runs it in auto mode.
- *
- * <p>Auto currently just initializes the Robot as Auto.runOpMode() is empty.</p>
- * <p>Tasks:</p>
- * <p>Deliver duck from carousel (10)</p>
- *
- * <p>Deliver freight to hub (6)</p>
- *
- * <p>   - deliver freight to corresponding level of custom element (20)</p>
- *
- * <p>Park in warehouse (10)</p>
- *
+ * Auto creates a robot and runs it in auto mode.
  * @see LinearOpMode
  */
 
