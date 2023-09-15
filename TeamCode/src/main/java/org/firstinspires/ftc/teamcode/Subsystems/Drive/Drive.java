@@ -229,8 +229,6 @@ public class Drive extends Subsystem {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
 
         // Timeout control (stop loop if motor stalls)
