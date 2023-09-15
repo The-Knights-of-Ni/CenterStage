@@ -22,6 +22,7 @@ public class GamepadWrapper {
     public Button bumperLeft = new Button();
     public Button bumperRight = new Button();
     public Gamepad gamepad;
+
     public GamepadWrapper(Gamepad gamepad) {
         this.gamepad = gamepad;
         update();

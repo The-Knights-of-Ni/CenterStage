@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
+import androidx.core.math.MathUtils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PID implements MoveSystem {
@@ -35,8 +36,7 @@ public class PID implements MoveSystem {
         previousError = error;
 
         // Cap output at range (-1,1)
-        double cappedOutput = Math.min(1, Math.max(-1, error * Kp + integralSum * Ki + derivative * Kd));
-        return cappedOutput;
+        return MathUtils.clamp(error * Kp + integralSum * Ki + derivative * Kd, -1, 1);
     }
 
     /**

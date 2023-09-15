@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
+import java.util.Arrays;
+
 /**
  * Mecanum drivetrain subsystem
  */
@@ -223,6 +225,7 @@ public class Drive extends Subsystem {
      * @param tickCount How far each motor should go
      */
     public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
+        Log.i(TAG, "Moving " + Arrays.toString(tickCount));
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -298,7 +301,7 @@ public class Drive extends Subsystem {
         tickCount[2] -= (int)(turnAngle * COUNTS_PER_DEGREE);
         tickCount[3] = (int)((distance * Math.cos(angle)));
         tickCount[3] += (int)(turnAngle * COUNTS_PER_DEGREE);
-        MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
+        MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
         allMotorControl(tickCount, pids);
         stop();
     }
