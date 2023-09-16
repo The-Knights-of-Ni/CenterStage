@@ -182,7 +182,7 @@ public class Drive extends Subsystem {
         }
 
         public void setPower() {
-            motor.setPower(DRIVE_SPEED*moveSystem.calculate(targetCount, currentCount));
+            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
         }
 
         public void halt() {
