@@ -29,6 +29,7 @@ public abstract class Auto extends LinearOpMode {
      */
     public Robot robot;
     public ElapsedTime timer;
+
     /**
      * Initializes the robot class and sets the robot as the newly initialized robot.
      * @param allianceColor The alliance color
@@ -36,19 +37,12 @@ public abstract class Auto extends LinearOpMode {
     public void initAuto(AllianceColor allianceColor) {
         Log.i("main", "*** Opmode control passed to teamcode ***");
         timer = new ElapsedTime();
-        try {
-            HashMap<String, Boolean> flags = new HashMap<>();
-            flags.put("vision", true);
-            flags.put("web", false);
-            this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
-            robot.control.initDevicesAuto();
-            telemetry.addData("Waiting for start", "");
-            telemetry.update();
-        } catch (Exception ioException) {
-            telemetry.addData("ERROR: ", "IO EXCEPTION", ioException);
-            telemetry.update();
-            Log.e("main", "fatal error IO EXCEPTION", ioException);
-            stop();
-        }
+        HashMap<String, Boolean> flags = new HashMap<>();
+        flags.put("vision", true);
+        flags.put("web", false);
+        this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
+        robot.control.initDevicesAuto();
+        telemetry.addData("Waiting for start", "");
+        telemetry.update();
     }
 }
