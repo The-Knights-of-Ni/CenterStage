@@ -51,6 +51,8 @@ public class Drive extends Subsystem {
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
 
+    private final boolean debug = false;
+
     // State variables for robot position
     private double robotX;
     private double robotY;
@@ -263,10 +265,11 @@ public class Drive extends Subsystem {
             } else {
                 isTimeOutStarted = false;
             }
-            // TODO: Profile total logging time
-            Log.v("Target tick", fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-            Log.v("Current tick", fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-            Log.v("Current power", fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+            if (debug) {
+                Log.v("Target tick", fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
+                Log.v("Current tick", fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
+                Log.v("Current power", fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+            }
         }
     }
 
