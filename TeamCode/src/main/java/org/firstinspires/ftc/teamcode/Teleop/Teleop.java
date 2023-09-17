@@ -4,11 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.*;
+import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import static java.lang.Math.abs;
 
 @TeleOp(name = "TeleOp")
 public class Teleop extends LinearOpMode {
@@ -90,8 +94,21 @@ public class Teleop extends LinearOpMode {
             }
 
             if(robot.gamepad2.aButton.toggle) {
-                robot.control.moveLinearSlide(SlidePosition.EXTENDED);
-                robot.control.moveDoubleGrippy(DoubleGrippyState.OPEN_SIMUL);
+                new ScorePixelThread(robot).start();
+            }
+
+            //Omitting the slide calibration since the pixels will be at an angle and thus droppable.
+
+            if(abs(robot.gamepad2.rightStickY) > 0) {
+                robot.control.intakePixel();
+            }
+
+            if(robot.gamepad2.bumperRight.toggle) {
+                robot.control.craneLift(CraneState.DOWN);
+            }
+
+            if(robot.gamepad2.bumperLeft.toggle) {
+                robot.control.craneLift(CraneState.UP);
             }
 
             Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)
