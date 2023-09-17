@@ -61,6 +61,20 @@ class DriveTest {
     void testPIDStrafe() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             Drive drive = init();
+            drive.moveVector(new Vector(1000, 0));
+            assertEquals(2442, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            // TODO: Once fr gets fixed we can uncomment this test :)
+            // assertEquals(-2442, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
+            assertEquals(-2442, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(2442, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        }
+    }
+
+
+    @Test
+    void testPIDDiagonal() {
+        try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
+            Drive drive = init();
             drive.moveVector(new Vector(1000, 1000));
             assertEquals(4224, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             // TODO: Once fr gets fixed we can uncomment this test :)
