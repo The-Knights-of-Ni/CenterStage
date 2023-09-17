@@ -13,7 +13,7 @@ public class Control extends Subsystem {
         super(telemetry, "control");
     }
 
-    enum DoubleGrippyState { //TODO: Calibrate claw constants
+    public enum DoubleGrippyState { //TODO: Calibrate claw constants
         CLOSE_FRONT(0,0),
         CLOSE_REAR(0,0),
         OPEN_FRONT(0,0),
@@ -22,13 +22,14 @@ public class Control extends Subsystem {
         CLOSE_SIMUL(0,0);
         private double posFront;
         private double posRear;
+        private double pivotAngle;
         DoubleGrippyState(double posFront, double posRear) {
             this.posFront = posFront;
             this.posRear = posRear;
         }
     }
 
-    enum PlaneLaunchRange { //TODO: Calibrate Motor Powers
+    public enum PlaneLaunchRange { //TODO: Calibrate Motor Powers
         LONG(0),
         MEDIUM(0),
         SHORT(0);
@@ -38,7 +39,7 @@ public class Control extends Subsystem {
         }
     }
 
-    enum SlidePosition { //TODO: Calibrate Slide Constants
+    public enum SlidePosition { //TODO: Calibrate Slide Constants
         EXTENDED(0),
         RETRACTED(0),
         OBJ_PICKUP(0);
@@ -48,7 +49,7 @@ public class Control extends Subsystem {
         }
     }
 
-    enum CraneState { //TODO: Calibrate crane constants
+    public enum CraneState { //TODO: Calibrate crane constants
         UP(0),
         DOWN(0);
         private double tickCount;
@@ -63,6 +64,14 @@ public class Control extends Subsystem {
 
     public void initDevicesTeleop() {
 
+    }
+
+    public void intakePixel() {
+
+    }
+
+    public void pivotDoubleGrippy(double pos) {
+        //Pivot the double grippy
     }
 
     public void moveDoubleGrippy(DoubleGrippyState pos) {
