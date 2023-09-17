@@ -7,6 +7,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
@@ -32,6 +35,10 @@ public class Vision extends Subsystem {
     private final AllianceColor allianceColor;
 
     public AprilTagDetectionThread aprilTagDetectionThread;
+
+    private OpenCvCamera camera;
+
+    private MarkerDetectionPipeline pipeline;
 
     /**
      * Class instantiation
@@ -86,5 +93,56 @@ public class Vision extends Subsystem {
             }
         }
         return position;
+    }
+
+    private void initDetectionPipeline() {
+        // Get the camera ID
+        int cameraMonitorViewId =
+                hardwareMap
+                        .appContext
+                        .getResources()
+                        .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        // Obtain camera instance from ID
+        camera =
+                OpenCvCameraFactory.getInstance()
+                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+
+        // Create a detection pipeline for detecting the position
+        pipeline = new MarkerDetectionPipeline(allianceColor, CAMERA_HEIGHT, CAMERA_WIDTH);
+        camera.setPipeline(pipeline);
+
+        // Create listeners for the camera
+        camera.openCameraDeviceAsync(
+                new OpenCvCamera.AsyncCameraOpenListener() {
+                    @Override
+                    public void onOpened() { // Listener for when the camera first starts
+                        telemetry.addLine("Streaming");
+                        camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                    }
+
+                    @Override
+                    public void onError(int errorCode) { // Listener to log if the camera stops abruptly
+                        telemetry.addLine("Error Streaming, aborting");
+                        telemetry.update();
+                    }
+                });
+    }
+
+    public void stop() {
+        // Stop streaming
+        camera.stopStreaming();
+        camera.closeCameraDevice();
+    }
+
+    /**
+     * This method waits until the search for the marker is done, and then it return the marker
+     * location. It waits until the marker is found, then it returns the marker location.
+     *
+     * @return Where the marker is
+     */
+    public MarkerDetectionPipeline.MarkerLocation detectMarkerRun() {
+        // Return the marker location
+        return pipeline.getMarkerLocation();
     }
 }

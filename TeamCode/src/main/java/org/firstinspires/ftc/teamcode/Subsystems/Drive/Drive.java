@@ -281,6 +281,10 @@ public class Drive extends Subsystem {
         moveVector(v, 0);
     }
 
+    public void moveAngle(double turnAngle) {
+        moveVector(new Vector(0, 0), turnAngle);
+    }
+
     public void moveVector(Vector v, double turnAngle) {
         Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
         // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
