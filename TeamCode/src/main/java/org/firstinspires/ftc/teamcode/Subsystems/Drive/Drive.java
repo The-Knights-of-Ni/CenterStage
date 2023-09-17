@@ -39,9 +39,6 @@ public class Drive extends Subsystem {
 
     // Default drive speeds
     private static final double DRIVE_SPEED = 0.60;
-    private static final double DRIVE_SPEED_X = 0.70;
-    private static final double DRIVE_SPEED_Y = 0.80;
-    private static final double TURN_SPEED = 0.40;
 
     // PID Constants
     private static final double motorKp = 0.0025;
@@ -54,11 +51,7 @@ public class Drive extends Subsystem {
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
 
-    // PID Controllers
-    public MoveSystem flControl;
-    public MoveSystem frControl;
-    public MoveSystem rlControl;
-    public MoveSystem rrControl;
+    private final boolean debug = false;
 
     // State variables for robot position
     private double robotX;
@@ -66,9 +59,7 @@ public class Drive extends Subsystem {
     private double robotTheta;
 
     private final ElapsedTime timer;
-    private long startTime;
-
-    public final boolean odometryEnabled; // TODO: Implement
+    public final boolean odometryEnabled;
 
     /**
      * Initializes the drive subsystem
@@ -84,13 +75,13 @@ public class Drive extends Subsystem {
         super(telemetry, "drive");
         this.timer = elapsedTime;
         this.odometryEnabled = odometryEnabled;
-        // Initialize motors
+        // Set motors
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.rearLeft = rearLeft;
         this.rearRight = rearRight;
 
-        // Motors will brake/stop when power is set to zero (locks the motors so they don't roll around)
+        // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Initialize robot position
@@ -103,6 +94,7 @@ public class Drive extends Subsystem {
      * Uniformly sets zero power behavior of all drive motors
      *
      * @param mode
+     * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
         this.frontLeft.setZeroPowerBehavior(mode);
@@ -115,6 +107,7 @@ public class Drive extends Subsystem {
      * Uniformly sets run mode of all drive motors
      *
      * @param mode
+     * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
         this.frontLeft.setMode(mode);
@@ -127,6 +120,7 @@ public class Drive extends Subsystem {
      * Sets the drive power of each motor individually.
      *
      * @param powers the powers to set each of the motors to
+     * @see DcMotorEx#setPower(double)
      */
     public void setDrivePowers(double[] powers) {
         frontLeft.setPower(powers[0]);
@@ -135,11 +129,15 @@ public class Drive extends Subsystem {
         rearRight.setPower(powers[3]);
     }
 
+    public void setDrivePowers(double power) {
+        setDrivePowers(new double[] {power, power, power, power});
+    }
+
     /**
      * Sets all drive motor powers to zero
      */
     private void stop() {
-        setDrivePowers(new double[] {0, 0, 0, 0});
+        setDrivePowers(0.);
     }
 
     /**
@@ -160,6 +158,64 @@ public class Drive extends Subsystem {
         return new double[]{lfPower, rfPower, lrPower, rrPower};
     }
 
+    static class MotorControlData {
+        DcMotorEx motor;
+        MoveSystem moveSystem;
+        boolean isNotMoving;
+        boolean isDone;
+        int currentCount;
+        int prevCount;
+        int targetCount;
+        int timeOutThreshold;
+        public MotorControlData(DcMotorEx motorEx, MoveSystem mS, int targetTickCount, int timeOutThreshold) {
+            motor = motorEx;
+            moveSystem = mS;
+            isNotMoving = false;
+            isDone = false;
+            prevCount = -1;
+            targetCount = targetTickCount;
+            this.timeOutThreshold = timeOutThreshold;
+        }
+
+        public void updateCurrentCount() {
+            currentCount = motor.getCurrentPosition();
+        }
+
+        public void setPower() {
+            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
+        }
+
+        public void halt() {
+            isDone = true;
+            isNotMoving = true;
+            motor.setPower(0.0);
+        }
+
+        public void updateIsNotMoving() {
+            if (prevCount != -1)
+                isNotMoving = Math.abs(currentCount - prevCount) < timeOutThreshold;
+        }
+
+        public void updatePrevCount() {
+            prevCount = currentCount;
+        }
+
+        public void cycle(boolean fRbypass) {
+            if (!fRbypass)
+                updateCurrentCount(); // House of cards moment
+            setPower();
+            checkMotorDone();
+            updateIsNotMoving();
+            updatePrevCount();
+        }
+
+        public void checkMotorDone() {
+            if (isMotorDone(currentCount, targetCount)) {
+                halt();
+            }
+        }
+    }
+
     /**
      * PID motor control program to ensure all four motors are synchronized
      *
@@ -170,126 +226,55 @@ public class Drive extends Subsystem {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        boolean initialized = false;
-
-        // Initialize PID controllers
-        this.flControl = moveSystems[0];
-        this.frControl = moveSystems[1];
-        this.rlControl = moveSystems[2];
-        this.rrControl = moveSystems[3];
-
-        // Current motor encoder values
-        int currentCountFL;
-        int currentCountFR;
-        int currentCountRL;
-        int currentCountRR;
-
-        // Previous motor encoder values
-        int prevCountFL = 0;
-        int prevCountFR = 0;
-        int prevCountRL = 0;
-        int prevCountRR = 0;
-
-        // Conditionals to control PID loop
-        boolean isMotorFLDone = false;
-        boolean isMotorFRDone = false;
-        boolean isMotorRLDone = false;
-        boolean isMotorRRDone = false;
-
-        // Conditionals to control timeout
-        boolean isMotorFLNotMoving = false;
-        boolean isMotorFRNotMoving = false;
-        boolean isMotorRLNotMoving = false;
-        boolean isMotorRRNotMoving = false;
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
 
         // Timeout control (stop loop if motor stalls)
+        long currentTime; // current time in nanoseconds
+        long startTime = timer.nanoseconds();
         boolean isTimeOutStarted = false;
-        boolean isTimeOutExceeded = false;
-        double timeOutPeriod = 0.1;
+        boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
+        int timeOutPeriod = 100_000_000;
         double timeOutStartedTime = 0.0;
-        int timeOutThreshold = 3; // If the encoder does not change by 2 ticks, motor is "stuck"
-        double currentTime = 0.0;
+        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
 
-        while(((!isMotorFLDone) || (!isMotorFRDone) || (!isMotorRLDone) || (!isMotorRRDone)) && (!isTimeOutExceeded)) {
+        // Initialize motor data wrappers
+        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold); // TODO: Odometry implementation
+        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold);
+        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
+        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
+        // TODO: Profile init time
+        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
             // Update current variables
-            currentTime = ((double) timer.nanoseconds()) * 1.0e-9 - startTime;
-            currentCountFL = frontLeft.getCurrentPosition();
-            currentCountFR = (int) (frontRight.getCurrentPosition() / 0.7); // FR is always off, not sure why
-            currentCountRL = rearLeft.getCurrentPosition();
-            currentCountRR = rearRight.getCurrentPosition();
+            currentTime = timer.nanoseconds() - startTime;
+            // if only this got fixed ... then I could simplify the code even more
+            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why TODO: Check again ...
 
-            // PID control
-            double powerFL = flControl.calculate(tickCount[0], currentCountFL);
-            double powerFR = frControl.calculate(tickCount[1], currentCountFR);
-            double powerRL = rlControl.calculate(tickCount[2], currentCountRL);
-            double powerRR = rrControl.calculate(tickCount[3], currentCountRR);
-            frontLeft.setPower(DRIVE_SPEED * powerFL);
-            frontRight.setPower(DRIVE_SPEED * powerFR);
-            rearLeft.setPower(DRIVE_SPEED * powerRL);
-            rearRight.setPower(DRIVE_SPEED * powerRR);
-            // Check for target hit
-            int directionSign;
-            directionSign = tickCount[0] / Math.abs(tickCount[0]);
-            if (tickCount[0] == 0 || currentCountFL * directionSign >= Math.abs(tickCount[0])) {
-                isMotorFLDone = true;
-                isMotorFLNotMoving = true;
-                frontLeft.setPower(0.0);
-            }
-            directionSign = tickCount[1] / Math.abs(tickCount[1]);
-            if (tickCount[1] == 0 || currentCountFR * directionSign >= Math.abs(tickCount[1])) {
-                isMotorFRDone = true;
-                isMotorFRNotMoving = true;
-                frontRight.setPower(0.0);
-            }
-            directionSign = tickCount[2] / Math.abs(tickCount[2]);
-            if (tickCount[2] == 0 || currentCountRL * directionSign >= Math.abs(tickCount[2])) {
-                isMotorRLDone = true;
-                isMotorRLNotMoving = true;
-                rearLeft.setPower(0.0);
-            }
-            directionSign = tickCount[3] / Math.abs(tickCount[3]);
-            if (tickCount[3] == 0 || currentCountRR * directionSign >= Math.abs(tickCount[3])) {
-                isMotorRRDone = true;
-                isMotorRRNotMoving = true;
-                rearRight.setPower(0.0);
-            }
-
-            // Check for timeout
-            if (initialized) { // check if the motor is rotating
-                isMotorFLNotMoving = Math.abs(currentCountFL - prevCountFL) < timeOutThreshold;
-                isMotorFRNotMoving = Math.abs(currentCountFR - prevCountFR) < timeOutThreshold;
-                isMotorRLNotMoving = Math.abs(currentCountRL - prevCountRL) < timeOutThreshold;
-                isMotorRRNotMoving = Math.abs(currentCountRR - prevCountRR) < timeOutThreshold;
-            }
-            if (isMotorFLNotMoving && isMotorFRNotMoving && isMotorRLNotMoving && isMotorRRNotMoving) {
-                if (isTimeOutStarted) {
-                    if (currentTime - timeOutStartedTime > timeOutPeriod) {
-                        System.out.println("Timeout Exceeded");
-                        isTimeOutExceeded = true;
-                    }
+            // Run a cycle for each
+            fl.cycle(false);
+            fr.cycle(true);
+            rl.cycle(false);
+            rr.cycle(false);
+            if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
+                if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
+                    isTimeOutExceeded = true;
+                    Log.e(TAG, "Move failed, timeout exceeded");
                 } else { // time out was not started yet
                     isTimeOutStarted = true;
                     timeOutStartedTime = currentTime;
                 }
             } else {
                 isTimeOutStarted = false;
-                isTimeOutExceeded = false;
             }
-
-            prevCountFL = currentCountFL;
-            prevCountFR = currentCountFR;
-            prevCountRL = currentCountRL;
-            prevCountRR = currentCountRR;
-
-            initialized = true;
-            Log.d("Target tick", tickCount[0] + " " + tickCount[1] + " " + tickCount[2] + " " + tickCount[3]);
-            Log.d("Current tick", currentCountFL + " " + currentCountFR + " " + currentCountRL + " " + currentCountRR);
-            Log.d("Current power", powerFL + " " + powerFR + " " + powerRL + " " + powerRR);
+            if (debug) {
+                Log.v("Target tick", fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
+                Log.v("Current tick", fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
+                Log.v("Current power", fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+            }
         }
+    }
+
+    private static boolean isMotorDone(int currentCount, int targetCount) {
+        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
     }
 
     public void moveVector(Vector v) {
@@ -297,7 +282,7 @@ public class Drive extends Subsystem {
     }
 
     public void moveVector(Vector v, double turnAngle) {
-        Vector newV = new Vector(v.getX() * COUNTS_PER_MM * COUNTS_CORRECTION_X, v.getY() * COUNTS_PER_MM * COUNTS_CORRECTION_Y);
+        Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
         // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
         // for the strafer chassis to operate properly
         double distance = newV.distance(Vector2D.ZERO) * Math.sqrt(2);

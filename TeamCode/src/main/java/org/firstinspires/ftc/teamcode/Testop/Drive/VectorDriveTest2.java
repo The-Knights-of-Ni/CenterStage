@@ -22,6 +22,7 @@ public class VectorDriveTest2 extends Auto {
         waitForStart();
         timer.reset();
         robot.drive.moveVector(new Vector(24*mmPerInch, 12*mmPerInch));
+        robot.drive.moveVector(new Vector(12*mmPerInch, 24*mmPerInch));
         sleep(2000);
     }
 }
