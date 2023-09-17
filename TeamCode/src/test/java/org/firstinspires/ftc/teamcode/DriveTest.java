@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -44,25 +46,27 @@ class DriveTest {
 
     @Test
     void testPIDBasic() {
-        MockedStatic<Log> mocked = mockStatic(Log.class); // TODO: Urgent fix for this hack lol
-        Drive drive = init();
-        drive.moveVector(new Vector(0, 1000));
-        assertEquals(1782, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-        // TODO: Once fr gets fixed we can uncomment this test :)
-        // assertEquals(1782, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-        assertEquals(1782, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-        assertEquals(1782, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
+            Drive drive = init();
+            drive.moveVector(new Vector(0, 1000));
+            assertEquals(1782, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            // TODO: Once fr gets fixed we can uncomment this test :)
+            // assertEquals(1782, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(1782, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(1782, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        }
     }
 
     @Test
     void testPIDStrafe() {
-        Drive drive = init();
-        drive.moveVector(new Vector(1000, 1000));
-        assertEquals(4224, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-        // TODO: Once fr gets fixed we can uncomment this test :)
-        // assertEquals(-659, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
-        assertEquals(-659, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-        assertEquals(4224, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
+            Drive drive = init();
+            drive.moveVector(new Vector(1000, 1000));
+            assertEquals(4224, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            // TODO: Once fr gets fixed we can uncomment this test :)
+            // assertEquals(-659, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
+            assertEquals(-659, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(4224, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        }
     }
-
 }
