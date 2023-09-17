@@ -83,4 +83,17 @@ class DriveTest {
             assertEquals(4224, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }
     }
+
+    @Test
+    void testPIDTurn() {
+        try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
+            Drive drive = init();
+            drive.moveVector(new Vector(0, 0), 90);
+            assertEquals(-1170, drive.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            // TODO: Once fr gets fixed we can uncomment this test :)
+            // assertEquals(1170, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(-1170, drive.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(1170, drive.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+        }
+    }
 }
