@@ -62,7 +62,7 @@ public class Robot {
      * @param timer         The elapsed time
      * @param allianceColor the alliance color
      */
-    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, ElapsedTime timer,
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime timer,
                  AllianceColor allianceColor, Gamepad gamepad1, Gamepad gamepad2, HashMap<String, Boolean> flags) {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML); // Allow usage of some HTML tags
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.OLDEST_FIRST);
