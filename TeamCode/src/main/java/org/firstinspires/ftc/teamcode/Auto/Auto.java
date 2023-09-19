@@ -16,7 +16,7 @@ import java.util.HashMap;
  * @see LinearOpMode
  */
 
-@Autonomous(name = "Auto", group = "Concept")
+@Autonomous(name = "Auto", group = "Concept", preselectTeleOp = "Teleop")
 @Disabled
 public abstract class Auto extends LinearOpMode {
 
