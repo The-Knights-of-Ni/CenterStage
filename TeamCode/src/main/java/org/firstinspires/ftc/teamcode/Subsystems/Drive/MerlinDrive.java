@@ -320,9 +320,9 @@ public final class MerlinDrive {
                 return false;
             }
 
-            Pose2dDual<Time> txWorldTarget = turn.get(t);
+            DualPose<Time> txWorldTarget = turn.get(t);
 
-            PoseVelocity2d robotVelRobot = updatePoseEstimate();
+            PoseVelocity robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
                     PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
