@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -12,26 +13,25 @@ public class MockDcMotorEx implements DcMotorEx {
     RunMode currentRunMode;
     double currentPower;
     boolean motorEnabled;
+    int currentPosition;
     Direction currentDirection;
     int targetPosition;
     ZeroPowerBehavior powerBehavior;
+    ElapsedTime timer;
 
     public MockDcMotorEx(RunMode runMode) {
+        timer = new ElapsedTime();
         currentRunMode = runMode;
         currentPower = 0;
         motorEnabled = true;
         currentDirection = Direction.FORWARD;
         targetPosition = 0;
+        currentPosition = 0;
         powerBehavior = ZeroPowerBehavior.BRAKE;
     }
 
     public MockDcMotorEx() {
-        currentRunMode = RunMode.RUN_TO_POSITION;
-        currentPower = 0;
-        motorEnabled = true;
-        currentDirection = Direction.FORWARD;
-        targetPosition = 0;
-        powerBehavior = ZeroPowerBehavior.BRAKE;
+        this(RunMode.RUN_TO_POSITION);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class MockDcMotorEx implements DcMotorEx {
 
     @Override
     public boolean isMotorEnabled() {
-        return false;
+        return motorEnabled;
     }
 
     @Override
@@ -186,12 +186,18 @@ public class MockDcMotorEx implements DcMotorEx {
 
     @Override
     public int getCurrentPosition() {
-        return 0;
+        updateCurrentPosition();
+        return currentPosition;
     }
 
     @Override
     public void setMode(RunMode mode) {
         currentRunMode = mode;
+        if (currentRunMode == RunMode.STOP_AND_RESET_ENCODER) {
+            updateCurrentPosition();
+            currentPosition = 0;
+            currentPower = 0;
+        }
     }
 
     @Override
@@ -212,9 +218,9 @@ public class MockDcMotorEx implements DcMotorEx {
     @Override
     public void setPower(double power) {
         if (power <= 1.0 && power >= -1.0) {
+            updateCurrentPosition();
             currentPower = power;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Current power not between -1 and 1 (inclusive). Attempted power was " + power);
         }
     }
@@ -252,5 +258,10 @@ public class MockDcMotorEx implements DcMotorEx {
     @Override
     public void close() {
 
+    }
+
+    private void updateCurrentPosition() {
+        currentPosition += (int) ((currentPower * timer.milliseconds()) * 500);
+        timer.reset();
     }
 }

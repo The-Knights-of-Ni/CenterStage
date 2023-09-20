@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Robot {
-    public static final String name = "PowerPlay 2023";
+    public static final String name = "CenterStage 2023";
     public final String initLogTag = "init";
     public static final double length = 18.0;
     public static final double width = 18.0;
@@ -67,7 +67,7 @@ public class Robot {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML); // Allow usage of some HTML tags
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.OLDEST_FIRST);
         telemetry.log().setCapacity(5);
-        telemetryBroadcast("init", "started");
+        //telemetryBroadcast("init", "started");
         Log.i(initLogTag, "started");
         Log.v(initLogTag, "android version: " + Build.VERSION.RELEASE);
 //        double batteryVoltage = getBatteryVoltage();
@@ -75,13 +75,13 @@ public class Robot {
 //            Log.w(initLogTag, "Battery Voltage Low");
 //            telemetry.addData("Warning", "<b>Battery Voltage Low!</b>");
 //        }
+        this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         this.timer = timer;
         this.allianceColor = allianceColor;
         this.visionEnabled = flags.getOrDefault("vision", true);
         this.webEnabled = flags.getOrDefault("web", false);
         this.odometryEnabled = flags.getOrDefault("odometry", false);
-        this.telemetry = telemetry;
         this.wtd = WebThreadData.getWtd();
         this.gamepad1 = new GamepadWrapper(gamepad1);
         this.gamepad2 = new GamepadWrapper(gamepad2);
@@ -91,7 +91,7 @@ public class Robot {
 
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor: hardwareMap.voltageSensor) {
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double voltage = sensor.getVoltage();
             if (voltage > 0) {
                 result = Math.min(result, voltage);
@@ -126,8 +126,7 @@ public class Robot {
     private void servoInit() {
     }
 
-    public void subsystemInit()
-    {
+    public void subsystemInit() {
         Log.d(initLogTag, "Drive subsystem init started");
         drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, odometryEnabled, telemetry, timer);
         Log.i(initLogTag, "Drive subsystem init finished");
@@ -140,8 +139,7 @@ public class Robot {
             Log.d("init", "Vision subsystem init started");
             vision = new Vision(telemetry, hardwareMap, allianceColor);
             Log.i("init", "Vision subsystem init finished");
-        }
-        else {
+        } else {
             Log.w(initLogTag, "Vision subsystem init skipped");
         }
 
@@ -152,22 +150,21 @@ public class Robot {
                 web.run();
                 wtd.addLog(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
                 Log.i("init", "Web subsystem init finished");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(initLogTag, "Web Thread init failed " + e.getMessage());
             }
         }
         telemetryBroadcast("Status", "all subsystems initialized");
     }
 
-    public Telemetry.Item telemetryBroadcast(String caption, String value) {
-        Telemetry.Item resp = telemetry.addData(caption, value);
+    public void telemetryBroadcast(String caption, String value) {
+        telemetry.addData(caption, value);
         telemetry.update();
         if (webEnabled)
             wtd.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         Log.i(caption, value);
-        return resp;
     }
+
     public void updateGamepads() {
         gamepad1.update();
         gamepad2.update();
