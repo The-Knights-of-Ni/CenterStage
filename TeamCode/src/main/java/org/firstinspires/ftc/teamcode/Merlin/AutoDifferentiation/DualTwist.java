@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation;
 
+import org.firstinspires.ftc.teamcode.Util.Twist;
+
 public class DualTwist<Param> {
     public final DualVector<Param> line;
     public final DualNum<Param> angle;
@@ -9,8 +11,8 @@ public class DualTwist<Param> {
         this.angle = angle;
     }
 
-    public DualTwist<Param> value() {
-        return new DualTwist<>(line.value(), angle.value());
+    public Twist value() {
+        return new Twist(line.value(), angle.value());
     }
 
     public DualPoseVelocity<Param> velocity() {
