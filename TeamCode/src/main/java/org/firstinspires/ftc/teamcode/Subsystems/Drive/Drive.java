@@ -53,10 +53,10 @@ public class Drive extends Subsystem {
     public final DcMotorEx rearRight;
 
     // PID Controllers
-    public MoveSystem flControl;
-    public MoveSystem frControl;
-    public MoveSystem rlControl;
-    public MoveSystem rrControl;
+    public PositionMoveSystem flControl;
+    public PositionMoveSystem frControl;
+    public PositionMoveSystem rlControl;
+    public PositionMoveSystem rrControl;
 
     // State variables for robot position
     private double robotX;
@@ -163,7 +163,7 @@ public class Drive extends Subsystem {
      *
      * @param tickCount How far each motor should go
      */
-    public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
+    public void allMotorControl(int[] tickCount, PositionMoveSystem[] moveSystems) {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -308,7 +308,7 @@ public class Drive extends Subsystem {
         tickCount[2] -= (int)(turnAngle * COUNTS_PER_DEGREE);
         tickCount[3] = (int)((distance * Math.cos(angle)));
         tickCount[3] += (int)(turnAngle * COUNTS_PER_DEGREE);
-        MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
+        PositionMoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
         allMotorControl(tickCount, pids);
         stop();
     }

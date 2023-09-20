@@ -4,6 +4,11 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Vector extends Vector2D {
+
+    public Vector(Vector2D v) {
+        super(v.getX(), v.getY());
+    }
+
     /**
      * Simple constructor.
      * Build a vector from its coordinates
