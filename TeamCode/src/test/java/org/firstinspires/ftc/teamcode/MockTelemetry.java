@@ -3,6 +3,43 @@ package org.firstinspires.ftc.teamcode;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+class ImplementedLog implements Telemetry.Log {
+    @Override
+    public int getCapacity() {
+        return 0;
+    }
+
+    @Override
+    public void setCapacity(int capacity) {
+
+    }
+
+    @Override
+    public Telemetry.Log.DisplayOrder getDisplayOrder() {
+        return null;
+    }
+
+    @Override
+    public void setDisplayOrder(Telemetry.Log.DisplayOrder displayOrder) {
+
+    }
+
+    @Override
+    public void add(String entry) {
+
+    }
+
+    @Override
+    public void add(String format, Object... args) {
+
+    }
+
+    @Override
+    public void clear() {
+
+    }
+}
+
 public class MockTelemetry implements Telemetry {
 
     @Override
@@ -127,6 +164,6 @@ public class MockTelemetry implements Telemetry {
 
     @Override
     public Log log() {
-        return null;
+        return new ImplementedLog();
     }
 }
