@@ -92,7 +92,7 @@ public class WebThread extends Thread {
 
 
     private Response returnError(WebError error) {
-        return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error));
+        return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error.toHashMap()));
     }
 
     private Response handleRequest(Request req) throws WebError {
@@ -140,6 +140,7 @@ public class WebThread extends Thread {
                 String inputString = readToEnd(reader);
                 try {
                     Request req = new Request(inputString);
+                    System.out.println(req.method + " " + req.url + " " + socket.getInetAddress().getHostAddress());
                     Response resp = handleRequest(req);
                     OutputStream output = socket.getOutputStream();
                     PrintWriter writer = new PrintWriter(output, true);
