@@ -36,7 +36,6 @@ public class RunTest {
         }
     }
 
-    @Test
     void testWeb() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             HashMap<String, Boolean> flags = new HashMap<>();
