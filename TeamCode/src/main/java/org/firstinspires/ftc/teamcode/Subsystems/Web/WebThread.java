@@ -135,7 +135,7 @@ public class WebThread extends Thread {
             } else {
                 invalidMethod(req.method);
             }
-        } else if (Objects.equals(req.url, "/robot-position")) {
+        } else if (Objects.equals(req.url, "/position")) {
             if (Objects.equals(req.method, "GET")) {
                 return returnObject(new RobotPos(position.getX(), position.getY()));
             } else {
