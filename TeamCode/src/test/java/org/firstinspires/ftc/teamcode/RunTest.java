@@ -32,14 +32,15 @@ public class RunTest {
     @Test
     void testStart() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
-            Robot robot = init(new HashMap<>());
+            HashMap<String, Boolean> flags = new HashMap<>();
+            flags.put("web", true);
+            Robot robot = init(flags);
         }
     }
 
     void testWeb() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             HashMap<String, Boolean> flags = new HashMap<>();
-            flags.put("vision", false);
             flags.put("web", true);
             Robot robot = init(flags);
             robot.drive.moveVector(new Vector(0, 10000));
