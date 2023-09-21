@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
-import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThreadData;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.WebLog;
 
@@ -51,8 +50,6 @@ public class Robot {
     public final boolean visionEnabled;
     private final boolean webEnabled;
     private final boolean odometryEnabled;
-
-    private WebThreadData wtd;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     public GamepadWrapper gamepad1;
@@ -82,7 +79,6 @@ public class Robot {
         this.visionEnabled = flags.getOrDefault("vision", true);
         this.webEnabled = flags.getOrDefault("web", false);
         this.odometryEnabled = flags.getOrDefault("odometry", false);
-        this.wtd = WebThreadData.getWtd();
         this.gamepad1 = new GamepadWrapper(gamepad1);
         this.gamepad2 = new GamepadWrapper(gamepad2);
         init();
@@ -146,9 +142,9 @@ public class Robot {
         if (webEnabled) {
             try {
                 Log.d("init", "Web subsystem init started");
-                web = new WebThread(telemetry);
-                web.run();
-                wtd.addLog(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
+                web = new WebThread();
+                web.start();
+                WebThread.logs.add(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
                 Log.i("init", "Web subsystem init finished");
             } catch (Exception e) {
                 Log.e(initLogTag, "Web Thread init failed " + e.getMessage());
@@ -161,7 +157,7 @@ public class Robot {
         telemetry.addData(caption, value);
         telemetry.update();
         if (webEnabled)
-            wtd.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
+            WebThread.logs.add(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         Log.i(caption, value);
     }
 
