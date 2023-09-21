@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web.Server;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Response {
     public int statusCode;
@@ -13,5 +16,13 @@ public class Response {
         this.statusMessage = statusMessage;
         this.headers = headers;
         this.body = body;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "HTTP/1.1 " + statusCode + " " + statusMessage + "\n" +
+                headers.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining("\n")) +
+                "\n\n" + body;
     }
 }

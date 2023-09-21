@@ -11,7 +11,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class WebThread extends Thread {
@@ -92,12 +91,6 @@ public class WebThread extends Thread {
     }
 
 
-    private static String renderResponse(Response resp) {
-        return "HTTP/1.1 " + resp.statusCode + " " + resp.statusMessage + "\n" +
-                resp.headers.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining("\n")) +
-                "\n\n" + resp.body;
-    }
-
     private Response returnError(WebError error) {
         return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error));
     }
@@ -132,6 +125,12 @@ public class WebThread extends Thread {
         return str.toString();
     }
 
+    /** <p>Workflow:
+     * <p>- Read socket to end
+     * <p>- Parse request ({@link Request#Request(String)})
+     * <p>- Generate response ({@link WebThread#handleRequest(Request)})
+     * <p>- Return response
+     */
     @Override
     public void run() {
         while (true) {
@@ -144,17 +143,17 @@ public class WebThread extends Thread {
                     Response resp = handleRequest(req);
                     OutputStream output = socket.getOutputStream();
                     PrintWriter writer = new PrintWriter(output, true);
-                    writer.println(renderResponse(resp));
+                    writer.println(resp); // Automatic string conversion {@link Response#toString()}
                     output.close();
                 } catch (WebError e) {
                     OutputStream output = socket.getOutputStream();
                     PrintWriter writer = new PrintWriter(output, true);
                     Response resp = returnError(e);
-                    writer.println(renderResponse(resp));
+                    writer.println(resp); // Automatic string conversion {@link Response#toString()}
                     output.close();
                 }
             } catch (Exception e) {
-                System.out.println("ERROR ON WebThread: " + e.getMessage());
+                System.out.println("Error on WebThread: " + e.getMessage());
             }
         }
     }
