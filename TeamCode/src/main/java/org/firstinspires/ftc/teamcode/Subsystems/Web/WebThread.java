@@ -25,9 +25,12 @@ public class WebThread extends Thread {
         public double x;
         public double y;
 
-        public RobotPos(double x, double y) {
+        public double theta;
+
+        public RobotPos(double x, double y, double theta) {
             this.x = x;
             this.y = y;
+            this.theta = theta;
         }
     }
 
@@ -41,7 +44,7 @@ public class WebThread extends Thread {
         public MainResponse(ArrayList<WebLog> logs, ArrayList<WebAction> actions, Vector position) {
             this.logs = logs;
             this.actions = actions;
-            this.position = new RobotPos(position.getX(), position.getY());
+            this.position = new RobotPos(position.getX(), position.getY(), theta);
         }
     }
 
@@ -58,7 +61,8 @@ public class WebThread extends Thread {
     private static final ArrayList<WebLog> logs = new ArrayList<>();
     private static final ArrayList<WebAction> actions = new ArrayList<>();
 
-    public static org.firstinspires.ftc.teamcode.Util.Vector position = new Vector(0, 0);
+    public static Vector position = new Vector(0, 0);
+    public static double theta = 0;
     int port;
     ServerSocket serverSocket;
 
@@ -137,7 +141,7 @@ public class WebThread extends Thread {
             }
         } else if (Objects.equals(req.url, "/position")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new RobotPos(position.getX(), position.getY()));
+                return returnObject(new RobotPos(position.getX(), position.getY(), theta));
             } else {
                 invalidMethod(req.method);
             }

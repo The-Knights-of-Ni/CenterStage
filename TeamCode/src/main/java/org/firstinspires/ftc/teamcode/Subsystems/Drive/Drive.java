@@ -291,6 +291,8 @@ public class Drive extends Subsystem {
     }
 
     public void moveVector(Vector v, double turnAngle) {
+        WebThread.position = new Vector(WebThread.position.add(v).toArray()); // TODO: Fix because angle isn't constant
+        WebThread.theta += turnAngle;
         Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
         // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
         // for the strafer chassis to operate properly
