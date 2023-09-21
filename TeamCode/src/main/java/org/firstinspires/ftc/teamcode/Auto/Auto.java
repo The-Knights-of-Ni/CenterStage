@@ -15,9 +15,6 @@ import java.util.HashMap;
  * Auto creates a robot and runs it in auto mode.
  * @see LinearOpMode
  */
-
-@Autonomous(name = "Auto", group = "Concept", preselectTeleOp = "Teleop")
-@Disabled
 public abstract class Auto extends LinearOpMode {
 
     /**
