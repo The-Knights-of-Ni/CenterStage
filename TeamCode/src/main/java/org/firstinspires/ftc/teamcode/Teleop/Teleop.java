@@ -60,19 +60,19 @@ public class Teleop extends LinearOpMode {
         final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
 
         while (opModeIsActive()) {
-            robot.updateGamepads();
+            Robot.updateGamepads();
 
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
 
-            driveHighPower = robot.gamepad1.yButton.toggle;
+            driveHighPower = Robot.gamepad1.yButton.toggle;
             double[] motorPowers;
             if (driveHighPower) {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
+                motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
             }
             else {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
+                motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
             }
             robot.drive.setDrivePowers(motorPowers);
             Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)

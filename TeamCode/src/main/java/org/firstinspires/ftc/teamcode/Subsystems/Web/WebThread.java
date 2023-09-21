@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
+import org.firstinspires.ftc.teamcode.GamepadWrapper;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
@@ -19,19 +21,20 @@ public class WebThread extends Thread {
 
     private Gson gson;
 
+    class RobotPos {
+        public double x;
+        public double y;
+
+        public RobotPos(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     class MainResponse {
         public ArrayList<WebLog> logs;
+
         public ArrayList<WebAction> actions;
-
-        public class RobotPos {
-            public double x;
-            public double y;
-
-            public RobotPos(double x, double y) {
-                this.x = x;
-                this.y = y;
-            }
-        }
 
         public RobotPos position;
 
@@ -39,6 +42,16 @@ public class WebThread extends Thread {
             this.logs = logs;
             this.actions = actions;
             this.position = new RobotPos(position.getX(), position.getY());
+        }
+    }
+
+    class GamepadResponse {
+        public GamepadWrapper gamepad1;
+        public GamepadWrapper gamepad2;
+
+        public GamepadResponse(GamepadWrapper gamepad1, GamepadWrapper gamepad2) {
+            this.gamepad1 = gamepad1;
+            this.gamepad2 = gamepad2;
         }
     }
 
@@ -95,16 +108,48 @@ public class WebThread extends Thread {
         return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error.toHashMap()));
     }
 
+    private void invalidMethod(String method) throws WebError {
+        throw new WebError("Method '" + method + "' not allowed", 405);
+    }
+
+    private Response returnObject(Object obj) {
+        return new Response(200, "OK", defaultHeaders, gson.toJson(obj));
+    }
+
     private Response handleRequest(Request req) throws WebError {
         if (Objects.equals(req.url, "/")) {
             if (Objects.equals(req.method, "GET")) {
-                return new Response(200, "OK", defaultHeaders, gson.toJson(new MainResponse(logs, actions, position)));
+                return returnObject(new MainResponse(logs, actions, position));
             } else {
-                throw new WebError("Method '" + req.method + "' not allowed for endpoint '/'. Use GET instead.", 405);
+                invalidMethod(req.method);
             }
-        } else {
-            throw new WebError("Resource not found", 404);
+        } else if (Objects.equals(req.url, "/logs")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(logs);
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/actions")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(actions);
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/robot-position")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new RobotPos(position.getX(), position.getY()));
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/gamepads")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new GamepadResponse(Robot.gamepad1, Robot.gamepad2));
+            } else {
+                invalidMethod(req.method);
+            }
         }
+
+        throw new WebError("Resource not found", 404);
     }
 
     private static String readToEnd(InputStreamReader reader) throws IOException {

@@ -49,8 +49,8 @@ public class Robot {
     private final boolean odometryEnabled;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
-    public GamepadWrapper gamepad1;
-    public GamepadWrapper gamepad2;
+    public static GamepadWrapper gamepad1;
+    public static GamepadWrapper gamepad2;
 
     /**
      * @param timer         The elapsed time
@@ -76,8 +76,8 @@ public class Robot {
         this.visionEnabled = flags.getOrDefault("vision", true);
         this.webEnabled = flags.getOrDefault("web", false);
         this.odometryEnabled = flags.getOrDefault("odometry", false);
-        this.gamepad1 = new GamepadWrapper(gamepad1);
-        this.gamepad2 = new GamepadWrapper(gamepad2);
+        Robot.gamepad1 = new GamepadWrapper(gamepad1);
+        Robot.gamepad2 = new GamepadWrapper(gamepad2);
         init();
     }
 
@@ -158,7 +158,7 @@ public class Robot {
         Log.i(caption, value);
     }
 
-    public void updateGamepads() {
+    public static void updateGamepads() {
         gamepad1.update();
         gamepad2.update();
     }
