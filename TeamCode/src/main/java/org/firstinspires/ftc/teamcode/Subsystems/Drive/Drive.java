@@ -226,7 +226,7 @@ public class Drive extends Subsystem {
      */
     public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
         logger.info("Moving " + Arrays.toString(tickCount));
-        WebThread.actions.add(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
+        WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

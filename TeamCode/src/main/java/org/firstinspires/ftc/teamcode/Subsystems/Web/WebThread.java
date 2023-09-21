@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import android.util.Log;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import com.google.gson.Gson;
@@ -13,6 +15,9 @@ import java.util.stream.Collectors;
 
 
 public class WebThread extends Thread {
+
+    private static HashMap<String, String> defaultHeaders = new HashMap<>();
+
     private Gson gson;
 
     class MainResponse {
@@ -39,22 +44,22 @@ public class WebThread extends Thread {
     }
 
     private static final ArrayList<WebLog> logs = new ArrayList<>();
-    public static final ArrayList<WebAction> actions = new ArrayList<>();
+    private static final ArrayList<WebAction> actions = new ArrayList<>();
 
     public static org.firstinspires.ftc.teamcode.Util.Vector position = new Vector(0, 0);
     int port;
     ServerSocket serverSocket;
 
     public WebThread() throws IOException {
-        gson = new Gson();
-        port = 7070;
-        serverSocket = new ServerSocket(port);
+        this(7070);
     }
 
     public WebThread(int port) throws IOException {
         gson = new Gson();
         this.port = port;
         serverSocket = new ServerSocket(port);
+        defaultHeaders.put("Content-Type", "application/json");
+        defaultHeaders.put("Server", "Web Subsystem Thread");
     }
 
     public static void addLog(WebLog log) {
@@ -78,60 +83,76 @@ public class WebThread extends Thread {
         setPercentage(task, (Math.abs(progress) / Math.abs(total)) * 100);
     }
 
+    public static void addAction(WebAction action) {
+        actions.add(action);
+    }
+
     public static void removeAction(String task) {
         actions.removeIf(action -> Objects.equals(action.name, task));
     }
 
+
+    private static String renderResponse(Response resp) {
+        return "HTTP/1.1 " + resp.statusCode + " " + resp.statusMessage + "\n" +
+                resp.headers.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining("\n")) +
+                "\n\n" + resp.body;
+    }
+
+    private Response returnError(WebError error) {
+        return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error));
+    }
+
+    private Response handleRequest(Request req) throws WebError {
+        if (Objects.equals(req.url, "/")) {
+            if (Objects.equals(req.method, "GET")) {
+                return new Response(200, "OK", defaultHeaders, gson.toJson(new MainResponse(logs, actions, position)));
+            } else {
+                throw new WebError("Method '" + req.method + "' not allowed for endpoint '/'. Use GET instead.", 405);
+            }
+        } else {
+            throw new WebError("Resource not found", 404);
+        }
+    }
+
+    private static String readToEnd(InputStreamReader reader) throws IOException {
+        StringBuilder str = new StringBuilder();
+        boolean exit = false;
+        int prev = 0;
+        while (!exit) {
+            int result = reader.read();
+            if (result == -1) {
+                exit = true;
+            } else if (result == 13 && prev == 10) {
+                exit = true;
+            } else {
+                str.append((char) result);
+            }
+            prev = result;
+        }
+        return str.toString();
+    }
 
     @Override
     public void run() {
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
-                InputStream input = socket.getInputStream();
-                InputStreamReader reader = new InputStreamReader(input);
-                StringBuilder str = new StringBuilder();
-                boolean exit = false;
-                int prev = 0;
-                while (!exit) {
-                    int result = reader.read();
-                    if (result == -1) {
-                        exit = true;
-                    } else if (result == 13 && prev == 10) {
-                        exit = true;
-                    } else {
-                        str.append((char) result);
-                    }
-                    prev = result;
+                InputStreamReader reader = new InputStreamReader(socket.getInputStream());
+                String inputString = readToEnd(reader);
+                try {
+                    Request r = new Request(inputString);
+                    OutputStream output = socket.getOutputStream();
+                    PrintWriter writer = new PrintWriter(output, true);
+                    Response resp = handleRequest(r);
+                    writer.println(renderResponse(resp));
+                    output.close();
+                } catch (WebError e) {
+                    OutputStream output = socket.getOutputStream();
+                    PrintWriter writer = new PrintWriter(output, true);
+                    Response resp = returnError(e);
+                    writer.println(renderResponse(resp));
+                    output.close();
                 }
-                List<String> lines = Arrays.stream(str.toString().split("\n")).collect(Collectors.toList());
-                String request = lines.get(0);
-                String[] topSplit = request.split(" ");
-                String method = topSplit[0];
-                String url = topSplit[1];
-                String version = topSplit[2];
-                System.out.println("WebThread: " + request);
-                lines.remove(0);
-                HashMap<String, String> headers = new HashMap<>();
-                for (String header : lines) {
-                    String[] split = header.split(":( )");
-                    headers.put(split[0], split[1]);
-                }
-                OutputStream output = socket.getOutputStream();
-                PrintWriter writer = new PrintWriter(output, true);
-                int statusCode = 200;
-                String resp = "";
-                if (Objects.equals(url, "/")) {
-                    resp = gson.toJson(new MainResponse(logs, actions, position));
-                } else {
-                    statusCode = 404;
-                    resp = "{\"error\": \"Resource not Found.\"}";
-                }
-                writer.println("HTTP/1.1 " + statusCode + " OK\n" +
-                        "Server: Web Subsystem v0.0.0\n" +
-                        "Content-Type: application/json\n" +
-                        "\n\n" + resp);
-                output.close();
             } catch (Exception e) {
                 System.out.println("ERROR ON WebThread: " + e.getMessage());
             }

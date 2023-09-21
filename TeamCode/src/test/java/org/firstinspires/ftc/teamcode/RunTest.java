@@ -44,7 +44,7 @@ public class RunTest {
             flags.put("web", true);
             Robot robot = init(flags);
             robot.drive.moveVector(new Vector(0, 10000));
-            WebThread.actions.add(new WebAction("test", "Doing nothing for 100 seconds"));
+            WebThread.addAction(new WebAction("test", "Doing nothing for 100 seconds"));
             for (int i = 0; i < 101; i++) {
                 Thread.sleep(1000);
                 WebThread.setPercentage("test", i);
