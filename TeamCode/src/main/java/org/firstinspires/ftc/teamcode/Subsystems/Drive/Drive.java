@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.Arrays;
@@ -223,7 +225,8 @@ public class Drive extends Subsystem {
      * @param tickCount How far each motor should go
      */
     public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
-        Log.i(TAG, "Moving " + Arrays.toString(tickCount));
+        logger.info("Moving " + Arrays.toString(tickCount));
+        WebThread.actions.add(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -258,7 +261,7 @@ public class Drive extends Subsystem {
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
-                    Log.e(TAG, "Move failed, timeout exceeded");
+                    logger.info("Move failed, timeout exceeded");
                 } else { // time out was not started yet
                     isTimeOutStarted = true;
                     timeOutStartedTime = currentTime;
@@ -267,11 +270,12 @@ public class Drive extends Subsystem {
                 isTimeOutStarted = false;
             }
             if (debug) {
-                Log.v("Target tick", fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-                Log.v("Current tick", fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                Log.v("Current power", fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+                logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
+                logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
+                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
             }
         }
+        WebThread.removeAction("drive");
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {

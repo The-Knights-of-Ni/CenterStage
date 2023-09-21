@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
-import androidx.annotation.NonNull;
-import com.qualcomm.hardware.lynx.LynxModule;
 import android.os.Build;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,10 +10,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.WebLog;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Robot {
     public static final String name = "CenterStage 2023";
@@ -144,7 +141,7 @@ public class Robot {
                 Log.d("init", "Web subsystem init started");
                 web = new WebThread();
                 web.start();
-                WebThread.logs.add(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
+                WebThread.addLog(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
                 Log.i("init", "Web subsystem init finished");
             } catch (Exception e) {
                 Log.e(initLogTag, "Web Thread init failed " + e.getMessage());
@@ -157,7 +154,7 @@ public class Robot {
         telemetry.addData(caption, value);
         telemetry.update();
         if (webEnabled)
-            WebThread.logs.add(new WebLog(caption, value, WebLog.LogSeverity.INFO));
+            WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         Log.i(caption, value);
     }
 
