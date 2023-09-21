@@ -140,10 +140,10 @@ public class WebThread extends Thread {
                 InputStreamReader reader = new InputStreamReader(socket.getInputStream());
                 String inputString = readToEnd(reader);
                 try {
-                    Request r = new Request(inputString);
+                    Request req = new Request(inputString);
+                    Response resp = handleRequest(req);
                     OutputStream output = socket.getOutputStream();
                     PrintWriter writer = new PrintWriter(output, true);
-                    Response resp = handleRequest(r);
                     writer.println(renderResponse(resp));
                     output.close();
                 } catch (WebError e) {
