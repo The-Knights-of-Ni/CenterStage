@@ -13,10 +13,6 @@ import java.util.List;
 /**
  * This pipeline detects where the custom marker is.
  *
- * <p>It does this by splitting the camera input into 3 parts, the Left, Middle, and Right. It
- * checks each part for a custom marker (which is set to be green in the code), or some blue or red
- * tape, dependant on the alliance color. The marker is assumed to be yellow.</p>
- *
  * @see OpenCvPipeline
  * @see Vision
  */
@@ -70,6 +66,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
 
         Rect rectCrop = new Rect(0, 720, 1920, 360);
         Mat crop = new Mat(mask, rectCrop);
+        mask.release();
 
 
         if(crop.empty()) {
@@ -85,10 +82,13 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
+        thresh.release();
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        edges.release();
 
         MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
         Rect[] boundRect = new Rect[contours.size()];
