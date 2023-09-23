@@ -72,35 +72,28 @@ public class Teleop extends LinearOpMode {
             timePre = timeCurrent;
 
             double[] motorPowers;
-            if (robot.gamepad1.yButton.isPressed()) { //Turbo button!
+            if (robot.gamepad1.yButton.toggle) {
                 motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
-            }
-            else {
+            } else {
                 motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
             }
 
             robot.drive.setDrivePowers(motorPowers);
 
-            if(robot.gamepad1.xButton.toggle) {
+            if(robot.gamepad1.xButton.isPressed()) {
                 robot.control.craneLift(CraneState.DOWN);
             }
 
-            if(robot.gamepad1.bButton.toggle) {
+            if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.aButton.isPressed()) {
                 robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
             }
 
-            if(robot.gamepad2.bButton.toggle) {
+            if (robot.gamepad2.bButton.toggle) {
                 robot.control.intakePixel();
             }
 
-            if(robot.gamepad2.aButton.toggle) {
+            if (robot.gamepad2.aButton.toggle) {
                 new ScorePixelThread(robot).start();
-            }
-
-            //Omitting the slide calibration since the pixels will be at an angle and thus droppable.
-
-            if(abs(robot.gamepad2.rightStickY) > 0) {
-                robot.control.intakePixel();
             }
 
             if(robot.gamepad2.bumperRight.toggle) {
