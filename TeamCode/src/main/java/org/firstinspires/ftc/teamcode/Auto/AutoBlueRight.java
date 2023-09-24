@@ -27,7 +27,7 @@ public class AutoBlueRight extends Auto{
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
                 robot.control.moveLinearSlide(Control.SlidePosition.EXTENDED);
-                robot.control.moveDoubleGrippy(Control.DoubleGrippyState.OPEN_FRONT);
+                robot.control.setClaw(Control.ClawState.OPEN_FRONT);
                 robot.control.moveLinearSlide(Control.SlidePosition.RETRACTED);
                 robot.drive.moveVector(new Vector(0,0),-90);
                 robot.drive.moveVector(new Vector(0, 60 * mmPerInch));
