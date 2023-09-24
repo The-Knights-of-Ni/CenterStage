@@ -123,6 +123,15 @@ public class Teleop extends LinearOpMode {
                     }
                 }
 
+                // Switch to one gamepad
+                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.xButton.isPressed())) {
+                    twoGamepads = false;
+                }
+
+            } else {
+                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.xButton.isPressed())) {
+                    twoGamepads = true;
+                }
             }
 
             Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)
