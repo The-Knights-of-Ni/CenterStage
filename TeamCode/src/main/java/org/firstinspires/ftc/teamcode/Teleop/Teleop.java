@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static java.lang.Math.abs;
-
 @TeleOp(name = "TeleOp")
 public class Teleop extends LinearOpMode {
     double deltaT;

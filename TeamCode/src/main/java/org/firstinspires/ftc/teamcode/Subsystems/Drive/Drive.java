@@ -93,7 +93,7 @@ public class Drive extends Subsystem {
     /**
      * Uniformly sets zero power behavior of all drive motors
      *
-     * @param mode
+     * @param mode Zero Power Mode
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
@@ -106,7 +106,7 @@ public class Drive extends Subsystem {
     /**
      * Uniformly sets run mode of all drive motors
      *
-     * @param mode
+     * @param mode Run mode
      * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
