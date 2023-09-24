@@ -16,19 +16,12 @@ public class Control extends Subsystem {
     }
 
     public enum ClawState { //TODO: Calibrate claw constants
-        CLOSE_FRONT(0,0),
-        CLOSE_REAR(0,0),
-        OPEN_FRONT(0,0),
-        OPEN_REAR(0,0),
-        OPEN_SIMUL(0,0),
-        CLOSE_SIMUL(0,0);
-        private double posFront;
-        private double posRear;
-        private double pivotAngle;
+        OPEN(0),
+        CLOSE(0);
+        private double position;
 
-        ClawState(double posFront, double posRear) {
-            this.posFront = posFront;
-            this.posRear = posRear;
+        ClawState(double position) {
+            this.position = position;
         }
     }
 
