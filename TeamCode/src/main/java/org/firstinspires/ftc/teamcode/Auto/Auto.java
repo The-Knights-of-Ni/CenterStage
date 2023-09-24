@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import android.util.Log;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -15,9 +13,6 @@ import java.util.HashMap;
  * Auto creates a robot and runs it in auto mode.
  * @see LinearOpMode
  */
-
-@Autonomous(name = "Auto", group = "Concept")
-@Disabled
 public abstract class Auto extends LinearOpMode {
 
     /**

@@ -36,7 +36,7 @@ public class Drive extends Subsystem {
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double COUNTS_CORRECTION_X = 1.37;
     private static final double COUNTS_CORRECTION_Y = 1.0;
-    private static final double COUNTS_PER_DEGREE = 1180/90; // 1000 ticks per 90 degrees
+    private static final double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
     // Default drive speeds
     private static final double DRIVE_SPEED = 0.60;
@@ -94,7 +94,7 @@ public class Drive extends Subsystem {
     /**
      * Uniformly sets zero power behavior of all drive motors
      *
-     * @param mode
+     * @param mode Zero Power Mode
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
@@ -107,7 +107,7 @@ public class Drive extends Subsystem {
     /**
      * Uniformly sets run mode of all drive motors
      *
-     * @param mode
+     * @param mode Run mode
      * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
@@ -131,7 +131,7 @@ public class Drive extends Subsystem {
     }
 
     public void setDrivePowers(double power) {
-        setDrivePowers(new double[] {power, power, power, power});
+        setDrivePowers(new double[]{power, power, power, power});
     }
 
     /**

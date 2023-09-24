@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
-import androidx.annotation.NonNull;
-import com.qualcomm.hardware.lynx.LynxModule;
 import android.os.Build;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -16,7 +14,6 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.WebLog;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Robot {
     public static final String name = "CenterStage 2023";
@@ -62,7 +59,7 @@ public class Robot {
      * @param timer         The elapsed time
      * @param allianceColor the alliance color
      */
-    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, ElapsedTime timer,
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime timer,
                  AllianceColor allianceColor, Gamepad gamepad1, Gamepad gamepad2, HashMap<String, Boolean> flags) {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML); // Allow usage of some HTML tags
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.OLDEST_FIRST);
