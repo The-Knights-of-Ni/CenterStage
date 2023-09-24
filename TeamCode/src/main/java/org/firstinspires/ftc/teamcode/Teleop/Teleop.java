@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.*;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
@@ -81,38 +80,49 @@ public class Teleop extends LinearOpMode {
 
                 robot.drive.setDrivePowers(motorPowers);
 
-                if (robot.gamepad1.xButton.isPressed()) {
-                    robot.control.craneLift(CraneState.DOWN);
+                // Close claw and score ...
+                if (robot.gamepad1.aButton.isPressed()) {
+                    new ScorePixelThread(robot.control).start();
                 }
 
-                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.aButton.isPressed()) {
+                // Paper Drone
+                if (robot.gamepad1.dPadUp.isPressed()) {
                     robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-                }
-                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) {
+                } else if (robot.gamepad1.dPadRight.isPressed()) {
                     robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
-                }
-                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.yButton.isPressed()) {
+                } else if (robot.gamepad1.dPadLeft.isPressed()) {
                     robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
                 }
-                if (robot.gamepad1.bButton.isPressed() && !robot.gamepad1.aButton.isPressed() && !robot.gamepad1.xButton.isPressed() && !robot.gamepad1.yButton.isPressed()) {
+                if (robot.gamepad1.dPadDown.isPressed()) {
                     robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
                 }
 
-                if (robot.gamepad2.bButton.toggle) {
-                    robot.control.intakePixel();
+
+                // Claw
+                if (robot.gamepad2.aButton.isPressed()) {
+                    robot.control.openClaw();
+                }
+                if (robot.gamepad2.bButton.isPressed()) {
+                    robot.control.closeClaw();
                 }
 
-                if (robot.gamepad2.aButton.toggle) {
-                    new ScorePixelThread(robot).start();
-                }
-
+                // Crane
                 if (robot.gamepad2.xButton.isPressed()) {
-                    robot.control.craneLift(CraneState.DOWN);
+                    robot.control.moveCrane(CraneState.DOWN);
+                }
+                if (robot.gamepad2.yButton.isPressed()) {
+                    robot.control.moveCrane(CraneState.UP);
                 }
 
-                if (robot.gamepad2.yButton.isPressed()) {
-                    robot.control.craneLift(CraneState.UP);
+                // Linear Slide
+                if (robot.gamepad2.triggerLeft > 0.15 || robot.gamepad2.triggerRight > 0.15) {
+                    if (robot.gamepad2.triggerRight > robot.gamepad2.triggerLeft) {
+                        robot.control.setLinearSlideMotorPower(robot.gamepad2.triggerRight);
+                    } else if (robot.gamepad2.triggerLeft > robot.gamepad2.triggerRight) {
+                        robot.control.setLinearSlideMotorPower(-robot.gamepad2.triggerLeft);
+                    }
                 }
+
             }
 
             Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)
