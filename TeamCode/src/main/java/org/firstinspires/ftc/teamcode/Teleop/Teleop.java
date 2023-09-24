@@ -63,6 +63,7 @@ public class Teleop extends LinearOpMode {
 
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
         final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
+        boolean twoGamepads = true;
 
         while (opModeIsActive()) {
             robot.updateGamepads();
@@ -70,38 +71,48 @@ public class Teleop extends LinearOpMode {
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
+            if (twoGamepads) {
+                double[] motorPowers;
+                if (robot.gamepad1.yButton.toggle) {
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
+                } else {
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
+                }
 
-            double[] motorPowers;
-            if (robot.gamepad1.yButton.toggle) {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, robot.gamepad1.rightStickX * sensitivityHighPower);
-            } else {
-                motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, robot.gamepad1.rightStickX * sensitivityLowPower);
-            }
+                robot.drive.setDrivePowers(motorPowers);
 
-            robot.drive.setDrivePowers(motorPowers);
+                if (robot.gamepad1.xButton.isPressed()) {
+                    robot.control.craneLift(CraneState.DOWN);
+                }
 
-            if(robot.gamepad1.xButton.isPressed()) {
-                robot.control.craneLift(CraneState.DOWN);
-            }
+                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.aButton.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
+                }
+                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
+                }
+                if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.yButton.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
+                }
+                if (robot.gamepad1.bButton.isPressed() && !robot.gamepad1.aButton.isPressed() && !robot.gamepad1.xButton.isPressed() && !robot.gamepad1.yButton.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+                }
 
-            if (robot.gamepad1.bButton.isPressed() && robot.gamepad1.aButton.isPressed()) {
-                robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-            }
+                if (robot.gamepad2.bButton.toggle) {
+                    robot.control.intakePixel();
+                }
 
-            if (robot.gamepad2.bButton.toggle) {
-                robot.control.intakePixel();
-            }
+                if (robot.gamepad2.aButton.toggle) {
+                    new ScorePixelThread(robot).start();
+                }
 
-            if (robot.gamepad2.aButton.toggle) {
-                new ScorePixelThread(robot).start();
-            }
+                if (robot.gamepad2.xButton.isPressed()) {
+                    robot.control.craneLift(CraneState.DOWN);
+                }
 
-            if(robot.gamepad2.bumperRight.toggle) {
-                robot.control.craneLift(CraneState.DOWN);
-            }
-
-            if(robot.gamepad2.bumperLeft.toggle) {
-                robot.control.craneLift(CraneState.UP);
+                if (robot.gamepad2.yButton.isPressed()) {
+                    robot.control.craneLift(CraneState.UP);
+                }
             }
 
             Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)

@@ -32,7 +32,9 @@ public class Control extends Subsystem {
     public enum PlaneLaunchRange { //TODO: Calibrate Motor Powers
         LONG(0),
         MEDIUM(0),
-        SHORT(0);
+        SHORT(0),
+        OFF(0);
+
         private double motorPower;
         PlaneLaunchRange(double motorPower) {
             this.motorPower = motorPower;
@@ -44,6 +46,7 @@ public class Control extends Subsystem {
         RETRACTED(0),
         OBJ_PICKUP(0);
         private double pos;
+
         SlidePosition(double pos) {
             this.pos = pos;
         }
@@ -53,6 +56,7 @@ public class Control extends Subsystem {
         UP(0),
         DOWN(0);
         private double tickCount;
+
         CraneState(double tickCount) {
             this.tickCount = tickCount;
         }
