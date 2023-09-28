@@ -63,7 +63,7 @@ public class TimeProfile {
     }
 
     public double inverse(double x) {
-        val index = dispProfile.disps.binarySearch(x)
+        int index = dispProfile.disps.indexOf(x);
         return when {
             index >= dispProfile.disps.lastIndex -> times[index]
             index >= 0 -> times[index]
