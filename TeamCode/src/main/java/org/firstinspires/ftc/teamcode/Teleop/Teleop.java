@@ -127,6 +127,37 @@ public class Teleop extends LinearOpMode {
                 }
 
             } else {
+                // Must use gamepad 1 for one gamepad TODO: Find elegant fix
+                double[] motorPowers;
+                double triggerHit = robot.gamepad1.joystickDeadzoneCorrection(Math.max(robot.gamepad1.triggerLeft, robot.gamepad1.triggerRight));
+                if (robot.gamepad1.yButton.toggle) {
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, triggerHit * sensitivityHighPower);
+                } else {
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, triggerHit * sensitivityLowPower);
+                }
+                robot.drive.setDrivePowers(motorPowers);
+
+                robot.control.setLinearSlideMotorPower(robot.gamepad1.rightStickY);
+
+                if (robot.gamepad1.aButton.isPressed()) {
+                    robot.control.openClaw();
+                }
+                if (robot.gamepad1.bButton.isPressed()) {
+                    robot.control.closeClaw();
+                }
+
+                // Paper Drone
+                if (robot.gamepad1.dPadUp.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
+                } else if (robot.gamepad1.dPadRight.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
+                } else if (robot.gamepad1.dPadLeft.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
+                }
+                if (robot.gamepad1.dPadDown.isPressed()) {
+                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+                }
+
                 if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.xButton.isPressed())) {
                     twoGamepads = true;
                 }
