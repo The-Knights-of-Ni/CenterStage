@@ -18,11 +18,11 @@ public class Rotation {
     }
 
     public Rotation minus(Rotation r) {
-        return r.inverse().times(this).log();
+        return r.inverse().times(this); // TODO: Check
     }
 
     public Vector times(Vector v) {
-        return new Vector(real * v.x - imag * v.y, imag * v.x + real * v.y);
+        return new Vector(real * v.getX() - imag * v.getY(), imag * v.getX() + real * v.getY());
     }
 
     public PoseVelocity times(PoseVelocity pv) {

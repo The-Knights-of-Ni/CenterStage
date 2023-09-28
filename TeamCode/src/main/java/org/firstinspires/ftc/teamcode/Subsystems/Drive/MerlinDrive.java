@@ -1,31 +1,27 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
 import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-
+import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Merlin.*;
 import org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation.DualNum;
 import org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation.DualPose;
 import org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation.DualPoseVelocity;
 import org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation.DualTwist;
+import org.firstinspires.ftc.teamcode.Merlin.Encoder.PositionVelocityPair;
+import org.firstinspires.ftc.teamcode.Merlin.MathUtils;
+import org.firstinspires.ftc.teamcode.Merlin.MecanumKinematics;
 import org.firstinspires.ftc.teamcode.Merlin.Profile.Time;
+import org.firstinspires.ftc.teamcode.Merlin.Trajectory.TimeTrajectory;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.PoseVelocity;
 import org.firstinspires.ftc.teamcode.Util.Rotation;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,7 +112,7 @@ public final class MerlinDrive {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation2d heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            Rotation heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             double headingDelta = heading.minus(lastHeading);
 
             DualTwist<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
@@ -181,7 +177,6 @@ public final class MerlinDrive {
 
         localizer = new DriveLocalizer();
 
-        FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
 
     public void setDrivePowers(PoseVelocity powers) {
@@ -208,15 +203,15 @@ public final class MerlinDrive {
         public FollowTrajectoryAction(TimeTrajectory t) {
             timeTrajectory = t;
 
-            List<Double> disps = com.acmerobotics.roadrunner.Math.range(
+            List<Double> disps = MathUtils.range(
                     0, t.path.length(),
                     (int) Math.ceil(t.path.length() / 2));
             xPoints = new double[disps.size()];
             yPoints = new double[disps.size()];
             for (int i = 0; i < disps.size(); i++) {
-                Pose2d p = t.path.get(disps.get(i), 1).value();
-                xPoints[i] = p.position.x;
-                yPoints[i] = p.position.y;
+                Pose p = t.path.get(disps.get(i), 1).value();
+                xPoints[i] = p.position.getX();
+                yPoints[i] = p.position.getY();
             }
         }
 
@@ -251,20 +246,20 @@ public final class MerlinDrive {
 
             MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
-            leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
-            leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
-            rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
-            rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
+            leftFront.setPower(feedforward.calculate(wheelVels.leftFront) / voltage);
+            leftBack.setPower(feedforward.calculate(wheelVels.leftBack) / voltage);
+            rightBack.setPower(feedforward.calculate(wheelVels.rightBack) / voltage);
+            rightFront.setPower(feedforward.calculate(wheelVels.rightFront) / voltage);
 
             FlightRecorder.write("TARGET_POSE", new PoseMessage(txWorldTarget.value()));
 
-            p.put("x", pose.position.x);
-            p.put("y", pose.position.y);
+            p.put("x", pose.position.getX());
+            p.put("y", pose.position.getY());
             p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
 
-            Pose2d error = txWorldTarget.value().minusExp(pose);
-            p.put("xError", error.position.x);
-            p.put("yError", error.position.y);
+            Pose error = txWorldTarget.value().minusExp(pose);
+            p.put("xError", error.position.getX());
+            p.put("yError", error.position.getY());
             p.put("headingError (deg)", Math.toDegrees(error.heading.log()));
 
             // only draw when active; only one drive action should be active at a time
@@ -324,7 +319,7 @@ public final class MerlinDrive {
 
             PoseVelocity robotVelRobot = updatePoseEstimate();
 
-            PoseVelocity2dDual<Time> command = new HolonomicController(
+            DualPoseVelocity<Time> command = new HolonomicController(
                     PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
                     PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
             )
