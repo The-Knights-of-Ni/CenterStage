@@ -33,7 +33,7 @@ public class GamepadWrapper {
      * @param joystickInput the input of the joystick
      * @return the corrected input of the joystick
      */
-    private double joystickDeadzoneCorrection(double joystickInput) {
+    public static double joystickDeadzoneCorrection(double joystickInput) {
         double joystickOutput;
         if (joystickInput > joystickDeadZone) {
             joystickOutput = (joystickInput - joystickDeadZone) / (1.0 - joystickDeadZone);
