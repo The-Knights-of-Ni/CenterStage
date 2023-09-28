@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-enum ButtonStatus {
-    NOTCLICKED,
-    CLICKING,
-    CLICKED
-}
-
 public class Button {
     public ButtonStatus status;
     public boolean toggle = false;
