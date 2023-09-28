@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Merlin.Profile.TimeProfile;
 public class TimeTrajectory {
     public PosePath path;
     TimeProfile profile;
-    double duration;
+    public double duration;
 
     public TimeTrajectory(PosePath path, TimeProfile profile) {
         this.path = path;

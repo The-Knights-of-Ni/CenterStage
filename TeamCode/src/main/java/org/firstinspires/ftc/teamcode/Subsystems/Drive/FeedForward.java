@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.apache.commons.math3.util.MathUtils;
+import org.firstinspires.ftc.teamcode.Merlin.AutoDifferentiation.DualNum;
 import org.firstinspires.ftc.teamcode.Merlin.Curve.Arclength;
 import org.firstinspires.ftc.teamcode.Merlin.PositionPath;
+import org.firstinspires.ftc.teamcode.Merlin.Profile.Time;
 
 public class FeedForward {
     private double Ks;
@@ -24,5 +26,9 @@ public class FeedForward {
     public double calculate(double velocityReference, double accelerationReference) {
         // Cap output at range (-1,1) TODO: Use Ks
         return Math.min(1, Math.max(-1, Kv * velocityReference + Ka * accelerationReference));
+    }
+
+    public double calculate(DualNum<Time> vel) {
+        return calculate(vel.get(0), vel.get(1));
     }
 }

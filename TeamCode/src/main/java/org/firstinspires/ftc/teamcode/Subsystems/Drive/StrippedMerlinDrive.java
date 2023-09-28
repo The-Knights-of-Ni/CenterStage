@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Merlin.Encoder.PositionVelocityPair;
 import org.firstinspires.ftc.teamcode.Merlin.Encoder.RawEncoder;
 import org.firstinspires.ftc.teamcode.Merlin.MecanumKinematics;
 import org.firstinspires.ftc.teamcode.Merlin.Profile.Time;
+import org.firstinspires.ftc.teamcode.Merlin.Trajectory.TimeTrajectory;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.PoseVelocity;
@@ -85,7 +86,7 @@ public final class StrippedMerlinDrive {
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-            lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            lastHeading = Rotation.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         }
 
         @Override
@@ -95,7 +96,7 @@ public final class StrippedMerlinDrive {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            Rotation heading = Rotation.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             double headingDelta = heading.minus(lastHeading);
 
             DualTwist<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
@@ -171,7 +172,7 @@ public final class StrippedMerlinDrive {
         rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
     }
 
-    public moveTest(TimeTrajectory timeTrajectory) {
+    public void moveTest(TimeTrajectory timeTrajectory) {
         ElapsedTime timer = new ElapsedTime();
         double t;
         double beginTs = timer.seconds();
@@ -183,7 +184,7 @@ public final class StrippedMerlinDrive {
             rightBack.setPower(0);
             rightFront.setPower(0);
 
-            return false;
+            return;
         }
 
         DualPose<Time> txWorldTarget = timeTrajectory.get(t);
