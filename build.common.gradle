@@ -18,6 +18,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 android {
 
@@ -121,5 +122,12 @@ android {
 }
 
 repositories {
+}
+
+
+cargo {
+    module = "../pidrs"       // Or whatever directory contains your Cargo.toml
+    libname = "pidrs"          // Or whatever matches Cargo.toml's [package] name.
+    targets = ["arm", "x86"]  // See bellow for a longer list of options
 }
 
