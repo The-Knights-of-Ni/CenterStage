@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import java.time.LocalDateTime;
-
 public class WebAction { // TODO: Make autocloseable or something
     public String statusString;
     public int progress;
@@ -21,6 +19,6 @@ public class WebAction { // TODO: Make autocloseable or something
         this.statusString = status;
         this.progress = 0;
         this.status = Status.RUNNING;
-        this.startTimestamp = LocalDateTime.now().toString();
+        this.startTimestamp = ((Long) System.currentTimeMillis()).toString();
     }
 }

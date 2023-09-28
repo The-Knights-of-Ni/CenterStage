@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -38,12 +39,14 @@ public class RunTest {
         }
     }
 
+    @Test
     void testWeb() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             HashMap<String, Boolean> flags = new HashMap<>();
             flags.put("web", true);
             Robot robot = init(flags);
-            robot.drive.moveVector(new Vector(0, 10000));
+            robot.drive.moveVector(new Vector(0, 25000));
+            WebThread.addLog(new WebLog("test", "Testing stuff", WebLog.LogSeverity.INFO));
             WebThread.addAction(new WebAction("test", "Doing nothing for 100 seconds"));
             for (int i = 0; i < 101; i++) {
                 Thread.sleep(1000);

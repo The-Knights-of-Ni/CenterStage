@@ -30,7 +30,7 @@ public class Request {
                 } else if (header.isEmpty()) {
                     parsingHeaders = false;
                 } else {
-                    throw new WebError("Invalid header '" + header + "'", 400);
+                    throw new WebError("Invalid header '" + header + "'", 400, 4001);
                 }
             } else {
                 body.append(header).append("\n");
@@ -38,7 +38,7 @@ public class Request {
         }
         String[] split = topLine.split(" ");
         if (split.length != 3) {
-            throw new WebError("Invalid request (line 0: " + topLine + ")", 400);
+            throw new WebError("Invalid request (line 0: " + topLine + ")", 400, 4000);
         }
         this.method = split[0];
         this.url = split[1];

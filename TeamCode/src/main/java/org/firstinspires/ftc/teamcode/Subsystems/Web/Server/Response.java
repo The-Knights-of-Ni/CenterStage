@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web.Server;
 
-import androidx.annotation.NonNull;
-
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -9,20 +9,37 @@ public class Response {
     public int statusCode;
     public String statusMessage;
     public HashMap<String, String> headers;
-    public String body;
+    public byte[] body;
 
     public Response(int statusCode, String statusMessage, HashMap<String, String> headers, String body) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
         this.headers = headers;
-        this.body = body;
+        char[] chars = body.toCharArray();
+        this.body = new byte[chars.length];
+        for (int i = 0; i < chars.length; i++) {
+            this.body[i] = (byte) chars[i];
+        }
     }
 
-    @NonNull
-    @Override
-    public String toString() {
+    public Response(int statusCode, String statusMessage, HashMap<String, String> headers, ByteArrayOutputStream body) {
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
+        this.headers = headers;
+        this.body = body.toByteArray();
+    }
+
+    public String getHeaders() {
         return "HTTP/1.1 " + statusCode + " " + statusMessage + "\n" +
                 headers.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining("\n")) +
-                "\n\n" + body;
+                "\n\n";
+    }
+
+    public byte[] toBytes() {
+        byte[] headersBytes = getHeaders().getBytes();
+        byte[] result = new byte[headersBytes.length + this.body.length];
+        System.arraycopy(headersBytes, 0, result, 0, headersBytes.length);
+        System.arraycopy(body, 0, result, headersBytes.length, body.length);
+        return result;
     }
 }

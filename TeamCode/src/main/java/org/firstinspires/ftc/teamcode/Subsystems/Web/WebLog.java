@@ -23,7 +23,7 @@ public class WebLog {
         this.TAG = tag;
         this.message = message;
         this.severity = severity;
-        this.timestamp = LocalDateTime.now().toString();
+        this.timestamp = ((Long) System.currentTimeMillis()).toString();
     }
 
     public static void verbose(String tag, String message) {

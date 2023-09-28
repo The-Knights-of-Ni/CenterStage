@@ -248,6 +248,7 @@ public class Drive extends Subsystem {
         MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
         // TODO: Profile init time
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
+//            WebThread.setPercentage("drive", fr.currentCount, fr.targetCount);
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
             // if only this got fixed ... then I could simplify the code even more

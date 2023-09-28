@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
+import android.graphics.Bitmap;
 import org.firstinspires.ftc.teamcode.GamepadWrapper;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.RGBA;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
@@ -12,6 +15,7 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -21,43 +25,6 @@ public class WebThread extends Thread {
 
     private Gson gson;
 
-    class RobotPos {
-        public double x;
-        public double y;
-
-        public double theta;
-
-        public RobotPos(double x, double y, double theta) {
-            this.x = x;
-            this.y = y;
-            this.theta = theta;
-        }
-    }
-
-    class MainResponse {
-        public ArrayList<WebLog> logs;
-
-        public ArrayList<WebAction> actions;
-
-        public RobotPos position;
-
-        public MainResponse(ArrayList<WebLog> logs, ArrayList<WebAction> actions, Vector position) {
-            this.logs = logs;
-            this.actions = actions;
-            this.position = new RobotPos(position.getX(), position.getY(), theta);
-        }
-    }
-
-    class GamepadResponse {
-        public GamepadWrapper gamepad1;
-        public GamepadWrapper gamepad2;
-
-        public GamepadResponse(GamepadWrapper gamepad1, GamepadWrapper gamepad2) {
-            this.gamepad1 = gamepad1;
-            this.gamepad2 = gamepad2;
-        }
-    }
-
     private static final ArrayList<WebLog> logs = new ArrayList<>();
     private static final ArrayList<WebAction> actions = new ArrayList<>();
 
@@ -65,6 +32,7 @@ public class WebThread extends Thread {
     public static double theta = 0;
     int port;
     ServerSocket serverSocket;
+    WebCanvas webCanvas;
 
     public WebThread() throws IOException {
         this(7070);
@@ -73,6 +41,7 @@ public class WebThread extends Thread {
     public WebThread(int port) throws IOException {
         gson = new Gson();
         this.port = port;
+        this.webCanvas = new WebCanvas(500, 500);
         serverSocket = new ServerSocket(port);
         defaultHeaders.put("Content-Type", "application/json");
         defaultHeaders.put("Server", "Web Subsystem Thread");
@@ -87,8 +56,6 @@ public class WebThread extends Thread {
             if (Objects.equals(action.name, task)) {
                 if (percentage == 100) {
                     action.status = WebAction.Status.SUCCESS;
-                } else {
-                    action.status = WebAction.Status.RUNNING;
                 }
                 action.progress = percentage;
             }
@@ -113,7 +80,7 @@ public class WebThread extends Thread {
     }
 
     private void invalidMethod(String method) throws WebError {
-        throw new WebError("Method '" + method + "' not allowed", 405);
+        throw new WebError("Method '" + method + "' not allowed", 405, 4050);
     }
 
     private Response returnObject(Object obj) {
@@ -123,7 +90,7 @@ public class WebThread extends Thread {
     private Response handleRequest(Request req) throws WebError {
         if (Objects.equals(req.url, "/")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new MainResponse(logs, actions, position));
+                return returnObject(new View.MainResponse(logs, actions, position, theta));
             } else {
                 invalidMethod(req.method);
             }
@@ -141,19 +108,35 @@ public class WebThread extends Thread {
             }
         } else if (Objects.equals(req.url, "/position")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new RobotPos(position.getX(), position.getY(), theta));
+                return returnObject(new View.RobotPos(position.getX(), position.getY(), theta));
             } else {
                 invalidMethod(req.method);
             }
         } else if (Objects.equals(req.url, "/gamepads")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new GamepadResponse(Robot.gamepad1, Robot.gamepad2));
+                return returnObject(new View.GamepadResponse(Robot.gamepad1, Robot.gamepad2));
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/canvas")) {
+            if (Objects.equals(req.method, "GET")) {
+                HashMap<String, String> headers = new HashMap<>(2);
+                headers.put("Server", "Web Subsystem Thread");
+                headers.put("Content-Type", "image/unknown");
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                BufferedOutputStream bw = new BufferedOutputStream(stream);
+                try {
+                    bw.write(244);
+                    bw.write(322);
+                } catch (IOException e) {
+
+                }
+                return new Response(200, "OK", headers, stream);
             } else {
                 invalidMethod(req.method);
             }
         }
-
-        throw new WebError("Resource not found", 404);
+        throw new WebError("Resource not found", 404, 4040);
     }
 
     private static String readToEnd(InputStreamReader reader) throws IOException {
@@ -192,18 +175,22 @@ public class WebThread extends Thread {
                     System.out.println(req.method + " " + req.url + " " + socket.getInetAddress().getHostAddress());
                     Response resp = handleRequest(req);
                     OutputStream output = socket.getOutputStream();
-                    PrintWriter writer = new PrintWriter(output, true);
-                    writer.println(resp); // Automatic string conversion {@link Response#toString()}
+                    output.write(resp.toBytes());
                     output.close();
                 } catch (WebError e) {
                     OutputStream output = socket.getOutputStream();
-                    PrintWriter writer = new PrintWriter(output, true);
                     Response resp = returnError(e);
-                    writer.println(resp); // Automatic string conversion {@link Response#toString()}
+                    output.write(resp.toBytes());
                     output.close();
+                } catch (Exception e) {
+                    OutputStream output = socket.getOutputStream();
+                    Response resp = returnError(new WebError(e.getMessage(), 500, 5000));
+                    output.write(resp.toBytes());
+                    output.close();
+                    System.out.println("Unhandled Error on WebThread, graceful exit performed: " + e.getMessage());
                 }
             } catch (Exception e) {
-                System.out.println("Error on WebThread: " + e.getMessage());
+                System.out.println("Unhandled Error on WebThread, hard exit: " + e.getMessage());
             }
         }
     }
