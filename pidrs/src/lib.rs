@@ -1,14 +1,13 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+#[allow(non_snake_case)]
+use jni::objects::JClass;
+use jni::sys::jstring;
+use jni::JNIEnv;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+// The native function implemented in Rust.
+#[no_mangle]
+pub unsafe extern "C" fn Java_org_theknightsofni_pidrs_PID_nativeRun(
+    env: JNIEnv,
+    _: JClass,
+) -> jstring {
+    todo!("Implement something useful.")
 }
