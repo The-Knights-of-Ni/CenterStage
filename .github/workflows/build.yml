@@ -26,7 +26,11 @@ jobs:
           java-version: '18'
           distribution: 'adopt'
           cache: gradle
-
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21c
+          link-to-sdk: true
       - name: Build rust code
         run: |
           cd pidrs
