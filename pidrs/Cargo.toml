@@ -3,7 +3,8 @@ name = "pidrs"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate_type = ["cdylib"] # This crate type is required for JNI
 
 [dependencies]
-jni = { version = "0.21", default-features = false }
+jni = "0.21"

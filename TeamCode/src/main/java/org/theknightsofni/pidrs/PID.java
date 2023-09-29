@@ -3,7 +3,9 @@ package org.theknightsofni.pidrs;
 class PID {
     // This declares that the static `hello` method will be provided
     // a native library.
-    private static native String nativeRun();
+    public static native String nativeRun();
+
+    public static native double[] nativeCalcMotorPowers(double leftStickX, double leftStickY, double rightStickX);
 
     static {
         // This actually loads the shared object that we'll be creating.
