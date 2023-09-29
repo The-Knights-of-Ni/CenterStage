@@ -14,22 +14,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 18
-      uses: actions/setup-java@v2
-      with:
-        java-version: '18'
-        distribution: 'adopt'
-        cache: gradle
+      - uses: actions/checkout@v2
+        name: Checkout
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew
-    - name: Test with Gradle
-      run: ./gradlew test
-    - name: Stop Gradle
-      run: ./gradlew --stop
+      - name: set up JDK 18
+        uses: actions/setup-java@v2
+        with:
+          java-version: '18'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Build rust code
+        run: |
+          cd pidrs
+          cargo build --release
+          cd ..
+          export PATH=$PATH:./pidrs/target/release
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew
+
+      - name: Test with Gradle
+        run: ./gradlew test
+
+      - name: Stop Gradle
+        run: ./gradlew --stop
