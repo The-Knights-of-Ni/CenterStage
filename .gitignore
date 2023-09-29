@@ -82,3 +82,5 @@ lint/tmp/
 
 # rust
 pidrs/Cargo.lock
+pidrs/target
+pidrs.dll

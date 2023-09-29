@@ -28,5 +28,8 @@ public class PIDrsTest {
         assertEquals(0.5, PIDrs.nativeClamp(0.5, -1, 1));
         assertEquals(1, PIDrs.nativeClamp(4, -1, 1));
         assertEquals(-1, PIDrs.nativeClamp(-4, -1, 1));
+        assertNotEquals(0, PIDrs.nativeClamp(0.5, -1, 1));
+        assertNotEquals(0, PIDrs.nativeClamp(4, -1, 1));
+        assertNotEquals(0, PIDrs.nativeClamp(-4, -1, 1));
     }
 }
