@@ -1,4 +1,4 @@
-#[allow(non_snake_case)]
+#![allow(non_snake_case)]
 use jni::objects::JClass;
 use jni::sys::{jdouble};
 use jni::JNIEnv;
