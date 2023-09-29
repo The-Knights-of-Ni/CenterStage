@@ -22,4 +22,11 @@ public class PIDrsTest {
         assertNotEquals(0, PIDrs.nativeCalcMotorPowers(0, 1, 0)[2]);
         assertNotEquals(0, PIDrs.nativeCalcMotorPowers(0, 1, 0)[3]);
     }
+
+    @Test
+    void testClampRS() {
+        assertEquals(0.5, PIDrs.nativeClamp(0.5, -1, 1));
+        assertEquals(1, PIDrs.nativeClamp(4, -1, 1));
+        assertEquals(-1, PIDrs.nativeClamp(-4, -1, 1));
+    }
 }
