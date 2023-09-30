@@ -7,6 +7,7 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.Vector;
+import org.theknightsofni.pidrs.PIDrs;
 
 import java.util.Arrays;
 
@@ -149,13 +150,7 @@ public class Drive extends Subsystem {
      * @return A list with the motor powers
      */
     public double[] calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        double r = Math.hypot(leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        double lrPower = r * Math.sin(robotAngle) + rightStickX;
-        double lfPower = r * Math.cos(robotAngle) + rightStickX;
-        double rrPower = r * Math.cos(robotAngle) - rightStickX;
-        double rfPower = r * Math.sin(robotAngle) - rightStickX;
-        return new double[]{lfPower, rfPower, lrPower, rrPower};
+        return PIDrs.nativeCalcMotorPowers(leftStickX, leftStickY, rightStickX);
     }
 
     static class MotorControlData {

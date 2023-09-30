@@ -27,7 +27,7 @@ pub extern "system" fn Java_org_theknightsofni_pidrs_PIDrs_nativeCalcMotorPowers
 }
 
 #[no_mangle]
-pub extern "system" fn Java_org_theknightsofni_pidrs_PIDrs_nativeClamp<'local>(_env: JNIEnv<'local>, _: JClass<'local>, val: jdouble, min: jdouble, max: jdouble) -> jdouble {
+pub extern "system" fn Java_org_theknightsofni_pidrs_PIDrs_nativeClamp<'local>(env: JNIEnv<'local>, _: JClass<'local>, val: jdouble, min: jdouble, max: jdouble) -> jdouble {
     let output;
     if val >= min && val <= max {
         output = val

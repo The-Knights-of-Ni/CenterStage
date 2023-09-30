@@ -1,6 +1,6 @@
 package org.theknightsofni.pidrs;
 
-class PIDrs {
+public class PIDrs {
     // This declares that the static `hello` method will be provided
     // a native library.
     public static native String nativeRun();
