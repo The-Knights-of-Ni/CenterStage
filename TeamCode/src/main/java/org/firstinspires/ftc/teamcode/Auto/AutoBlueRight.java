@@ -6,15 +6,6 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 public class AutoBlueRight extends Auto{
-
-    public void placePixel() {
-        robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-        robot.control.openClawSync();
-        robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-        robot.control.closeClawSync();
-        robot.control.openClaw();
-    }
-
     public void runOpMode() {
         initAuto(AllianceColor.BLUE);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
@@ -38,7 +29,8 @@ public class AutoBlueRight extends Auto{
                 robot.drive.moveVector(new Vector(0, -100 * mmPerInch), -180);
                 break;
         }
-        // TODO: Correct position first
+
+        adjustPosition(markerPosition);
         robot.control.closeClawSync();
         robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
         robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);

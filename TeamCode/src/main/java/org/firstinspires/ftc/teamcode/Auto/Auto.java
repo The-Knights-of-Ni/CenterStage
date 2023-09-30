@@ -4,8 +4,11 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.HashMap;
 
@@ -39,5 +42,28 @@ public abstract class Auto extends LinearOpMode {
         robot.control.initDevicesAuto();
         telemetry.addData("Waiting for start", "");
         telemetry.update();
+    }
+
+    public void placePixel() {
+        robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
+        robot.control.openClawSync();
+        robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
+        robot.control.closeClawSync();
+        robot.control.openClaw();
+    }
+
+    public void adjustPosition(MarkerDetectionPipeline.MarkerLocation location) {
+        switch (location) {
+            case LEFT:
+                robot.drive.moveVector(new Vector(-9 * mmPerInch, 0));
+                break;
+
+            case MIDDLE:
+                break;
+
+            case RIGHT:
+                robot.drive.moveVector(new Vector(9 * mmPerInch, 0));
+                break;
+        }
     }
 }
