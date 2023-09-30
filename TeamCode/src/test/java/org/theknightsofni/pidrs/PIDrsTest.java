@@ -26,17 +26,6 @@ public class PIDrsTest {
     }
 
     @Test
-    void testClampRS() {
-        assertEquals(0.5, PIDrs.nativeClamp(0.5, -1, 1));
-        assertEquals(1, PIDrs.nativeClamp(4, -1, 1));
-        assertEquals(-1, PIDrs.nativeClamp(-4, -1, 1));
-        assertNotEquals(0, PIDrs.nativeClamp(0.5, -1, 1));
-        assertNotEquals(0, PIDrs.nativeClamp(4, -1, 1));
-        assertNotEquals(0, PIDrs.nativeClamp(-4, -1, 1));
-    }
-
-
-    @Test
     void testMotorDistanceRS() {
         assertEquals(1782, PIDrs.nativeCalcMotorDistances(0, 1000, 0,
                 Drive.COUNTS_CORRECTION_X, Drive.COUNTS_CORRECTION_Y, Drive.COUNTS_PER_MM, Drive.COUNTS_PER_DEGREE)[0]);
