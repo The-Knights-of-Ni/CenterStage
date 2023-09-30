@@ -26,7 +26,7 @@ public class Drive extends Subsystem {
     // NEW Chassis
     private static final double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
     private static final double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
-    private static final double COUNTS_PER_MM =
+    public static final double COUNTS_PER_MM =
             (MOTOR_TICK_PER_REV_YELLOW_JACKET_312 * DRIVE_GEAR_REDUCTION)
                     / (GOBUILDA_MECANUM_DIAMETER_MM * Math.PI);
     private static final double WHEEL_DIAMETER_MM = 100.0;
@@ -34,9 +34,9 @@ public class Drive extends Subsystem {
 
     private static final double COUNTS_PER_INCH =
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-    private static final double COUNTS_CORRECTION_X = 1.37;
-    private static final double COUNTS_CORRECTION_Y = 1.0;
-    private static final double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
+    public static final double COUNTS_CORRECTION_X = 1.37;
+    public static final double COUNTS_CORRECTION_Y = 1.0;
+    public static final double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
     // Default drive speeds
     private static final double DRIVE_SPEED = 0.60;
@@ -282,21 +282,7 @@ public class Drive extends Subsystem {
     }
 
     public void moveVector(Vector v, double turnAngle) {
-        Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
-        // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
-        // for the strafer chassis to operate properly
-        double distance = newV.distance(Vector2D.ZERO) * Math.sqrt(2);
-        double angle = Math.atan2(newV.getY(), newV.getX()) - Math.PI / 4;
-
-        int[] tickCount = new int[4]; // All tick counts need to be integers
-        tickCount[0] = (int) ((distance * Math.cos(angle)));
-        tickCount[0] -= (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[1] = (int) ((distance * Math.sin(angle)));
-        tickCount[1] += (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[2] = (int) ((distance * Math.sin(angle)));
-        tickCount[2] -= (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[3] = (int) ((distance * Math.cos(angle)));
-        tickCount[3] += (int) (turnAngle * COUNTS_PER_DEGREE);
+        int[] tickCount = PIDrs.nativeCalcMotorDistances(v.getX(), v.getY(), turnAngle, COUNTS_CORRECTION_X, COUNTS_CORRECTION_Y, COUNTS_PER_MM, COUNTS_PER_DEGREE);
         MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
         allMotorControl(tickCount, pids);
         stop();

@@ -8,3 +8,6 @@ crate_type = ["cdylib"] # This crate type is required for JNI
 
 [dependencies]
 jni = "0.21"
+
+[profile.release]
+opt-level = 3
