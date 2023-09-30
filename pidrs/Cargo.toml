@@ -11,3 +11,4 @@ jni = "0.21"
 
 [profile.release]
 opt-level = 3
+strip = true
