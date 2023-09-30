@@ -43,16 +43,3 @@ pub extern "system" fn Java_org_theknightsofni_pidrs_PIDrs_nativeCalcMotorPowers
     env.set_double_array_region(&jniArray, 0, &motorPowers).unwrap();
     return jniArray;
 }
-
-#[no_mangle]
-pub extern "system" fn Java_org_theknightsofni_pidrs_PIDrs_nativeClamp<'local>(_env: JNIEnv<'local>, _: JClass<'local>, val: jdouble, min: jdouble, max: jdouble) -> jdouble {
-    let output;
-    if val >= min && val <= max {
-        output = val
-    } else if val < min {
-        output = min
-    } else {
-        output = max
-    }
-    return output;
-}

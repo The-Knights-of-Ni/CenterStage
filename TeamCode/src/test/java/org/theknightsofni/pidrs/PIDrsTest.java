@@ -51,7 +51,7 @@ public class PIDrsTest {
     @Test
     void benchMotorDistanceJava() {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             int turnAngle = 0;
             Vector newV = new Vector(0 * Drive.COUNTS_CORRECTION_X * Drive.COUNTS_PER_MM, 1000 * Drive.COUNTS_CORRECTION_Y * Drive.COUNTS_PER_MM);
             // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
@@ -76,7 +76,7 @@ public class PIDrsTest {
     @Test
     void benchMotorDistanceRS() {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             PIDrs.nativeCalcMotorDistances(0, 1000, 0,
                     Drive.COUNTS_CORRECTION_X, Drive.COUNTS_CORRECTION_Y, Drive.COUNTS_PER_MM, Drive.COUNTS_PER_DEGREE);
         }
