@@ -47,14 +47,6 @@ public abstract class Auto extends LinearOpMode {
         telemetry.update();
     }
 
-    public void placePixel() {
-        robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-        robot.control.openClawSync();
-        robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-        robot.control.closeClawSync();
-        robot.control.openClaw();
-    }
-
     public void adjustPosition(MarkerDetectionPipeline.MarkerLocation location) {
         switch (location) {
             case LEFT:
