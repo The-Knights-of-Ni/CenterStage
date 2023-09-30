@@ -28,6 +28,8 @@ public abstract class Auto extends LinearOpMode {
     public Robot robot;
     public ElapsedTime timer;
 
+    public ArmMovementThread thread;
+
     /**
      * Initializes the robot class and sets the robot as the newly initialized robot.
      * @param allianceColor The alliance color
@@ -40,6 +42,7 @@ public abstract class Auto extends LinearOpMode {
         flags.put("web", false);
         this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
         robot.control.initDevicesAuto();
+        thread = new ArmMovementThread(robot.control);
         telemetry.addData("Waiting for start", "");
         telemetry.update();
     }

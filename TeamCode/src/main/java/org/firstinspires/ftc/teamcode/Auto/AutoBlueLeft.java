@@ -11,30 +11,29 @@ public class AutoBlueLeft extends Auto{
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
         robot.vision.stop();
         waitForStart();
+        thread.start();
         timer.reset();
         switch (markerPosition) {
             case LEFT:
                 robot.drive.moveVector(new Vector(0, 30 * mmPerInch), -90);
-                placePixel();
+                thread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(0,30 * mmPerInch));
                 break;
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
-                placePixel();
+                thread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(-42, 0), -90);
                 break;
             case RIGHT:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0),90);
-                placePixel();
+                thread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(0, -60 * mmPerInch), -180);
                 break;
         }
 
         adjustPosition(markerPosition);
-        robot.control.closeClawSync();
-        robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-        robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
+        thread.reachedPosition = true;
+        while(!thread.retracted) {}
         robot.drive.moveVector(new Vector(-24,0));
     }
-
 }
