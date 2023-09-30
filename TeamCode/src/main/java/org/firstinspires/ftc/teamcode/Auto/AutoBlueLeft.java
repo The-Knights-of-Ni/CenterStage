@@ -7,6 +7,14 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
 
 public class AutoBlueLeft extends Auto{
 
+    public void placePixel() {
+        robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
+        robot.control.openClawSync();
+        robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
+        robot.control.closeClawSync();
+        robot.control.openClaw();
+    }
+
     public void runOpMode() {
         initAuto(AllianceColor.BLUE);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
@@ -16,36 +24,25 @@ public class AutoBlueLeft extends Auto{
         switch (markerPosition) {
             case LEFT:
                 robot.drive.moveVector(new Vector(12*mmPerInch, 24 * mmPerInch), -90);
-                robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-                robot.control.openClaw();
-                robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-                robot.drive.moveVector(new Vector(0,24*mmPerInch));
-
-
+                placePixel();
+                robot.drive.moveVector(new Vector(0,30*mmPerInch));
                 break;
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
-                robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-                robot.control.openClaw();
-                robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-                robot.drive.moveVector(new Vector(0, 0), -90);
-                robot.drive.moveVector(new Vector(0, 24 * mmPerInch));
+                placePixel();
+                robot.drive.moveVector(new Vector(-42, 0), -90);
                 break;
             case RIGHT:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0),90);
-                robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-                robot.control.openClaw();
-                robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-                robot.drive.moveVector(new Vector(0,0), -180);
-                robot.drive.moveVector(new Vector(24,0));
+                placePixel();
+                robot.drive.moveVector(new Vector(0, -60 * mmPerInch), -180);
                 break;
         }
+        // TODO: Correct position first
+        robot.control.closeClawSync();
         robot.control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-        robot.control.openClaw();
         robot.control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-        //Detect apriltags
-        //Place pixel on backdrop
-        // Move out of the way
+        robot.drive.moveVector(new Vector(-24,0));
     }
 
 }
