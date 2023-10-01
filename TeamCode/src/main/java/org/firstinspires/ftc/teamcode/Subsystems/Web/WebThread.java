@@ -1,170 +1,196 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import android.util.JsonWriter;
+import android.graphics.Bitmap;
+import org.firstinspires.ftc.teamcode.GamepadWrapper;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.RGBA;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
+import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import android.util.Log;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.Util.WebLog;
+import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
-public class WebThread extends Subsystem implements Runnable {
-    WebThreadData wtd = WebThreadData.getWtd();
+public class WebThread extends Thread {
+
+    private static HashMap<String, String> defaultHeaders = new HashMap<>();
+
+    private Gson gson;
+
+    private static final ArrayList<WebLog> logs = new ArrayList<>();
+    private static final ArrayList<WebAction> actions = new ArrayList<>();
+
+    public static Vector position = new Vector(0, 0);
+    public static double theta = 0;
     int port;
     ServerSocket serverSocket;
+    WebCanvas webCanvas;
 
-    public WebThread(Telemetry telemetry) throws IOException {
-        super(telemetry, "web");
-        init();
-        port = 7070;
-        serverSocket = new ServerSocket(port);
+    public WebThread() throws IOException {
+        this(7070);
     }
 
-    public WebThread(Telemetry telemetry, int port) {
-        super(telemetry, "web");
-        init();
+    public WebThread(int port) throws IOException {
+        gson = new Gson();
         this.port = port;
+        this.webCanvas = new WebCanvas(500, 500);
+        serverSocket = new ServerSocket(port);
+        defaultHeaders.put("Content-Type", "application/json");
+        defaultHeaders.put("Server", "Web Subsystem Thread");
     }
 
-    private void init() {
-//        app = Javalin.create(config -> {
-//        });
-//        app.get("/logs", ctx -> ctx.result(getLogs()));
-//        app.get("/", ctx -> ctx.result(
-//                "{\n" +
-//                "    \"version\": \"0.0.0\"" +
-//                "\n}"));
-//        app.get("/robot-position", ctx -> ctx.result(getRobotPosition()));
-
+    public static void addLog(WebLog log) {
+        logs.add(log);
     }
 
-
-    public String writeJson(ArrayList<WebLog> logs) throws IOException {
-        OutputStream output = new OutputStream() {
-            private StringBuilder string = new StringBuilder();
-
-            @Override
-            public void write(int b) throws IOException {
-                this.string.append((char) b);
+    public static void setPercentage(String task, int percentage) {
+        for (WebAction action : actions) {
+            if (Objects.equals(action.name, task)) {
+                if (percentage == 100) {
+                    action.status = WebAction.Status.SUCCESS;
+                }
+                action.progress = percentage;
             }
+        }
+    }
 
-            @Override
-            public String toString() {
-                return this.string.toString();
+    public static void setPercentage(String task, int progress, int total) {
+        setPercentage(task, (Math.abs(progress) / Math.abs(total)) * 100);
+    }
+
+    public static void addAction(WebAction action) {
+        actions.add(action);
+    }
+
+    public static void removeAction(String task) {
+        actions.removeIf(action -> Objects.equals(action.name, task));
+    }
+
+
+    private Response returnError(WebError error) {
+        return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error.toHashMap()));
+    }
+
+    private void invalidMethod(String method) throws WebError {
+        throw new WebError("Method '" + method + "' not allowed", 405, 4050);
+    }
+
+    private Response returnObject(Object obj) {
+        return new Response(200, "OK", defaultHeaders, gson.toJson(obj));
+    }
+
+    private Response handleRequest(Request req) throws WebError {
+        if (Objects.equals(req.url, "/")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new View.MainResponse(logs, actions, position, theta));
+            } else {
+                invalidMethod(req.method);
             }
-        };
-        writeJsonStream(output, logs);
-        return output.toString();
-    }
+        } else if (Objects.equals(req.url, "/logs")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(logs);
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/actions")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(actions);
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/position")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new View.RobotPos(position.getX(), position.getY(), theta));
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/gamepads")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new View.GamepadResponse(Robot.gamepad1, Robot.gamepad2));
+            } else {
+                invalidMethod(req.method);
+            }
+        } else if (Objects.equals(req.url, "/canvas")) {
+            if (Objects.equals(req.method, "GET")) {
+                HashMap<String, String> headers = new HashMap<>(2);
+                headers.put("Server", "Web Subsystem Thread");
+                headers.put("Content-Type", "image/unknown");
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                BufferedOutputStream bw = new BufferedOutputStream(stream);
+                try {
+                    bw.write(244);
+                    bw.write(322);
+                } catch (IOException e) {
 
-    public void writeJsonStream(OutputStream out, ArrayList<WebLog> logs) throws IOException {
-        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
-        writer.setIndent("    ");
-        writeMessagesArray(writer, logs);
-        writer.close();
-    }
-
-    public void writeMessagesArray(JsonWriter writer, ArrayList<WebLog> messages) throws IOException {
-        writer.beginArray();
-        for (WebLog log : messages) {
-            writeMessage(writer, log);
+                }
+                return new Response(200, "OK", headers, stream);
+            } else {
+                invalidMethod(req.method);
+            }
         }
-        writer.endArray();
+        throw new WebError("Resource not found", 404, 4040);
     }
 
-    public void writeMessage(JsonWriter writer, WebLog webLog) throws IOException {
-        writer.beginObject();
-        writer.name("tag").value(webLog.TAG);
-        writer.name("message").value(webLog.message);
-        writer.name("severity").value(webLog.severity.ordinal());
-        writer.endObject();
-    }
-
-
-    public String getLogs() {
-        StringBuilder json = new StringBuilder("{");
-        ArrayList<WebLog> logs = wtd.getLogs();
-        for (WebLog log: logs) {
-            json.append("\n{\n" + "\"tag\": ")
-                    .append(log.TAG)
-                    .append(",\n\"message\": ")
-                    .append(log.message)
-                    .append(",\n\"severity\": ")
-                    .append(log.severity)
-                    .append("\n},");
+    private static String readToEnd(InputStreamReader reader) throws IOException {
+        StringBuilder str = new StringBuilder();
+        boolean exit = false;
+        int prev = 0;
+        while (!exit) {
+            int result = reader.read();
+            if (result == -1) {
+                exit = true;
+            } else if (result == 13 && prev == 10) {
+                exit = true;
+            } else {
+                str.append((char) result);
+            }
+            prev = result;
         }
-        json = new StringBuilder(json.substring(0, json.length() - 2));
-        json.append("}");
-        return json.toString();
+        return str.toString();
     }
 
-    public String getRobotPosition() {
-        return "{\n\"x\": " + wtd.getPosition().getX() + ",\n\"y\": " + wtd.getPosition().getY();
-    }
-
+    /** <p>Workflow:
+     * <p>- Read socket to end
+     * <p>- Parse request ({@link Request#Request(String)})
+     * <p>- Generate response ({@link WebThread#handleRequest(Request)})
+     * <p>- Return response
+     */
     @Override
     public void run() {
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
-                InputStream input = socket.getInputStream();
-                InputStreamReader reader = new InputStreamReader(input);
-                StringBuilder str = new StringBuilder();
-                boolean exit = false;
-                int prev = 0;
-                while (!exit) {
-                    int result = reader.read();
-                    if (result == -1) {
-                        exit = true;
-                    }
-                    else if (result == 13 && prev == 10) {
-                        exit = true;
-                    }
-                    else {
-                        str.append((char) result);
-                    }
-                    prev = result;
+                InputStreamReader reader = new InputStreamReader(socket.getInputStream());
+                String inputString = readToEnd(reader);
+                try {
+                    Request req = new Request(inputString);
+                    System.out.println(req.method + " " + req.url + " " + socket.getInetAddress().getHostAddress());
+                    Response resp = handleRequest(req);
+                    OutputStream output = socket.getOutputStream();
+                    output.write(resp.toBytes());
+                    output.close();
+                } catch (WebError e) {
+                    OutputStream output = socket.getOutputStream();
+                    Response resp = returnError(e);
+                    output.write(resp.toBytes());
+                    output.close();
+                } catch (Exception e) {
+                    OutputStream output = socket.getOutputStream();
+                    Response resp = returnError(new WebError(e.getMessage(), 500, 5000));
+                    output.write(resp.toBytes());
+                    output.close();
+                    System.out.println("Unhandled Error on WebThread, graceful exit performed: " + e.getMessage());
                 }
-                List<String> lines = Arrays.stream(str.toString().split("\n")).collect(Collectors.toList());
-                String request = lines.get(0);
-                String[] topSplit = request.split(" ");
-                String method = topSplit[0];
-                String url = topSplit[1];
-                String version = topSplit[2];
-                Log.i("WebThread", request);
-                lines.remove(0);
-                HashMap<String, String> headers = new HashMap<>();
-                for (String header: lines) {
-                    String[] split = header.split(":( )");
-                    headers.put(split[0], split[1]);
-                }
-                OutputStream output = socket.getOutputStream();
-                PrintWriter writer = new PrintWriter(output, true);
-                int statusCode = 200;
-                String resp = "";
-                if (Objects.equals(url, "/")) {
-                    resp = getLogs();
-                } else if (Objects.equals(url, "/robot-position")) {
-                    resp = getRobotPosition();
-                }
-                else {
-                    statusCode = 404;
-                    resp = "{\"error\": \"Resource not Found.\"";
-                }
-                writer.println("HTTP/1.1 " + statusCode + " OK\n" +
-                        "Server: v0.0.0\n" +
-                        "Content-Type: text/json\n" +
-                        "\n\n" + resp);
-                output.close();
             } catch (Exception e) {
-                Log.e("WebThread", e.toString());
+                System.out.println("Unhandled Error on WebThread, hard exit: " + e.getMessage());
             }
         }
     }
