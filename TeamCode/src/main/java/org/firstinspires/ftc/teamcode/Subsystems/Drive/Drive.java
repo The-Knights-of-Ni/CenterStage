@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
+import java.sql.Time;
 import java.util.Arrays;
 
 /**
@@ -161,6 +162,38 @@ public class Drive extends Subsystem {
         return new double[]{lfPower, rfPower, lrPower, rrPower};
     }
 
+
+    public static class TimeoutManager {
+        private final long timeout;
+        private final ElapsedTime timer;
+        private boolean isStarted = false;
+        private long startTime = 0;
+        private boolean isExceeded = false;
+
+        public TimeoutManager(long timeout) {
+            this.timeout = timeout;
+            this.timer = new ElapsedTime();
+        }
+
+        public void start() {
+            isStarted = true;
+            startTime = timer.nanoseconds();
+        }
+
+        public void stop() {
+            isStarted = false;
+        }
+
+        public boolean isExceeded() {
+            if (isStarted) {
+                if (timer.nanoseconds() - startTime > timeout) {
+                    isExceeded = true;
+                }
+            }
+            return isExceeded;
+        }
+    }
+
     /**
      * PID motor control program to ensure all four motors are synchronized
      *
@@ -173,14 +206,8 @@ public class Drive extends Subsystem {
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
-
-        // Timeout control (stop loop if motor stalls)
-        long currentTime; // current time in nanoseconds
-        long startTime = timer.nanoseconds();
-        boolean isTimeOutStarted = false;
-        boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
-        int timeOutPeriod = 100_000_000;
-        double timeOutStartedTime = 0.0;
+        // Timeout controls (stop loop if motor stalls)
+        TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
 
         // Initialize motor data wrappers
@@ -189,10 +216,9 @@ public class Drive extends Subsystem {
         MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
         MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
         // TODO: Profile init time
-        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
+        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!timeoutManager.isExceeded())) { // TODO: Profile time for one while loop cycle
 //            WebThread.setPercentage("drive", fr.currentCount, fr.targetCount);
             // Update current variables
-            currentTime = timer.nanoseconds() - startTime;
             // if only this got fixed ... then I could simplify the code even more
             fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why TODO: Check again ...
 
@@ -202,15 +228,11 @@ public class Drive extends Subsystem {
             rl.cycle(false);
             rr.cycle(false);
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
-                if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
-                    isTimeOutExceeded = true;
-                    logger.warning("Move failed, timeout exceeded");
-                } else { // time out was not started yet
-                    isTimeOutStarted = true;
-                    timeOutStartedTime = currentTime;
+                if (!timeoutManager.isStarted) {
+                    timeoutManager.start();
                 }
             } else {
-                isTimeOutStarted = false;
+                timeoutManager.stop();
             }
             if (debug) {
                 logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
