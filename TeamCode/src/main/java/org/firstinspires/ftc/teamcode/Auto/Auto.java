@@ -4,7 +4,6 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
@@ -28,7 +27,7 @@ public abstract class Auto extends LinearOpMode {
     public Robot robot;
     public ElapsedTime timer;
 
-    public ArmMovementThread thread;
+    public ArmMovementThread controlThread;
 
     /**
      * Initializes the robot class and sets the robot as the newly initialized robot.
@@ -42,7 +41,7 @@ public abstract class Auto extends LinearOpMode {
         flags.put("web", false);
         this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
         robot.control.initDevicesAuto();
-        thread = new ArmMovementThread(robot.control);
+        controlThread = new ArmMovementThread(robot.control);
         telemetry.addData("Waiting for start", "");
         telemetry.update();
     }
