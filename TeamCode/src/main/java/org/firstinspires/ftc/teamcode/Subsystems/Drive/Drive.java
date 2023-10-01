@@ -181,7 +181,7 @@ public class Drive extends Subsystem {
         boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
         int timeOutPeriod = 100_000_000;
         double timeOutStartedTime = 0.0;
-        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
+        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
 
         // Initialize motor data wrappers
         MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold); // TODO: Odometry implementation
@@ -204,7 +204,7 @@ public class Drive extends Subsystem {
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
-                    logger.info("Move failed, timeout exceeded");
+                    logger.warning("Move failed, timeout exceeded");
                 } else { // time out was not started yet
                     isTimeOutStarted = true;
                     timeOutStartedTime = currentTime;
