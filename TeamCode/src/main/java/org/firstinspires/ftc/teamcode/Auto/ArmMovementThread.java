@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 
-public class ArmMovementThread extends Thread{
-    Control control;
+public class ArmMovementThread extends Thread {
     public boolean reachedPosition = false;
     public boolean retracted = false;
+    Control control;
 
     public ArmMovementThread(Control control) {
         this.control = control;
@@ -14,14 +13,16 @@ public class ArmMovementThread extends Thread{
 
     public void run() {
         control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
-        while (!reachedPosition) {}
+        while (!reachedPosition) {
+        }
         control.openClawSync();
         reachedPosition = false;
         control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
         retracted = true;
         control.closeClawSync();
 
-        while (!reachedPosition) {}
+        while (!reachedPosition) {
+        }
         retracted = false;
         control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
         control.openClawSync();
