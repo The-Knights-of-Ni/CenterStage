@@ -4,9 +4,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-public class AutoBlueRight extends Auto{
+public class AutoRedLeft extends Auto{
     public void runOpMode() {
-        initAuto(AllianceColor.BLUE);
+        initAuto(AllianceColor.RED);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
         robot.vision.stop();
         waitForStart();
@@ -33,6 +33,6 @@ public class AutoBlueRight extends Auto{
         adjustPosition(markerPosition);
         thread.reachedPosition = true;
         while(!thread.retracted) {}
-        robot.drive.moveVector(new Vector(-24,0));
+        robot.drive.moveVector(new Vector(24,0));
     }
 }
