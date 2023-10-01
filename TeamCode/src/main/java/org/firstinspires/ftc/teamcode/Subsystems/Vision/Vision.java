@@ -5,7 +5,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;

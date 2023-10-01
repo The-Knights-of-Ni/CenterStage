@@ -21,7 +21,7 @@ public class CanvasLayer {
                 pixelArray[y][x] = new RGBA(0, 0, 0, 0);
             }
         }
-        for (CanvasObject canvasObject: objects) {
+        for (CanvasObject canvasObject : objects) {
             for (Pixel p : canvasObject.getPixels()) {
                 pixelArray[p.y][p.x] = p.color;
             }

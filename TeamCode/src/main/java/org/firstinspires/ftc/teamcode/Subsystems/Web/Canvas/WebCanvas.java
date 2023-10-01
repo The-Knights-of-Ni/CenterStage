@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebCanvas {
-    public List<CanvasLayer> layers;
     public final int height;
     public final int width;
+    public List<CanvasLayer> layers;
 
     public WebCanvas(int height, int width) {
         this.width = width;
@@ -23,7 +23,7 @@ public class WebCanvas {
                 pixelArray[y][x] = new RGBA(255, 255, 255, 255); // TODO: set background color variable
             }
         }
-        for (CanvasLayer canvasLayer: layers) {
+        for (CanvasLayer canvasLayer : layers) {
             RGBA[][] layerPixels = canvasLayer.getPixels();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {

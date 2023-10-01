@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -53,16 +52,13 @@ public class Drive extends Subsystem {
     public final DcMotorEx frontRight;
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
-
-    private final boolean debug = false;
-
-    // State variables for robot position
-    private double robotX;
-    private double robotY;
-    private double robotTheta;
-
-    private final ElapsedTime timer;
     public final boolean odometryEnabled;
+    private final boolean debug = false;
+    private final ElapsedTime timer;
+    // State variables for robot position
+    private final double robotX;
+    private final double robotY;
+    private final double robotTheta;
 
     /**
      * Initializes the drive subsystem
@@ -91,6 +87,10 @@ public class Drive extends Subsystem {
         this.robotX = 0;
         this.robotY = 0;
         this.robotTheta = 0;
+    }
+
+    private static boolean isMotorDone(int currentCount, int targetCount) {
+        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
     }
 
     /**
@@ -161,65 +161,6 @@ public class Drive extends Subsystem {
         return new double[]{lfPower, rfPower, lrPower, rrPower};
     }
 
-    static class MotorControlData {
-        DcMotorEx motor;
-        MoveSystem moveSystem;
-        boolean isNotMoving;
-        boolean isDone;
-        int currentCount;
-        int prevCount;
-        int targetCount;
-        int timeOutThreshold;
-
-        public MotorControlData(DcMotorEx motorEx, MoveSystem mS, int targetTickCount, int timeOutThreshold) {
-            motor = motorEx;
-            moveSystem = mS;
-            isNotMoving = false;
-            isDone = false;
-            prevCount = -1;
-            targetCount = targetTickCount;
-            this.timeOutThreshold = timeOutThreshold;
-        }
-
-        public void updateCurrentCount() {
-            currentCount = motor.getCurrentPosition();
-        }
-
-        public void setPower() {
-            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
-        }
-
-        public void halt() {
-            isDone = true;
-            isNotMoving = true;
-            motor.setPower(0.0);
-        }
-
-        public void updateIsNotMoving() {
-            if (prevCount != -1)
-                isNotMoving = Math.abs(currentCount - prevCount) < timeOutThreshold;
-        }
-
-        public void updatePrevCount() {
-            prevCount = currentCount;
-        }
-
-        public void cycle(boolean fRbypass) {
-            if (!fRbypass)
-                updateCurrentCount(); // House of cards moment
-            setPower();
-            checkMotorDone();
-            updateIsNotMoving();
-            updatePrevCount();
-        }
-
-        public void checkMotorDone() {
-            if (isMotorDone(currentCount, targetCount)) {
-                halt();
-            }
-        }
-    }
-
     /**
      * PID motor control program to ensure all four motors are synchronized
      *
@@ -280,10 +221,6 @@ public class Drive extends Subsystem {
         WebThread.removeAction("drive");
     }
 
-    private static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
-    }
-
     public void moveVector(Vector v) {
         moveVector(v, 0);
     }
@@ -313,5 +250,64 @@ public class Drive extends Subsystem {
         MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
         allMotorControl(tickCount, pids);
         stop();
+    }
+
+    static class MotorControlData {
+        DcMotorEx motor;
+        MoveSystem moveSystem;
+        boolean isNotMoving;
+        boolean isDone;
+        int currentCount;
+        int prevCount;
+        int targetCount;
+        int timeOutThreshold;
+
+        public MotorControlData(DcMotorEx motorEx, MoveSystem mS, int targetTickCount, int timeOutThreshold) {
+            motor = motorEx;
+            moveSystem = mS;
+            isNotMoving = false;
+            isDone = false;
+            prevCount = -1;
+            targetCount = targetTickCount;
+            this.timeOutThreshold = timeOutThreshold;
+        }
+
+        public void updateCurrentCount() {
+            currentCount = motor.getCurrentPosition();
+        }
+
+        public void setPower() {
+            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
+        }
+
+        public void halt() {
+            isDone = true;
+            isNotMoving = true;
+            motor.setPower(0.0);
+        }
+
+        public void updateIsNotMoving() {
+            if (prevCount != -1)
+                isNotMoving = Math.abs(currentCount - prevCount) < timeOutThreshold;
+        }
+
+        public void updatePrevCount() {
+            prevCount = currentCount;
+        }
+
+        public void cycle(boolean fRbypass) {
+            if (!fRbypass)
+                updateCurrentCount(); // House of cards moment
+            setPower();
+            checkMotorDone();
+            updateIsNotMoving();
+            updatePrevCount();
+        }
+
+        public void checkMotorDone() {
+            if (isMotorDone(currentCount, targetCount)) {
+                halt();
+            }
+        }
     }
 }

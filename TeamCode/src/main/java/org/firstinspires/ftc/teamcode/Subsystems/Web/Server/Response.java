@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web.Server;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 

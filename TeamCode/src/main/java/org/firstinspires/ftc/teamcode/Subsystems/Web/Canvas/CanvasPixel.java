@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CanvasPixel  implements CanvasObject{
+public class CanvasPixel implements CanvasObject {
     Pixel pixel;
 
     public CanvasPixel(Pixel pixel) {

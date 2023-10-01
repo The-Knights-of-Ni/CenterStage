@@ -8,19 +8,26 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 
 import java.util.HashMap;
 
 public class Robot {
     public static final String name = "CenterStage 2023";
-    public final String initLogTag = "init";
     public static final double length = 18.0;
     public static final double width = 18.0;
-
+    public static GamepadWrapper gamepad1;
+    public static GamepadWrapper gamepad2;
+    public final String initLogTag = "init";
     public final ElapsedTime timer;
+    public final boolean visionEnabled;
+    private final AllianceColor allianceColor;
+    private final boolean webEnabled;
+    private final boolean odometryEnabled;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
     // DC Motors
     public DcMotorEx frontLeftDriveMotor;
     public DcMotorEx frontRightDriveMotor;
@@ -43,14 +50,6 @@ public class Robot {
     public Control control;
     public Vision vision;
     public WebThread web;
-    private final AllianceColor allianceColor;
-    public final boolean visionEnabled;
-    private final boolean webEnabled;
-    private final boolean odometryEnabled;
-    private final HardwareMap hardwareMap;
-    private final Telemetry telemetry;
-    public static GamepadWrapper gamepad1;
-    public static GamepadWrapper gamepad2;
 
     /**
      * @param timer         The elapsed time
@@ -81,6 +80,10 @@ public class Robot {
         init();
     }
 
+    public static void updateGamepads() {
+        gamepad1.update();
+        gamepad2.update();
+    }
 
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
@@ -156,10 +159,5 @@ public class Robot {
         if (webEnabled)
             WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         Log.i(caption, value);
-    }
-
-    public static void updateGamepads() {
-        gamepad1.update();
-        gamepad2.update();
     }
 }

@@ -4,17 +4,14 @@ import androidx.core.math.MathUtils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PID implements MoveSystem {
-    private double Kp;
-    private double Ki;
-    private double Kd;
-
     protected boolean hasRun = false;
-
     protected ElapsedTime timer = new ElapsedTime();
-
     protected double previousError = 0;
     protected double integralSum = 0;
     protected double derivative = 0;
+    private final double Kp;
+    private final double Ki;
+    private final double Kd;
 
     public PID(double Kp, double Ki, double Kd) {
         this.Kp = Kp;

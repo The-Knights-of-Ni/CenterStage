@@ -22,10 +22,6 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
     private final int CAMERA_WIDTH;
     private MarkerLocation markerLocation = MarkerLocation.NOT_FOUND;
 
-    public enum MarkerLocation {
-        LEFT, MIDDLE, RIGHT, NOT_FOUND
-    }
-
     /**
      * Class instantiation
      *
@@ -131,5 +127,9 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     public MarkerLocation getMarkerLocation() {
         return markerLocation;
+    }
+
+    public enum MarkerLocation {
+        LEFT, MIDDLE, RIGHT, NOT_FOUND
     }
 }

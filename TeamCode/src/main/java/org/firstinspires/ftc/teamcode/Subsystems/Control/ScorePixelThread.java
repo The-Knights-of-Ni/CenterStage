@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
 public class ScorePixelThread extends Thread {
-    private Control control;
+    private final Control control;
 
     public ScorePixelThread(Control control) {
         this.control = control;
