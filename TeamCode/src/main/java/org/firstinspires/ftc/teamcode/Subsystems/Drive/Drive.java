@@ -192,7 +192,7 @@ public class Drive extends Subsystem {
     }
 
     private Pose getCurrentPose() {
-        return null; // TODO: main thing to implement
+        throw new RuntimeException("Not yet implemented"); // TODO: main thing to implement
     }
 
     public static class TimeoutManager {
