@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <ul class="list-group">
+                {% for log in resp.logs %}
+                <li class="list-group-item">{{ log.severity }}: {{ log.TAG }} - {{ log.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-6">
+            <ul class="list-group">
+                {% for action in resp.actions %}
+                <li class="list-group-item">{{ action.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

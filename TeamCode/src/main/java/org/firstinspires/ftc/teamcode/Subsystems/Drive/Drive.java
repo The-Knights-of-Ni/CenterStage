@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
+import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.Arrays;
@@ -224,7 +226,8 @@ public class Drive extends Subsystem {
      * @param tickCount How far each motor should go
      */
     public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
-        Log.i(TAG, "Moving " + Arrays.toString(tickCount));
+        logger.info("Moving " + Arrays.toString(tickCount));
+        WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -246,6 +249,7 @@ public class Drive extends Subsystem {
         MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
         // TODO: Profile init time
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
+//            WebThread.setPercentage("drive", fr.currentCount, fr.targetCount);
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
             // if only this got fixed ... then I could simplify the code even more
@@ -259,7 +263,7 @@ public class Drive extends Subsystem {
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
-                    Log.e(TAG, "Move failed, timeout exceeded");
+                    logger.info("Move failed, timeout exceeded");
                 } else { // time out was not started yet
                     isTimeOutStarted = true;
                     timeOutStartedTime = currentTime;
@@ -268,11 +272,12 @@ public class Drive extends Subsystem {
                 isTimeOutStarted = false;
             }
             if (debug) {
-                Log.v("Target tick", fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-                Log.v("Current tick", fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                Log.v("Current power", fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+                logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
+                logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
+                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
             }
         }
+        WebThread.removeAction("drive");
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
@@ -288,6 +293,8 @@ public class Drive extends Subsystem {
     }
 
     public void moveVector(Vector v, double turnAngle) {
+        WebThread.position = new Vector(WebThread.position.add(v).toArray()); // TODO: Fix because angle isn't constant
+        WebThread.theta += turnAngle;
         Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
         // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
         // for the strafer chassis to operate properly

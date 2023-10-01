@@ -5,6 +5,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -57,8 +58,7 @@ public class Vision extends Subsystem {
         this.aprilTagDetectionThread = new AprilTagDetectionThread(this.hardwareMap.get(WebcamName.class, WEBCAM_NAME));
         this.aprilTagDetectionThread.start();
         // Telemetry
-        telemetry.addLine("Vision init complete");
-        telemetry.update();
+        logger.info("Vision init complete");
     }
 
     public void stopAprilTagDetection() throws InterruptedException {
@@ -117,14 +117,13 @@ public class Vision extends Subsystem {
                 new OpenCvCamera.AsyncCameraOpenListener() {
                     @Override
                     public void onOpened() { // Listener for when the camera first starts
-                        telemetry.addLine("Streaming");
+                        logger.info("Streaming");
                         camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
                     }
 
                     @Override
                     public void onError(int errorCode) { // Listener to log if the camera stops abruptly
-                        telemetry.addLine("Error Streaming, aborting");
-                        telemetry.update();
+                        logger.error("Error Streaming, aborting");
                     }
                 });
     }
