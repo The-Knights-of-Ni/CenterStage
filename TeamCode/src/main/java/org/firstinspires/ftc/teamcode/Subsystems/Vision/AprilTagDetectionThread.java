@@ -9,19 +9,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 public class AprilTagDetectionThread extends Thread {
+    public boolean terminate = false;
+    public List<AprilTagDetection> currentDetections;
     /**
      * The variable to store our instance of the AprilTag processor.
      */
     private AprilTagProcessor aprilTag;
-    private CameraName cameraName;
-
-    public boolean terminate = false;
-
+    private final CameraName cameraName;
     /**
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
-    public List<AprilTagDetection> currentDetections;
 
     public AprilTagDetectionThread(CameraName cameraName) {
         this.cameraName = cameraName;
@@ -39,6 +37,7 @@ public class AprilTagDetectionThread extends Thread {
         }
 
     }
+
     /**
      * Initialize the AprilTag processor.
      */

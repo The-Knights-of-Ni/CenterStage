@@ -4,17 +4,14 @@ import androidx.core.math.MathUtils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PID implements MoveSystem {
-    private double Kp;
-    private double Ki;
-    private double Kd;
-
     protected boolean hasRun = false;
-
     protected ElapsedTime timer = new ElapsedTime();
-
     protected double previousError = 0;
     protected double integralSum = 0;
     protected double derivative = 0;
+    private final double Kp;
+    private final double Ki;
+    private final double Kd;
 
     public PID(double Kp, double Ki, double Kd) {
         this.Kp = Kp;
@@ -24,14 +21,15 @@ public class PID implements MoveSystem {
 
     /**
      * calculate PID output
-     * @param target the target position
+     *
+     * @param target   the target position
      * @param measured current system state
      * @return PID output
      */
     public double calculate(double target, double measured) {
         double dt = getDT();
         double error = calculateError(target, measured);
-        double derivative = calculateDerivative(error,dt);
+        double derivative = calculateDerivative(error, dt);
         integrate(error, dt);
         previousError = error;
 
@@ -41,6 +39,7 @@ public class PID implements MoveSystem {
 
     /**
      * get the time constant
+     *
      * @return time constant
      */
     public double getDT() {

@@ -5,7 +5,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -31,7 +30,7 @@ public class Vision extends Subsystem {
     // Define where camera is in relation to center of robot in inches
     final static double CAMERA_FORWARD_DISPLACEMENT = 6.0f * mmPerInch; // TODO: CALIBRATE WHEN ROBOT IS BUILT
     final static double CAMERA_VERTICAL_DISPLACEMENT = 6.5f * mmPerInch;
-    final static double CAMERA_RIGHT_DISPLACEMENT =  0f * mmPerInch;
+    final static double CAMERA_RIGHT_DISPLACEMENT = 0f * mmPerInch;
     private final HardwareMap hardwareMap;
     private final AllianceColor allianceColor;
 
@@ -44,8 +43,8 @@ public class Vision extends Subsystem {
     /**
      * Class instantiation
      *
-     * @param telemetry   Telemetry
-     * @param hardwareMap the hardware map
+     * @param telemetry     Telemetry
+     * @param hardwareMap   the hardware map
      * @param allianceColor the alliance color
      */
     public Vision(
@@ -70,20 +69,20 @@ public class Vision extends Subsystem {
         List<AprilTagDetection> tags = aprilTagDetectionThread.currentDetections;
         Vector position = null;
         double distance = 100000;
-        for (AprilTagDetection tag: tags) {
+        for (AprilTagDetection tag : tags) {
             Vector robotPosition = null;
             switch (tag.id) {
                 case 2: // Blue Alliance Center
-                    robotPosition = new Vector(-36.6875+tag.ftcPose.x-CAMERA_FORWARD_DISPLACEMENT, 61-tag.ftcPose.y+CAMERA_RIGHT_DISPLACEMENT); // TODO: Calibrate y (use yaw etc. maybe?)
+                    robotPosition = new Vector(-36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT); // TODO: Calibrate y (use yaw etc. maybe?)
                     break;
                 case 5: // Red Alliance Center
-                    robotPosition = new Vector(36.6875+tag.ftcPose.x-CAMERA_FORWARD_DISPLACEMENT, 61-tag.ftcPose.y+CAMERA_RIGHT_DISPLACEMENT);  // TODO: Calibrate y (use yaw etc. maybe?)
+                    robotPosition = new Vector(36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT);  // TODO: Calibrate y (use yaw etc. maybe?)
                     break;
                 case 8: // Red pixel stack
-                    robotPosition = new Vector(11.5+24-tag.ftcPose.x+CAMERA_FORWARD_DISPLACEMENT, -72.-tag.ftcPose.y-CAMERA_RIGHT_DISPLACEMENT);
+                    robotPosition = new Vector(11.5 + 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72. - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
                     break;
                 case 9: // Blue pixel stack
-                    robotPosition = new Vector(-11.5-24-tag.ftcPose.x+CAMERA_FORWARD_DISPLACEMENT, -72.-tag.ftcPose.y-CAMERA_RIGHT_DISPLACEMENT);
+                    robotPosition = new Vector(-11.5 - 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72. - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
                     break;
             }
 

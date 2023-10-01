@@ -1,38 +1,32 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import android.graphics.Bitmap;
-import org.firstinspires.ftc.teamcode.GamepadWrapper;
+import com.google.gson.Gson;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.RGBA;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import com.google.gson.Gson;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 
 public class WebThread extends Thread {
 
-    private static HashMap<String, String> defaultHeaders = new HashMap<>();
-
-    private Gson gson;
-
     private static final ArrayList<WebLog> logs = new ArrayList<>();
     private static final ArrayList<WebAction> actions = new ArrayList<>();
-
     public static Vector position = new Vector(0, 0);
     public static double theta = 0;
+    private static final HashMap<String, String> defaultHeaders = new HashMap<>();
     int port;
     ServerSocket serverSocket;
     WebCanvas webCanvas;
+    private final Gson gson;
 
     public WebThread() throws IOException {
         this(7070);
@@ -74,6 +68,23 @@ public class WebThread extends Thread {
         actions.removeIf(action -> Objects.equals(action.name, task));
     }
 
+    private static String readToEnd(InputStreamReader reader) throws IOException {
+        StringBuilder str = new StringBuilder();
+        boolean exit = false;
+        int prev = 0;
+        while (!exit) {
+            int result = reader.read();
+            if (result == -1) {
+                exit = true;
+            } else if (result == 13 && prev == 10) {
+                exit = true;
+            } else {
+                str.append((char) result);
+            }
+            prev = result;
+        }
+        return str.toString();
+    }
 
     private Response returnError(WebError error) {
         return new Response(error.statusCode, "ERR", defaultHeaders, gson.toJson(error.toHashMap()));
@@ -139,25 +150,8 @@ public class WebThread extends Thread {
         throw new WebError("Resource not found", 404, 4040);
     }
 
-    private static String readToEnd(InputStreamReader reader) throws IOException {
-        StringBuilder str = new StringBuilder();
-        boolean exit = false;
-        int prev = 0;
-        while (!exit) {
-            int result = reader.read();
-            if (result == -1) {
-                exit = true;
-            } else if (result == 13 && prev == 10) {
-                exit = true;
-            } else {
-                str.append((char) result);
-            }
-            prev = result;
-        }
-        return str.toString();
-    }
-
-    /** <p>Workflow:
+    /**
+     * <p>Workflow:
      * <p>- Read socket to end
      * <p>- Parse request ({@link Request#Request(String)})
      * <p>- Generate response ({@link WebThread#handleRequest(Request)})

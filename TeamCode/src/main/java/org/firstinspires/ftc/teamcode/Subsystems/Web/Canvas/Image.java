@@ -7,6 +7,7 @@ import java.util.List;
 
 public class Image implements CanvasObject {
     Bitmap internal;
+
     public Image(Bitmap bitmap) {
         internal = bitmap;
     }

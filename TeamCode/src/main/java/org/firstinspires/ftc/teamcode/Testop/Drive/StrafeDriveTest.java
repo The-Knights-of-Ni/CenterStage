@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testop.Drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -21,7 +20,7 @@ public class StrafeDriveTest extends Auto {
         initAuto(AllianceColor.RED);
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(12*mmPerInch, 0*mmPerInch));
+        robot.drive.moveVector(new Vector(12 * mmPerInch, 0 * mmPerInch));
         sleep(2000);
     }
 }

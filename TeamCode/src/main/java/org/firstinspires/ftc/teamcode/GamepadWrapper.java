@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class GamepadWrapper {
     private static final double joystickDeadZone = 0.1;
-
+    private final Gamepad gamepad;
     public double leftStickX;
     public double leftStickY;
     public double rightStickX;
@@ -21,7 +21,6 @@ public class GamepadWrapper {
     public Button dPadRight = new Button();
     public Button bumperLeft = new Button();
     public Button bumperRight = new Button();
-    private final Gamepad gamepad;
 
     public GamepadWrapper(Gamepad gamepad) {
         this.gamepad = gamepad;
@@ -30,6 +29,7 @@ public class GamepadWrapper {
 
     /**
      * Discards joystick inputs between -joystickDeadZone and joystickDeadZone
+     *
      * @param joystickInput the input of the joystick
      * @return the corrected input of the joystick
      */

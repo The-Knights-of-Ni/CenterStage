@@ -1,24 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-import android.os.Build;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class WebLog {
-    public enum LogSeverity {
-        VERBOSE,
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR
-    }
-
     public String TAG;
     public String message;
     public LogSeverity severity;
     public String timestamp;
-
     public WebLog(String tag, String message, LogSeverity severity) {
         this.TAG = tag;
         this.message = message;
@@ -44,5 +30,13 @@ public class WebLog {
 
     public static void error(String tag, String message) {
         WebThread.addLog(new WebLog(tag, message, LogSeverity.ERROR));
+    }
+
+    public enum LogSeverity {
+        VERBOSE,
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR
     }
 }

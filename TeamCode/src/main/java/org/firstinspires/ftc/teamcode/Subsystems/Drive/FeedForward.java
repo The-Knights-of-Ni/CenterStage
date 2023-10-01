@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class FeedForward implements MoveSystem {
-    private double Kv;
-    private double Ka;
-
     protected boolean hasRun = false;
-
     protected ElapsedTime timer = new ElapsedTime();
-
+    private final double Kv;
+    private final double Ka;
     private double previousMeasured = 0;
     private double previousTime = 0;
 
@@ -21,7 +18,8 @@ public class FeedForward implements MoveSystem {
 
     /**
      * calculate output (hacky time/dynamic programming being used) TODO: standardize
-     * @param target the target position
+     *
+     * @param target   the target position
      * @param measured current system state
      * @return output
      */

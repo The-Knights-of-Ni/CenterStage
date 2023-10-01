@@ -3,18 +3,15 @@ package org.firstinspires.ftc.teamcode.Util;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class ServoEx {
 
-    private Servo servo;
-
-    //always stored internally as radians
-    private double maxAngle, minAngle;
-
     private final double maxPosition = 1;
     private final double minPosition = 0;
+    private final Servo servo;
+    //always stored internally as radians
+    private double maxAngle, minAngle;
 
     public ServoEx(HardwareMap hw, String servoName, double minAngle, double maxAngle, AngleUnit angleUnit) {
         servo = hw.get(Servo.class, servoName);
@@ -50,10 +47,6 @@ public class ServoEx {
         setPosition(position);
     }
 
-    public void setPosition(double position) {
-        servo.setPosition(Range.clip(position, minPosition, maxPosition));
-    }
-
     public void setRange(double min, double max, AngleUnit angleUnit) {
         this.minAngle = toRadians(min, angleUnit);
         this.maxAngle = toRadians(max, angleUnit);
@@ -63,16 +56,20 @@ public class ServoEx {
         setRange(min, max, AngleUnit.DEGREES);
     }
 
-    public void setInverted(boolean isInverted) {
-        servo.setDirection(isInverted ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-    }
-
     public boolean getInverted() {
         return Servo.Direction.REVERSE == servo.getDirection();
     }
 
+    public void setInverted(boolean isInverted) {
+        servo.setDirection(isInverted ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+    }
+
     public double getPosition() {
         return servo.getPosition();
+    }
+
+    public void setPosition(double position) {
+        servo.setPosition(Range.clip(position, minPosition, maxPosition));
     }
 
     public double getAngle(AngleUnit angleUnit) {
