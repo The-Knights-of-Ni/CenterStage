@@ -192,6 +192,10 @@ public class Drive extends Subsystem {
     }
 
     private Pose getCurrentPose() {
+        int flTicks = frontLeft.getCurrentPosition();
+        int frTicks = frontRight.getCurrentPosition();
+        int rlTicks = rearLeft.getCurrentPosition();
+        int rrTicks = rearRight.getCurrentPosition();
         throw new RuntimeException("Not yet implemented"); // TODO: main thing to implement
     }
 
