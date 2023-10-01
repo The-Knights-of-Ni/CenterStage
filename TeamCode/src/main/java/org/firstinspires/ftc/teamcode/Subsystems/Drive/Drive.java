@@ -8,9 +8,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import java.sql.Time;
 import java.util.Arrays;
 
 /**
@@ -163,6 +163,38 @@ public class Drive extends Subsystem {
     }
 
 
+    private boolean reached(int one, int two) {
+        return Math.abs(one - two) < 50; // TODO: Convert to constant
+    }
+
+    public void holonomicMotorControl(int xTarget, int yTarget, int thetaTarget) {
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
+
+        PID xControl = new PID(motorKp, motorKi, motorKd);
+        PID yControl = new PID(motorKp, motorKi, motorKd);
+        PID thetaControl = new PID(motorKp, motorKi, motorKd);
+        TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
+        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
+        Pose currentPosition = new Pose(0, 0, 0);
+        while (!(reached(xTarget, currentPosition.x) && reached(yTarget, currentPosition.y) && reached(thetaTarget, currentPosition.heading)) && (!timeoutManager.isExceeded())) {
+            currentPosition = getCurrentPose();
+            double xPower = xControl.calculate(xTarget, currentPosition.x);
+            double yPower = yControl.calculate(yTarget, currentPosition.y);
+            double thetaPower = thetaControl.calculate(thetaTarget, currentPosition.heading);
+            double x_rotated = xPower * Math.cos(thetaTarget) - yPower * Math.sin(thetaTarget);
+            double y_rotated = xPower * Math.sin(thetaTarget) + yPower * Math.cos(thetaTarget);
+            frontLeft.setPower(x_rotated + y_rotated + thetaPower);
+            frontRight.setPower(x_rotated - y_rotated - thetaPower);
+            rearLeft.setPower(x_rotated - y_rotated + thetaPower);
+            rearRight.setPower(x_rotated + y_rotated - thetaPower);
+        }
+    }
+
+    private Pose getCurrentPose() {
+        return null; // TODO: main thing to implement
+    }
+
     public static class TimeoutManager {
         private final long timeout;
         private final ElapsedTime timer;
@@ -193,6 +225,7 @@ public class Drive extends Subsystem {
             return isExceeded;
         }
     }
+
 
     /**
      * PID motor control program to ensure all four motors are synchronized
