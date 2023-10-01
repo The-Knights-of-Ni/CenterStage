@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode.Geometry;
 
 import org.apache.commons.geometry.euclidean.twod.ConvexArea;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.List;
-
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
 public class BoundingBox {
     public final ConvexArea area;
@@ -13,6 +12,7 @@ public class BoundingBox {
 
     /**
      * The bounding box generates a box to represent an objects position.
+     *
      * @param bounds The boundary of the object
      */
     public BoundingBox(ConvexArea bounds) {
@@ -30,8 +30,8 @@ public class BoundingBox {
         double smallestDistance = vertices.get(0).distance(otherVertices.get(0));
         Vector2D vertex1 = vertices.get(0);
         Vector2D vertex2 = otherVertices.get(0);
-        for (Vector2D vertex:vertices) {
-            for (Vector2D otherVertex:otherVertices) {
+        for (Vector2D vertex : vertices) {
+            for (Vector2D otherVertex : otherVertices) {
                 if (vertex.distance(otherVertex) < smallestDistance) {
                     smallestDistance = vertex.distance(otherVertex);
                     vertex1 = vertex;
@@ -53,8 +53,8 @@ public class BoundingBox {
             return null;
         }
         int shiftedStart = otherBounds.indexOf(first);
-        for (int i = 0; i<bounds.size(); i++) {
-            if (bounds.get(i) != otherBounds.get((i+shiftedStart) % bounds.size())) {
+        for (int i = 0; i < bounds.size(); i++) {
+            if (bounds.get(i) != otherBounds.get((i + shiftedStart) % bounds.size())) {
                 return null;
             }
         }

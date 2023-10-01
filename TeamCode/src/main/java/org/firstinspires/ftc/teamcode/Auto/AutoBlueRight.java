@@ -14,9 +14,9 @@ public class AutoBlueRight extends Auto {
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                robot.drive.moveVector(new Vector(12*mmPerInch, 24 * mmPerInch), -90);
+                robot.drive.moveVector(new Vector(12 * mmPerInch, 24 * mmPerInch), -90);
                 controlThread.reachedPosition = true;
-                robot.drive.moveVector(new Vector(0,78*mmPerInch));
+                robot.drive.moveVector(new Vector(0, 78 * mmPerInch));
                 break;
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
@@ -24,7 +24,7 @@ public class AutoBlueRight extends Auto {
                 robot.drive.moveVector(new Vector(-112, 0), -90);
                 break;
             case RIGHT:
-                robot.drive.moveVector(new Vector(12 * mmPerInch, 0),90);
+                robot.drive.moveVector(new Vector(12 * mmPerInch, 0), 90);
                 controlThread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(0, -100 * mmPerInch), -180);
                 break;
@@ -32,7 +32,8 @@ public class AutoBlueRight extends Auto {
 
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
-        while (!controlThread.retracted) {}
+        while (!controlThread.retracted) {
+        }
         robot.drive.moveVector(new Vector(-24, 0));
     }
 }

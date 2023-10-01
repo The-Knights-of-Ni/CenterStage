@@ -12,6 +12,7 @@ public class WebLog {
         WARNING,
         ERROR
     }
+
     public String TAG;
     public String message;
     public LogSeverity severity;
@@ -23,8 +24,7 @@ public class WebLog {
         this.severity = severity;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.timestamp = LocalDate.now().toString();
-        }
-        else {
+        } else {
             this.timestamp = "";
         }
     }

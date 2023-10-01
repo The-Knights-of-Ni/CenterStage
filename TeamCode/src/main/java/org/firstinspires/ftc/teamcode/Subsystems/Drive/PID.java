@@ -24,14 +24,15 @@ public class PID implements MoveSystem {
 
     /**
      * calculate PID output
-     * @param target the target position
+     *
+     * @param target   the target position
      * @param measured current system state
      * @return PID output
      */
     public double calculate(double target, double measured) {
         double dt = getDT();
         double error = calculateError(target, measured);
-        double derivative = calculateDerivative(error,dt);
+        double derivative = calculateDerivative(error, dt);
         integrate(error, dt);
         previousError = error;
 
@@ -41,6 +42,7 @@ public class PID implements MoveSystem {
 
     /**
      * get the time constant
+     *
      * @return time constant
      */
     public double getDT() {

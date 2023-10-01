@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
 import android.util.JsonWriter;
-
 import android.util.Log;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
@@ -91,7 +90,7 @@ public class WebThread extends Subsystem implements Runnable {
     public String getLogs() {
         StringBuilder json = new StringBuilder("{");
         ArrayList<WebLog> logs = wtd.getLogs();
-        for (WebLog log: logs) {
+        for (WebLog log : logs) {
             json.append("\n{\n" + "\"tag\": ")
                     .append(log.TAG)
                     .append(",\n\"message\": ")
@@ -123,11 +122,9 @@ public class WebThread extends Subsystem implements Runnable {
                     int result = reader.read();
                     if (result == -1) {
                         exit = true;
-                    }
-                    else if (result == 13 && prev == 10) {
+                    } else if (result == 13 && prev == 10) {
                         exit = true;
-                    }
-                    else {
+                    } else {
                         str.append((char) result);
                     }
                     prev = result;
@@ -141,7 +138,7 @@ public class WebThread extends Subsystem implements Runnable {
                 Log.i("WebThread", request);
                 lines.remove(0);
                 HashMap<String, String> headers = new HashMap<>();
-                for (String header: lines) {
+                for (String header : lines) {
                     String[] split = header.split(":( )");
                     headers.put(split[0], split[1]);
                 }
@@ -153,8 +150,7 @@ public class WebThread extends Subsystem implements Runnable {
                     resp = getLogs();
                 } else if (Objects.equals(url, "/robot-position")) {
                     resp = getRobotPosition();
-                }
-                else {
+                } else {
                     statusCode = 404;
                     resp = "{\"error\": \"Resource not Found.\"";
                 }

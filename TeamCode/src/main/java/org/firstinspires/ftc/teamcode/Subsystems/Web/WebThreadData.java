@@ -9,7 +9,7 @@ public class WebThreadData {
     private static WebThreadData wtd;
     private static final ArrayList<WebLog> logs = new ArrayList<>();
 
-    private static Vector position = new Vector(0,0);
+    private static Vector position = new Vector(0, 0);
 
     public static WebThreadData getWtd() {
         return wtd;

@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.*;
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.CraneState;
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.PlaneLaunchRange;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class Teleop extends LinearOpMode {
         timer = new ElapsedTime();
         HashMap<String, Boolean> flags = new HashMap<>();
         flags.put("vision", false);
-        this.robot =  new Robot(hardwareMap, telemetry, timer, AllianceColor.BLUE, gamepad1, gamepad2,flags);
+        this.robot = new Robot(hardwareMap, telemetry, timer, AllianceColor.BLUE, gamepad1, gamepad2, flags);
         timeCurrent = timer.nanoseconds();
         timePre = timeCurrent;
 
@@ -125,15 +125,15 @@ public class Teleop extends LinearOpMode {
                 // April Tag Correction
                 if (robot.gamepad2.dPadLeft.isPressed()) {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 1 || tagDetection.id == 4).findFirst().ifPresent(
-                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x*Drive.mmPerInch, 0))
+                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
                 } else if (robot.gamepad2.dPadUp.isPressed()) {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 2 || tagDetection.id == 5).findFirst().ifPresent(
-                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x*Drive.mmPerInch, 0))
+                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
                 } else if (robot.gamepad2.dPadRight.isPressed()) {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 3 || tagDetection.id == 6).findFirst().ifPresent(
-                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x*Drive.mmPerInch, 0))
+                            aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
                 }
 

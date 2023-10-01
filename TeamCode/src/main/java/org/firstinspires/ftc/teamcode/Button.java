@@ -21,8 +21,7 @@ public class Button {
             case CLICKED:
                 if (value) {
                     status = ButtonStatus.CLICKING;
-                }
-                else {
+                } else {
                     status = ButtonStatus.NOTCLICKED;
                     toggle = !toggle;
                 }

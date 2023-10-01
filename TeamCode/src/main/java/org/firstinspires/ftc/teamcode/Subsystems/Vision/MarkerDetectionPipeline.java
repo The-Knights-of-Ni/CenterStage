@@ -69,7 +69,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         mask.release();
 
 
-        if(crop.empty()) {
+        if (crop.empty()) {
             markerLocation = MarkerLocation.NOT_FOUND;
             return input;
         }
@@ -93,7 +93,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
         Rect[] boundRect = new Rect[contours.size()];
 
-        for(int i = 0; i < contours.size(); i++) {
+        for (int i = 0; i < contours.size(); i++) {
             contoursPoly[i] = new MatOfPoint2f();
             Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
             boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
@@ -107,8 +107,8 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         boolean middle = false;
         boolean right = false;
 
-        for(int i = 0; i != boundRect.length; i++) {
-            int midpoint = boundRect[i].x + boundRect[i].width/2;
+        for (int i = 0; i != boundRect.length; i++) {
+            int midpoint = boundRect[i].x + boundRect[i].width / 2;
             if (midpoint < left_x)
                 left = true;
             if (left_x <= midpoint && midpoint <= right_x)
@@ -116,9 +116,9 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             if (right_x < midpoint)
                 right = true;
         }
-        if(left) markerLocation = MarkerLocation.LEFT;
-        if(middle) markerLocation = MarkerLocation.MIDDLE;
-        if(right) markerLocation = MarkerLocation.RIGHT;
+        if (left) markerLocation = MarkerLocation.LEFT;
+        if (middle) markerLocation = MarkerLocation.MIDDLE;
+        if (right) markerLocation = MarkerLocation.RIGHT;
 
         return crop;
     }

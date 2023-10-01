@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-public class AutoBlueLeft extends Auto{
+public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.BLUE);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
@@ -16,7 +16,7 @@ public class AutoBlueLeft extends Auto{
             case LEFT:
                 robot.drive.moveVector(new Vector(0, 30 * mmPerInch), -90);
                 controlThread.reachedPosition = true;
-                robot.drive.moveVector(new Vector(0,30 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
                 break;
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
@@ -24,7 +24,7 @@ public class AutoBlueLeft extends Auto{
                 robot.drive.moveVector(new Vector(-42, 0), -90);
                 break;
             case RIGHT:
-                robot.drive.moveVector(new Vector(12 * mmPerInch, 0),90);
+                robot.drive.moveVector(new Vector(12 * mmPerInch, 0), 90);
                 controlThread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(0, -60 * mmPerInch), -180);
                 break;
@@ -32,7 +32,8 @@ public class AutoBlueLeft extends Auto{
 
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
-        while (!controlThread.retracted) {}
+        while (!controlThread.retracted) {
+        }
         robot.drive.moveVector(new Vector(-24, 0));
     }
 }

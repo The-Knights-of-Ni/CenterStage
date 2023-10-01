@@ -14,7 +14,7 @@ public class LogController {
     public String getAll() {
         StringBuilder json = new StringBuilder("{");
         ArrayList<WebLog> logs = wtd.getLogs();
-        for (WebLog log: logs) {
+        for (WebLog log : logs) {
             json.append("\n{\n" + "\"tag\": ").append(log.TAG).append(",\n\"message\": ").append(log.message).append(",\n\"severity\": ").append(log.severity).append("\n},");
         }
         json = new StringBuilder(json.substring(0, json.length() - 2));

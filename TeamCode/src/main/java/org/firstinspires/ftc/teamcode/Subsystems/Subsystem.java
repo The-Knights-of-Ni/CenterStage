@@ -12,6 +12,7 @@ public abstract class Subsystem {
 
     /**
      * inits with telemetry, since every subsystem uses it.
+     *
      * @param telemetry The telemetry for logging
      */
     public Subsystem(Telemetry telemetry, String tag) {

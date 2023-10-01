@@ -21,6 +21,7 @@ public class Path {
         currentWaypoint++;
         targetWaypoint++;
     }
+
     public Vector goToNextWaypoint() {
         return new Vector(
                 Math.abs(waypoints.get(currentWaypoint).coordinate.getX() - waypoints.get(targetWaypoint).coordinate.getX()),

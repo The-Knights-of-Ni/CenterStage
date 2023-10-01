@@ -30,6 +30,7 @@ public class GamepadWrapper {
 
     /**
      * Discards joystick inputs between -joystickDeadZone and joystickDeadZone
+     *
      * @param joystickInput the input of the joystick
      * @return the corrected input of the joystick
      */

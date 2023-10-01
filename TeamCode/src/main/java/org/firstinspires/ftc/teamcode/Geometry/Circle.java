@@ -8,6 +8,7 @@ import java.util.List;
 public class Circle {
     public Vector center;
     public double radius;
+
     public Circle(Vector center, double radius) {
         this.center = center;
         this.radius = radius;

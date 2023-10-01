@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 /**
  * Auto creates a robot and runs it in auto mode.
+ *
  * @see LinearOpMode
  */
 public abstract class Auto extends LinearOpMode {
@@ -31,6 +32,7 @@ public abstract class Auto extends LinearOpMode {
 
     /**
      * Initializes the robot class and sets the robot as the newly initialized robot.
+     *
      * @param allianceColor The alliance color
      */
     public void initAuto(AllianceColor allianceColor) {

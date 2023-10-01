@@ -39,6 +39,7 @@ public class AprilTagDetectionThread extends Thread {
         }
 
     }
+
     /**
      * Initialize the AprilTag processor.
      */
