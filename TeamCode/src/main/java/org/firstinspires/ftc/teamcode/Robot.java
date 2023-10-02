@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import android.os.Build;
 import android.util.Log;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -11,13 +14,16 @@ import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Robot {
     public static final String name = "CenterStage 2023";
     public static final double length = 18.0;
     public static final double width = 18.0;
+    private MasterLogger logger;
     public static GamepadWrapper gamepad1;
     public static GamepadWrapper gamepad2;
     public final String initLogTag = "init";
@@ -35,16 +41,11 @@ public class Robot {
     public DcMotorEx rearLeftDriveMotor;
     //Servos
     // Odometry
-//    public List<LynxModule> allHubs;
-//    public DigitalChannel odometryRA;
-//    public DigitalChannel odometryRB;
-//    public DigitalChannel odometryBA;
-//    public DigitalChannel odometryBB;
-//    public DigitalChannel odometryLA;
-//    public DigitalChannel odometryLB;
-    public int odRCount = 0;
-    public int odBCount = 0;
-    public int odLCount = 0;
+    public DcMotorEx leftEncoder;
+    public DcMotorEx backEncoder;
+    public DcMotorEx rightEncoder;
+
+    public BNO055IMU imu;
     // Subsystems
     public Drive drive;
     public Control control;
@@ -60,15 +61,15 @@ public class Robot {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML); // Allow usage of some HTML tags
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.OLDEST_FIRST);
         telemetry.log().setCapacity(5);
-        //telemetryBroadcast("init", "started");
-        Log.i(initLogTag, "started");
-        Log.v(initLogTag, "android version: " + Build.VERSION.RELEASE);
+        this.telemetry = telemetry;
+        this.logger = new MasterLogger(telemetry, "Robot");
+        logger.info("started");
+        logger.verbose("android version: " + Build.VERSION.RELEASE);
 //        double batteryVoltage = getBatteryVoltage();
 //        if (batteryVoltage<11) {
 //            Log.w(initLogTag, "Battery Voltage Low");
 //            telemetry.addData("Warning", "<b>Battery Voltage Low!</b>");
 //        }
-        this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         this.timer = timer;
         this.allianceColor = allianceColor;
@@ -99,8 +100,47 @@ public class Robot {
     public void init() {
         motorInit();
         servoInit();
-        Log.i(initLogTag, "motor init finished");
+        odometryInit();
+        logger.info("motor init finished");
+        imuInit();
+        logger.info("imu init finished");
         subsystemInit();
+    }
+
+    private void odometryInit() {
+        if (odometryEnabled) {
+            leftEncoder = (DcMotorEx) hardwareMap.dcMotor.get("leftEncoder");
+            backEncoder = (DcMotorEx) hardwareMap.dcMotor.get("backEncoder");
+            rightEncoder = (DcMotorEx) hardwareMap.dcMotor.get("rightEncoder");
+        } else {
+            leftEncoder = null;
+            backEncoder = null;
+            rightEncoder = null;
+        }
+    }
+
+    private void imuInit() {
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile =
+                "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        telemetryBroadcast("Status", " IMU initializing...");
+        imu.initialize(parameters);
+        telemetryBroadcast("Status", " IMU calibrating...");
+        // make sure the imu gyro is calibrated before continuing.
+        while (!imu.isGyroCalibrated()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void motorInit() {
@@ -123,31 +163,35 @@ public class Robot {
     }
 
     public void subsystemInit() {
-        Log.d(initLogTag, "Drive subsystem init started");
-        drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, odometryEnabled, telemetry, timer);
-        Log.i(initLogTag, "Drive subsystem init finished");
+        logger.d("Drive subsystem init started");
+        if (odometryEnabled) {
+            drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
+        } else {
+            drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, null, imu, telemetry, timer);
+        }
+        logger.i("Drive subsystem init finished");
 
-        Log.d(initLogTag, "Control subsystem init started");
+        logger.d("Control subsystem init started");
         control = new Control(telemetry);
-        Log.i(initLogTag, "Control subsystem init finished");
+        logger.i("Control subsystem init finished");
 
         if (visionEnabled) {
-            Log.d("init", "Vision subsystem init started");
+            logger.d("Vision subsystem init started");
             vision = new Vision(telemetry, hardwareMap, allianceColor);
-            Log.i("init", "Vision subsystem init finished");
+            logger.i("Vision subsystem init finished");
         } else {
-            Log.w(initLogTag, "Vision subsystem init skipped");
+            logger.w("Vision subsystem init skipped");
         }
 
         if (webEnabled) {
             try {
-                Log.d("init", "Web subsystem init started");
+                logger.d("Web subsystem init started");
                 web = new WebThread();
                 web.start();
-                WebThread.addLog(new WebLog("init", "Started", WebLog.LogSeverity.INFO));
-                Log.i("init", "Web subsystem init finished");
+                WebThread.addLog(new WebLog("init", "web thread started", WebLog.LogSeverity.INFO));
+                logger.i("Web subsystem init finished");
             } catch (Exception e) {
-                Log.e(initLogTag, "Web Thread init failed " + e.getMessage());
+                logger.e("Web Thread init failed " + e.getMessage());
             }
         }
         telemetryBroadcast("Status", "all subsystems initialized");

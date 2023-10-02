@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
+import androidx.annotation.Nullable;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -53,13 +55,22 @@ public class Drive extends Subsystem {
     public final DcMotorEx frontRight;
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
+    // Odometry Encoders/Constants
     public final boolean odometryEnabled;
+    public DcMotorEx odL;
+    public DcMotorEx odB;
+    public DcMotorEx odR;
+    public final double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
+    public final double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+
     private final boolean debug = false;
-    private final ElapsedTime timer;
-    // State variables for robot position
-    private final double robotX;
-    private final double robotY;
-    private final double robotTheta;
+
+    private BNO055IMU imu;
+    Pose currentPosition = new Pose(0, 0, 0);
+    private int previousLeftOdometryTicks = 0;
+    private int previousBackOdometryTicks = 0;
+    private int previousRightOdometryTicks = 0;
+
 
     /**
      * Initializes the drive subsystem
@@ -71,23 +82,27 @@ public class Drive extends Subsystem {
      * @param telemetry   The telemetry
      * @param elapsedTime The timer for the elapsed time
      */
-    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight, boolean odometryEnabled, Telemetry telemetry, ElapsedTime elapsedTime) {
+    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight, @Nullable DcMotorEx[] odometry, BNO055IMU imu, Telemetry telemetry, ElapsedTime elapsedTime) {
         super(telemetry, "drive");
-        this.timer = elapsedTime;
-        this.odometryEnabled = odometryEnabled;
+        this.odometryEnabled = odometry != null;
+        if (odometryEnabled) {
+            this.odL = odometry[0];
+            this.odB = odometry[1];
+            this.odR = odometry[2];
+        } else {
+            this.odL = null;
+            this.odB = null;
+            this.odR = null;
+        }
         // Set motors
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.rearLeft = rearLeft;
         this.rearRight = rearRight;
+        this.imu = imu;
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Initialize robot position
-        this.robotX = 0;
-        this.robotY = 0;
-        this.robotTheta = 0;
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
@@ -168,7 +183,7 @@ public class Drive extends Subsystem {
     }
 
     public void holonomicMotorControl(int xTarget, int yTarget, int thetaTarget) {
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// TODO: Stall detection
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
         PID xControl = new PID(motorKp, motorKi, motorKd);
@@ -176,9 +191,9 @@ public class Drive extends Subsystem {
         PID thetaControl = new PID(motorKp, motorKi, motorKd);
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
-        Pose currentPosition = new Pose(0, 0, 0);
+        currentPosition = new Pose(0, 0, 0);
         while (!(reached(xTarget, currentPosition.x) && reached(yTarget, currentPosition.y) && reached(thetaTarget, currentPosition.heading)) && (!timeoutManager.isExceeded())) {
-            currentPosition = getCurrentPose();
+            updateCurrentPose(); // TODO: For merlin, you can just update the target pose after this line.
             double xPower = xControl.calculate(xTarget, currentPosition.x);
             double yPower = yControl.calculate(yTarget, currentPosition.y);
             double thetaPower = thetaControl.calculate(thetaTarget, currentPosition.heading);
@@ -191,12 +206,39 @@ public class Drive extends Subsystem {
         }
     }
 
-    private Pose getCurrentPose() {
-        int flTicks = frontLeft.getCurrentPosition();
-        int frTicks = frontRight.getCurrentPosition();
-        int rlTicks = rearLeft.getCurrentPosition();
-        int rrTicks = rearRight.getCurrentPosition();
-        throw new RuntimeException("Not yet implemented"); // TODO: main thing to implement
+    private void updateCurrentPose() {
+        if (odometryEnabled) {
+            // https://gm0.org/en/latest/docs/software/concepts/odometry.html
+            int odlTicks = odL.getCurrentPosition();
+            int odbTicks = odB.getCurrentPosition();
+            int odrTicks = odR.getCurrentPosition();
+
+            int deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
+            int deltaOdbTicks = odbTicks - previousBackOdometryTicks;
+            int deltaOdrTicks = odrTicks - previousRightOdometryTicks;
+
+            double deltaTheta = (deltaOdlTicks - deltaOdrTicks) / (ODOMETRY_TRACKWIDTH);
+            double deltaXC = (double) (deltaOdlTicks + deltaOdrTicks) / 2;
+            double deltaPerpendicular = deltaOdbTicks - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+
+            double deltaX = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
+            double deltaY = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+
+            currentPosition.heading += (int) deltaTheta;
+            currentPosition.x += (int) deltaX;
+            currentPosition.y += (int) deltaY;
+
+            previousLeftOdometryTicks = odlTicks;
+            previousBackOdometryTicks = odbTicks;
+            previousRightOdometryTicks = odrTicks;
+
+        } else {
+            int flTicks = frontLeft.getCurrentPosition();
+            int frTicks = frontRight.getCurrentPosition();
+            int rlTicks = rearLeft.getCurrentPosition();
+            int rrTicks = rearRight.getCurrentPosition();
+            throw new RuntimeException("Not yet implemented"); // TODO: Dead reckoning
+        }
     }
 
     public static class TimeoutManager {

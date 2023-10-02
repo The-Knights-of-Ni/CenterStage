@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import android.util.Log;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
@@ -28,7 +29,8 @@ class DriveTest {
         MockDcMotorEx mockRR = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
         ElapsedTime timer = new ElapsedTime();
         MockTelemetry telemetry = new MockTelemetry();
-        return new Drive(mockFL, mockFR, mockRL, mockRR, false, telemetry, timer);
+        BNO055IMU mockIMU = Mockito.mock(BNO055IMU.class);
+        return new Drive(mockFL, mockFR, mockRL, mockRR, null, mockIMU, telemetry, timer);
     }
 
     @Test
