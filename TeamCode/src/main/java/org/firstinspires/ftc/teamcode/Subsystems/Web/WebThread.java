@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
 import com.google.gson.Gson;
+import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
@@ -33,7 +34,7 @@ public class WebThread extends Thread {
     }
 
     public WebThread(int port) throws IOException {
-        gson = new Gson();
+        gson = SimpleGson.getInstance();
         this.port = port;
         this.webCanvas = new WebCanvas(500, 500);
         serverSocket = new ServerSocket(port);
