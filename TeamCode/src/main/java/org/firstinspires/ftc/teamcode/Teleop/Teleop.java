@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 @TeleOp(name = "TeleOp")
@@ -27,6 +28,7 @@ public class Teleop extends LinearOpMode {
         // Initialize DC motor objects
         timer = new ElapsedTime();
         HashMap<String, Boolean> flags = new HashMap<>();
+        flags.put("web", true);
         flags.put("vision", false);
         this.robot = new Robot(hardwareMap, telemetry, timer, AllianceColor.BLUE, gamepad1, gamepad2, flags);
         timeCurrent = timer.nanoseconds();

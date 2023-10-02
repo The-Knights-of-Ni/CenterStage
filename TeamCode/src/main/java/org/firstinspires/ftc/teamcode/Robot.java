@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import java.util.HashMap;
 
 public class Robot {
-    public static final String name = "CenterStage 2023";
+    public static final String name = "Hueil mab Caw";
     public static final double length = 18.0;
     public static final double width = 18.0;
     public static GamepadWrapper gamepad1;
