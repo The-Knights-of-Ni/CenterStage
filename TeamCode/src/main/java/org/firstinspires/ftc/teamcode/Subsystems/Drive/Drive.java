@@ -177,12 +177,7 @@ public class Drive extends Subsystem {
         return new double[]{lfPower, rfPower, lrPower, rrPower};
     }
 
-
-    private boolean reached(int one, int two) {
-        return Math.abs(one - two) < 50; // TODO: Convert to constant
-    }
-
-    public void holonomicMotorControl(int xTarget, int yTarget, int thetaTarget) {
+    public void holonomicMotorControl(Targeter targeter) {
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// TODO: Stall detection
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
@@ -192,17 +187,18 @@ public class Drive extends Subsystem {
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         currentPosition = new Pose(0, 0, 0);
-        while (!(reached(xTarget, currentPosition.x) && reached(yTarget, currentPosition.y) && reached(thetaTarget, currentPosition.heading)) && (!timeoutManager.isExceeded())) {
-            updateCurrentPose(); // TODO: For merlin, you can just update the target pose after this line.
-            double xPower = xControl.calculate(xTarget, currentPosition.x);
-            double yPower = yControl.calculate(yTarget, currentPosition.y);
-            double thetaPower = thetaControl.calculate(thetaTarget, currentPosition.heading);
-            double x_rotated = xPower * Math.cos(thetaTarget) - yPower * Math.sin(thetaTarget);
-            double y_rotated = xPower * Math.sin(thetaTarget) + yPower * Math.cos(thetaTarget);
-            frontLeft.setPower(x_rotated + y_rotated + thetaPower);
-            frontRight.setPower(x_rotated - y_rotated - thetaPower);
-            rearLeft.setPower(x_rotated - y_rotated + thetaPower);
-            rearRight.setPower(x_rotated + y_rotated - thetaPower);
+        while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
+            updateCurrentPose();
+            Pose target = targeter.getTarget(currentPosition);
+            double xPower = xControl.calculate(target.x, currentPosition.x);
+            double yPower = yControl.calculate(target.y, currentPosition.y);
+            double thetaPower = thetaControl.calculate(target.heading, currentPosition.heading);
+            double xRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading);
+            double yRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
+            frontLeft.setPower(xRotated + yRotated + thetaPower);
+            frontRight.setPower(xRotated - yRotated - thetaPower);
+            rearLeft.setPower(xRotated - yRotated + thetaPower);
+            rearRight.setPower(xRotated + yRotated - thetaPower);
         }
     }
 

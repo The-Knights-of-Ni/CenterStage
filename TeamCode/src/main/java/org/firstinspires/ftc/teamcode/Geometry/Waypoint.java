@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.Geometry;
 
-import org.firstinspires.ftc.teamcode.Util.Vector;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 
 public class Waypoint {
-    public Vector coordinate;
-    public double angle;
+    public Pose pose;
     public double velocity;
 
-    public Waypoint(Vector pos, double theta, double v) {
-        coordinate = pos;
-        angle = theta;
+    public Waypoint(Pose pose, double v) {
+        this.pose = pose;
         velocity = v;
     }
 }
