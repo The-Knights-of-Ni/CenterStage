@@ -163,35 +163,35 @@ public class Robot {
     }
 
     public void subsystemInit() {
-        logger.d("Drive subsystem init started");
+        logger.debug("Drive subsystem init started");
         if (odometryEnabled) {
             drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
             drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, null, imu, telemetry, timer);
         }
-        logger.i("Drive subsystem init finished");
+        logger.info("Drive subsystem init finished");
 
-        logger.d("Control subsystem init started");
+        logger.debug("Control subsystem init started");
         control = new Control(telemetry);
-        logger.i("Control subsystem init finished");
+        logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
-            logger.d("Vision subsystem init started");
+            logger.debug("Vision subsystem init started");
             vision = new Vision(telemetry, hardwareMap, allianceColor);
-            logger.i("Vision subsystem init finished");
+            logger.info("Vision subsystem init finished");
         } else {
-            logger.w("Vision subsystem init skipped");
+            logger.warning("Vision subsystem init skipped");
         }
 
         if (webEnabled) {
             try {
-                logger.d("Web subsystem init started");
+                logger.debug("Web subsystem init started");
                 web = new WebThread();
                 web.start();
                 WebThread.addLog(new WebLog("init", "web thread started", WebLog.LogSeverity.INFO));
-                logger.i("Web subsystem init finished");
+                logger.info("Web subsystem init finished");
             } catch (Exception e) {
-                logger.e("Web Thread init failed " + e.getMessage());
+                logger.error("Web Thread init failed " + e.getMessage());
             }
         }
         telemetryBroadcast("Status", "all subsystems initialized");

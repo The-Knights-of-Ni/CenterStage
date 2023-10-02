@@ -41,26 +41,4 @@ public class MasterLogger {
         Log.v(tag, message);
         WebLog.verbose(tag, message);
     }
-
-    public void e(String message) {
-        error(message);
-    }
-
-    public void w(String message) {
-        warning(message);
-    }
-
-    public void i(String message) {
-        info(message);
-    }
-
-    public void d(String message) {
-        debug(message);
-    }
-
-    public void v(String message) {
-        verbose(message);
-    }
-
-
 }
