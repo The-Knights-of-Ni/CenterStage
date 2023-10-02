@@ -18,7 +18,7 @@ public class PurePursuit implements Targeter {
     public Pose getTarget(Pose currentPosition) {
         Circle circle = new Circle(currentPosition.getCoordinate(), lookaheadDistance);
         Vector target = path.end().pose.getCoordinate();
-        Waypoint targetWaypoint = path.end(); // TODO: Fix
+        Waypoint targetWaypoint = path.end();
         for (Line lineSegment : path.lines) {
             List<Vector> intersections = circle.segmentIntersections(lineSegment);
             double bestIntersectionDistance = Double.MAX_VALUE;
