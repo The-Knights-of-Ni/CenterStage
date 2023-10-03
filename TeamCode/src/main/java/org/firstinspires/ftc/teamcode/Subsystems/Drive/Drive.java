@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
@@ -274,7 +275,7 @@ public class Drive extends Subsystem {
      *
      * @param tickCount How far each motor should go
      */
-    public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
+    public void legacyAllMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
         logger.info("Moving " + Arrays.toString(tickCount));
         WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
@@ -318,15 +319,28 @@ public class Drive extends Subsystem {
         WebThread.removeAction("drive");
     }
 
-    public void moveVector(Vector v) {
-        moveVector(v, 0);
+    /**
+     * @deprecated Use {@link #move(Pose)} or {@link #moveVector(Vector)} instead
+     * @param v The vector to move
+     */
+    public void moveVectorLegacy(Vector v) {
+        moveVectorLegacy(v, 0);
     }
 
-    public void moveAngle(double turnAngle) {
-        moveVector(new Vector(0, 0), turnAngle);
+    /**
+     * @deprecated Use {@link #moveAngle(int)} instead
+     * @param turnAngle The angle to turn
+     */
+    public void moveAngleLegacy(double turnAngle) {
+        moveVectorLegacy(new Vector(0, 0), turnAngle);
     }
 
-    public void moveVector(Vector v, double turnAngle) {
+    /**
+     * @deprecated Use {@link #move(Pose)} or {@link #moveVector(Vector)} instead
+     * @param v The vector to move
+     * @param turnAngle The angle to turn
+     */
+    public void moveVectorLegacy(Vector v, double turnAngle) {
         WebThread.position = new Vector(WebThread.position.add(v).toArray()); // TODO: Fix because angle isn't constant
         WebThread.theta += turnAngle;
         Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
@@ -345,7 +359,7 @@ public class Drive extends Subsystem {
         tickCount[3] = (int) ((distance * Math.cos(angle)));
         tickCount[3] += (int) (turnAngle * COUNTS_PER_DEGREE);
         MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
-        allMotorControl(tickCount, pids);
+        legacyAllMotorControl(tickCount, pids);
         stop();
     }
 
@@ -406,5 +420,21 @@ public class Drive extends Subsystem {
                 halt();
             }
         }
+    }
+
+    public void move(Pose p) {
+        holonomicMotorControl(new StaticTargeter(p));
+    }
+
+    public void moveVector(Vector vector) {
+        holonomicMotorControl(new StaticTargeter(new Pose(vector, 0)));
+    }
+
+    public void moveAngle(int angle) {
+        holonomicMotorControl(new StaticTargeter(new Pose(new Vector(0, 0), angle)));
+    }
+
+    public void followPath(Path path) {
+        holonomicMotorControl(new PurePursuit(path, 100)); // TODO: Make constant
     }
 }

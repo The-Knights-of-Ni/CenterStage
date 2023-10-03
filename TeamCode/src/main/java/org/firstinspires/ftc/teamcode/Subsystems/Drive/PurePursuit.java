@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode.Geometry;
+package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter;
+import org.firstinspires.ftc.teamcode.Geometry.Circle;
+import org.firstinspires.ftc.teamcode.Geometry.Line;
+import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
@@ -17,8 +19,8 @@ public class PurePursuit implements Targeter {
 
     public Pose getTarget(Pose currentPosition) {
         Circle circle = new Circle(currentPosition.getCoordinate(), lookaheadDistance);
-        Vector target = path.end().pose.getCoordinate();
-        Waypoint targetWaypoint = path.end();
+        Vector target = path.end().getCoordinate();
+        Pose targetWaypoint = path.end();
         for (Line lineSegment : path.lines) {
             List<Vector> intersections = circle.segmentIntersections(lineSegment);
             double bestIntersectionDistance = Double.MAX_VALUE;
@@ -33,11 +35,11 @@ public class PurePursuit implements Targeter {
                 target = bestIntersection;
             }
         }
-        return new Pose(target, targetWaypoint.pose.heading);
+        return new Pose(target, targetWaypoint.heading);
     }
 
     @Override
     public boolean reachedTarget(Pose currentPosition) {
-        return path.end().pose.fuzzyCompare(currentPosition);
+        return path.end().fuzzyCompare(currentPosition);
     }
 }

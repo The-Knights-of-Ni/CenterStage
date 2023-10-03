@@ -1,27 +1,27 @@
 package org.firstinspires.ftc.teamcode.Geometry;
 
-import org.firstinspires.ftc.teamcode.Util.Vector;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 
 import java.util.ArrayList;
 
 public class Path {
-    public ArrayList<Waypoint> waypoints;
+    public ArrayList<Pose> waypoints;
     public ArrayList<Line> lines;
 
 
-    public Path(ArrayList<Waypoint> stops) {
+    public Path(ArrayList<Pose> stops) {
         waypoints = stops;
-        Waypoint previousWaypoint = null;
-        for (Waypoint waypoint: waypoints) {
+        Pose previousWaypoint = null;
+        for (Pose waypoint : waypoints) {
             if (previousWaypoint != null) {
-                lines.add(new Line(previousWaypoint.pose.getCoordinate(), waypoint.pose.getCoordinate()));
+                lines.add(new Line(waypoint.getCoordinate(), waypoint.getCoordinate()));
             }
             previousWaypoint = waypoint;
         }
 
     }
 
-    public Waypoint end() {
+    public Pose end() {
         return waypoints.get(waypoints.size() - 1);
     }
 }
