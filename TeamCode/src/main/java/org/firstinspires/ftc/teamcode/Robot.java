@@ -4,12 +4,12 @@ import android.os.Build;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
@@ -17,13 +17,12 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Robot {
     public static final String name = "Hueil mab Caw";
     public static final double length = 18.0;
     public static final double width = 18.0;
-    private MasterLogger logger;
+    private final MasterLogger logger;
     public static GamepadWrapper gamepad1;
     public static GamepadWrapper gamepad2;
     public final String initLogTag = "init";
@@ -65,12 +64,12 @@ public class Robot {
         this.logger = new MasterLogger(telemetry, "Robot");
         logger.info("started");
         logger.verbose("android version: " + Build.VERSION.RELEASE);
-//        double batteryVoltage = getBatteryVoltage();
-//        if (batteryVoltage<11) {
-//            Log.w(initLogTag, "Battery Voltage Low");
-//            telemetry.addData("Warning", "<b>Battery Voltage Low!</b>");
-//        }
         this.hardwareMap = hardwareMap;
+        double batteryVoltage = getBatteryVoltage();
+        if (batteryVoltage < 11) {
+            Log.w(initLogTag, "Battery Voltage Low");
+            telemetry.addData("Warning", "<b>Battery Voltage Low!</b>");
+        }
         this.timer = timer;
         this.allianceColor = allianceColor;
         this.visionEnabled = flags.getOrDefault("vision", true);
@@ -88,10 +87,12 @@ public class Robot {
 
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
-            double voltage = sensor.getVoltage();
-            if (voltage > 0) {
-                result = Math.min(result, voltage);
+        if (hardwareMap.voltageSensor != null) {
+            for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+                double voltage = sensor.getVoltage();
+                if (voltage > 0) {
+                    result = Math.min(result, voltage);
+                }
             }
         }
         return result;
@@ -165,9 +166,9 @@ public class Robot {
     public void subsystemInit() {
         logger.debug("Drive subsystem init started");
         if (odometryEnabled) {
-            drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
+            drive = new Drive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
-            drive = new Drive(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor, null, imu, telemetry, timer);
+            drive = new Drive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), null, imu, telemetry, timer);
         }
         logger.info("Drive subsystem init finished");
 
@@ -191,7 +192,7 @@ public class Robot {
                 WebThread.addLog(new WebLog("init", "web thread started", WebLog.LogSeverity.INFO));
                 logger.info("Web subsystem init finished");
             } catch (Exception e) {
-                logger.error("Web Thread init failed " + e.getMessage());
+                logger.error("Web Thread init failed " + e.getMessage(), e);
             }
         }
         telemetryBroadcast("Status", "all subsystems initialized");

@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import java.util.List;
+import java.util.Comparator;
 
 public class PurePursuit implements Targeter {
     Path path;
@@ -22,18 +22,10 @@ public class PurePursuit implements Targeter {
         Vector target = path.end().getCoordinate();
         Pose targetWaypoint = path.end();
         for (Line lineSegment : path.lines) {
-            List<Vector> intersections = circle.segmentIntersections(lineSegment);
-            double bestIntersectionDistance = Double.MAX_VALUE;
-            Vector bestIntersection = null;
-            for (Vector intersection : intersections) {
-                if (intersection.distance(lineSegment.end) < bestIntersectionDistance) {
-                    bestIntersection = intersection;
-                    bestIntersectionDistance = intersection.distance(lineSegment.end);
-                }
-            }
-            if (bestIntersection != null) {
-                target = bestIntersection;
-            }
+            target = circle.segmentIntersections(lineSegment) // Gets the intersections
+                    .stream() // Converts to stream (for comparing)
+                    .max(Comparator.comparingDouble(v -> v.distance(lineSegment.end))) // Finds the one closest to the end of the line.
+                    .orElse(target); // If there isn't one, keep target asis.
         }
         return new Pose(target, targetWaypoint.heading);
     }

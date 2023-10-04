@@ -6,6 +6,7 @@ public class WebAction { // TODO: Make autocloseable or something
     public String name;
     public Status status;
     public String startTimestamp;
+
     public WebAction(String name, String status) {
         this.name = name;
         this.statusString = status;

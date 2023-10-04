@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import androidx.core.math.MathUtils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class PID implements MoveSystem {
+public class PID {
     protected boolean hasRun = false;
     protected ElapsedTime timer = new ElapsedTime();
     protected double previousError = 0;
@@ -17,6 +17,10 @@ public class PID implements MoveSystem {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
+    }
+
+    public PID(PIDCoefficients coefficients) {
+        this(coefficients.kP, coefficients.kI, coefficients.kD);
     }
 
     /**
@@ -63,5 +67,14 @@ public class PID implements MoveSystem {
     protected double calculateDerivative(double error, double dt) {
         derivative = (error - previousError) / dt;
         return derivative;
+    }
+
+    @Override
+    public String toString() {
+        return "PID{" +
+                "Kp=" + Kp +
+                ", Ki=" + Ki +
+                ", Kd=" + Kd +
+                '}';
     }
 }

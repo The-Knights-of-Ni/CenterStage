@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.Subsystems.Web.Server;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Request {
+    private static final Pattern HEADER_PATTERN = Pattern.compile(": ?");
     public String method;
     public String url;
     public String version;
@@ -23,7 +25,7 @@ public class Request {
         StringBuilder body = new StringBuilder();
         for (String header : lines) {
             if (parsingHeaders) {
-                String[] split = header.split(": ?");
+                String[] split = HEADER_PATTERN.split(header);
                 if (split.length > 1 && !split[0].isEmpty() && !split[1].isEmpty()) {
                     h.put(split[0], split[1]); // TODO: Handle duplicate headers
                     // TODO: Handle headers with multiple semicolons

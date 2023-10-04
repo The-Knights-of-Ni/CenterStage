@@ -5,6 +5,7 @@ public class WebLog {
     public String message;
     public LogSeverity severity;
     public String timestamp;
+
     public WebLog(String tag, String message, LogSeverity severity) {
         this.TAG = tag;
         this.message = message;

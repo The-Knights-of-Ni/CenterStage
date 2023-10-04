@@ -52,6 +52,7 @@ public class RunTest {
                 Thread.sleep(1000);
                 WebThread.setPercentage("test", i);
             }
+            WebThread.removeAction("test");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

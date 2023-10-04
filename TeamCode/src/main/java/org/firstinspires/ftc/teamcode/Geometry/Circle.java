@@ -32,11 +32,13 @@ public class Circle {
             return intersections;
         }
 
-        double x1 = (D * dy + (dy >= 0 ? 1 : -1) * dx * Math.sqrt(discriminant)) / (d * d);
-        double x2 = (D * dy - (dy >= 0 ? 1 : -1) * dx * Math.sqrt(discriminant)) / (d * d);
+        double signed = (dy >= 0 ? 1 : -1) * dx * Math.sqrt(discriminant);
+        double x1 = (D * dy + signed) / (d * d);
+        double x2 = (D * dy - signed) / (d * d);
 
-        double y1 = (-D * dx + Math.abs(dy) * Math.sqrt(discriminant)) / (d * d);
-        double y2 = (-D * dx - Math.abs(dy) * Math.sqrt(discriminant)) / (d * d);
+        double calced = Math.abs(dy) * Math.sqrt(discriminant);
+        double y1 = (-D * dx + calced) / (d * d);
+        double y2 = (-D * dx - calced) / (d * d);
 
         boolean valid_intersection_1 = Math.min(p1.getX(), p2.getX()) < x1 && x1 < Math.max(p1.getX(), p2.getX()) || Math.min(p1.getY(), p2.getY()) < y1 && y1 < Math.max(p1.getY(), p2.getY());
         boolean valid_intersection_2 = Math.min(p1.getX(), p2.getX()) < x2 && x2 < Math.max(p1.getX(), p2.getX()) || Math.min(p1.getY(), p2.getY()) < y2 && y2 < Math.max(p1.getY(), p2.getY());

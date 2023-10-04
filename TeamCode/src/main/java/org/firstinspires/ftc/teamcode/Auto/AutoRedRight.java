@@ -2,9 +2,13 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
+import java.util.concurrent.TimeUnit;
+
 public class AutoRedRight extends Auto {
+    @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.RED);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
@@ -14,26 +18,25 @@ public class AutoRedRight extends Auto {
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                robot.drive.moveVector(new Vector(0, 30 * mmPerInch), -90);
+                robot.drive.move(new Pose(0, 30 * mmPerInch, -90));
                 controlThread.reachedPosition = true;
                 robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
                 break;
             case MIDDLE:
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
                 controlThread.reachedPosition = true;
-                robot.drive.moveVector(new Vector(-42, 0), -90);
+                robot.drive.move(new Pose(-42, 0, -90));
                 break;
             case RIGHT:
-                robot.drive.moveVector(new Vector(12 * mmPerInch, 0), 90);
+                robot.drive.move(new Pose(12 * mmPerInch, 0, 90));
                 controlThread.reachedPosition = true;
-                robot.drive.moveVector(new Vector(0, -60 * mmPerInch), -180);
+                robot.drive.move(new Pose(0, -60 * mmPerInch, -180));
                 break;
         }
 
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
-        while (!controlThread.retracted) {
-        }
+        controlThread.extended.tryLock(100, TimeUnit.SECONDS);
         robot.drive.moveVector(new Vector(24, 0));
     }
 }

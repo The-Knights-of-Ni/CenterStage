@@ -20,6 +20,13 @@ public class MasterLogger {
         WebLog.error(tag, message);
     }
 
+    public void error(String message, Throwable tr) {
+        telemetry.addData(tag, message);
+        telemetry.update();
+        Log.e(tag, message, tr);
+        WebLog.error(tag, message);
+    }
+
     public void warning(String message) {
         telemetry.addData(tag, message);
         telemetry.update();
