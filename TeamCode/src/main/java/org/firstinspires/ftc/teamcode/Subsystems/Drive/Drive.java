@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -172,6 +172,8 @@ public class Drive extends Subsystem {
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // TODO: Check if acquisition time is correct
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
@@ -224,18 +226,17 @@ public class Drive extends Subsystem {
             currentPosition.heading += deltaTheta;
             currentPosition.x += deltaX;
             currentPosition.y += deltaY;
-            currentPosition.velocity = new Vector(deltaX, deltaY); // TODO: no constant time ... maybe use motor velocities?
+            currentPosition.velocity = new Vector(imu.getVelocity().xVeloc, imu.getVelocity().yVeloc);
 
             previousLeftOdometryTicks = odlTicks;
             previousBackOdometryTicks = odbTicks;
             previousRightOdometryTicks = odrTicks;
         } else {
-            int flTicks = this.motors.frontLeft.getCurrentPosition();
-            int frTicks = this.motors.frontRight.getCurrentPosition();
-            int rlTicks = this.motors.rearLeft.getCurrentPosition();
-            int rrTicks = this.motors.rearRight.getCurrentPosition();
-            Acceleration acceleration = imu.getAcceleration();
-            throw new RuntimeException("Not yet implemented"); // TODO: Dead reckoning
+            Position position = imu.getPosition().toUnit(DistanceUnit.MM); // TODO: Ensure accuracy
+            currentPosition.x = position.x;
+            currentPosition.y = position.y;
+            // TODO: Make sure correct angle is being used
+            currentPosition.heading = imu.getAngularOrientation().toAngleUnit(AngleUnit.DEGREES).firstAngle;
         }
     }
 
