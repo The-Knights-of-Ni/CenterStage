@@ -20,7 +20,7 @@ public class Circle implements CanvasObject {
     @Override
     public List<Pixel> getPixels() {
         List<Pixel> pixels = new ArrayList<>(1);
-
+        pixels.add(new Pixel(center, color));
         return pixels;
     }
 }

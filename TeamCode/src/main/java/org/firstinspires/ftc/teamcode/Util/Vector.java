@@ -22,7 +22,7 @@ public class Vector extends Vector2D {
      * Build a vector from its coordinates
      *
      * @param v coordinates array
-     * @throws DimensionMismatchException if array does not have 2 elements
+     * @throws DimensionMismatchException if the array does not have two elements
      * @see #toArray()
      */
     public Vector(double[] v) throws DimensionMismatchException {

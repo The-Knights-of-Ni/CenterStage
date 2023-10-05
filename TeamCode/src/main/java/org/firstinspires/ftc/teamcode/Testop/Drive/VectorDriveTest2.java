@@ -16,6 +16,7 @@ public class VectorDriveTest2 extends Auto {
      * @see com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
      */
     @Override
+    @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.RED);
         waitForStart();

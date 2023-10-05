@@ -16,6 +16,7 @@ public class BackwardDriveTest extends Auto {
      * @see com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
      */
     @Override
+    @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.BLUE);
         waitForStart();

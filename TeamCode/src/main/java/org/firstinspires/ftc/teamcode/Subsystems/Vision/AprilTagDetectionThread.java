@@ -73,9 +73,9 @@ public class AprilTagDetectionThread extends Thread {
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
         //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
+        // Choose whether LiveView stops if no processors are enabled.
+        // If set "true", the monitor shows a solid orange screen if no processors enabled.
+        // If set "false", the monitor shows camera view without annotations.
         //builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.

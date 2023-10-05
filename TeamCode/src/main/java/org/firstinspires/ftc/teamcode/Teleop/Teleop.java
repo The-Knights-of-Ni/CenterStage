@@ -9,11 +9,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.CraneState;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.PlaneLaunchRange;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 @TeleOp(name = "TeleOp")
@@ -24,7 +23,7 @@ public class Teleop extends LinearOpMode {
     ElapsedTime timer;
     private Robot robot;
 
-    private void initOpMode() throws IOException {
+    private void initOpMode() {
         // Initialize DC motor objects
         timer = new ElapsedTime();
         HashMap<String, Boolean> flags = new HashMap<>();
@@ -48,11 +47,7 @@ public class Teleop extends LinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        try {
-            initOpMode();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initOpMode();
 
         ElapsedTime timer = new ElapsedTime();
         robot.control.initDevicesTeleop();
@@ -73,7 +68,7 @@ public class Teleop extends LinearOpMode {
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
             if (twoGamepads) {
-                double[] motorPowers;
+                MotorGeneric<Double> motorPowers;
                 if (Robot.gamepad1.yButton.toggle) {
                     motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, Robot.gamepad1.leftStickY * sensitivityHighPower, Robot.gamepad1.rightStickX * sensitivityHighPower);
                 } else {
@@ -147,7 +142,7 @@ public class Teleop extends LinearOpMode {
 
             } else {
                 // Must use gamepad 1 for one gamepad TODO: Find elegant fix
-                double[] motorPowers;
+                MotorGeneric<Double> motorPowers;
                 double triggerHit = GamepadWrapper.joystickDeadzoneCorrection(Math.max(Robot.gamepad1.triggerLeft, Robot.gamepad1.triggerRight));
                 if (Robot.gamepad1.yButton.toggle) {
                     motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, Robot.gamepad1.leftStickY * sensitivityHighPower, triggerHit * sensitivityHighPower);

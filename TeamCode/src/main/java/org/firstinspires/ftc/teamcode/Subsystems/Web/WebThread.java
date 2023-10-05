@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
+import android.util.Log;
 import com.google.gson.Gson;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -21,13 +22,12 @@ public class WebThread extends Thread {
 
     private static final ArrayList<WebLog> logs = new ArrayList<>();
     private static final ArrayList<WebAction> actions = new ArrayList<>();
-    public static Vector position = new Vector(0, 0);
-    public static double theta = 0;
     private static final HashMap<String, String> defaultHeaders = new HashMap<>();
     int port;
     ServerSocket serverSocket;
     WebCanvas webCanvas;
     private final Gson gson;
+    public static volatile boolean terminate = false;
 
     public WebThread() throws IOException {
         this(7070);
@@ -47,14 +47,7 @@ public class WebThread extends Thread {
     }
 
     public static void setPercentage(String task, int percentage) {
-        for (WebAction action : actions) {
-            if (Objects.equals(action.name, task)) {
-                if (percentage == 100) {
-                    action.status = WebAction.Status.SUCCESS;
-                }
-                action.progress = percentage;
-            }
-        }
+        actions.stream().filter(action -> Objects.equals(action.name, task)).findFirst().ifPresent(action -> action.progress = percentage);
     }
 
     public static void setPercentage(String task, int progress, int total) {
@@ -102,7 +95,7 @@ public class WebThread extends Thread {
     private Response handleRequest(Request req) throws WebError {
         if (Objects.equals(req.url, "/")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new View.MainResponse(logs, actions, position, theta));
+                return returnObject(new View.MainResponse(logs, actions, Drive.currentPosition));
             } else {
                 invalidMethod(req.method);
             }
@@ -120,7 +113,7 @@ public class WebThread extends Thread {
             }
         } else if (Objects.equals(req.url, "/position")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new View.RobotPos(position.getX(), position.getY(), theta));
+                return returnObject(Drive.currentPosition);
             } else {
                 invalidMethod(req.method);
             }
@@ -141,7 +134,7 @@ public class WebThread extends Thread {
                     bw.write(244);
                     bw.write(322);
                 } catch (IOException e) {
-
+                    Log.e("WebThread", "Error writing to stream: " + e.getMessage(), e);
                 }
                 return new Response(200, "OK", headers, stream);
             } else {
@@ -160,7 +153,7 @@ public class WebThread extends Thread {
      */
     @Override
     public void run() {
-        while (true) {
+        while (!terminate) {
             try {
                 Socket socket = serverSocket.accept();
                 InputStreamReader reader = new InputStreamReader(socket.getInputStream());

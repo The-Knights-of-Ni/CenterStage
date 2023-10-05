@@ -1,36 +1,27 @@
 package org.firstinspires.ftc.teamcode.Geometry;
 
-import org.firstinspires.ftc.teamcode.Util.Vector;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 
 import java.util.ArrayList;
 
 public class Path {
-    ArrayList<Waypoint> waypoints;
-    ArrayList<Waypoint> poses;
-    int currentWaypoint;
-    int targetWaypoint;
+    public ArrayList<Pose> waypoints;
+    public ArrayList<Line> lines;
 
 
-    public Path(ArrayList<Waypoint> stops) {
+    public Path(ArrayList<Pose> stops) {
         waypoints = stops;
-        currentWaypoint = 0;
-        targetWaypoint = 1;
+        Pose previousWaypoint = null;
+        for (Pose waypoint : waypoints) {
+            if (previousWaypoint != null) {
+                lines.add(new Line(waypoint.getCoordinate(), waypoint.getCoordinate()));
+            }
+            previousWaypoint = waypoint;
+        }
+
     }
 
-    public void next() {
-        currentWaypoint++;
-        targetWaypoint++;
-    }
-
-    public Vector goToNextWaypoint() {
-        return new Vector(
-                Math.abs(waypoints.get(currentWaypoint).coordinate.getX() - waypoints.get(targetWaypoint).coordinate.getX()),
-                Math.abs(waypoints.get(currentWaypoint).coordinate.getY() - waypoints.get(targetWaypoint).coordinate.getY())
-        );
-    }
-
-    public Vector getVectorForPosition(Vector coordinate) {
-        return new Vector(Math.abs(coordinate.getX() - waypoints.get(targetWaypoint).coordinate.getX()),
-                Math.abs(coordinate.getY() - waypoints.get(targetWaypoint).coordinate.getY()));
+    public Pose end() {
+        return waypoints.get(waypoints.size() - 1);
     }
 }

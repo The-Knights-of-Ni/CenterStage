@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
+import androidx.annotation.Nullable;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
-import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
-
-import java.util.Arrays;
 
 /**
  * Mecanum drivetrain subsystem
@@ -18,6 +18,7 @@ import java.util.Arrays;
 public class Drive extends Subsystem {
     // mm per inch
     public static final double mmPerInch = 25.4;
+    public static final double PURE_PURSUIT_LOOKAHEAD_DISTANCE = 100;
 
     // DO WITH ENCODERS
     private static final double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
@@ -27,7 +28,7 @@ public class Drive extends Subsystem {
     // NEW Chassis
     private static final double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
     private static final double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
-    private static final double COUNTS_PER_MM =
+    public static final double COUNTS_PER_MM =
             (MOTOR_TICK_PER_REV_YELLOW_JACKET_312 * DRIVE_GEAR_REDUCTION)
                     / (GOBUILDA_MECANUM_DIAMETER_MM * Math.PI);
     private static final double WHEEL_DIAMETER_MM = 100.0;
@@ -41,52 +42,58 @@ public class Drive extends Subsystem {
 
     // Default drive speeds
     private static final double DRIVE_SPEED = 0.60;
-
-    // PID Constants
-    private static final double motorKp = 0.0025;
-    private static final double motorKi = 0.000175;
-    private static final double motorKd = 0.0003;
-
+    // Motor PID coefficients
+    private static final PIDCoefficients motorPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003);
+    // Move PID coefficients
+    private static final PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    private static final PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
     // Drive-train motors
-    public final DcMotorEx frontLeft;
-    public final DcMotorEx frontRight;
-    public final DcMotorEx rearLeft;
-    public final DcMotorEx rearRight;
+    public final MotorGeneric<DcMotorEx> motors;
+    // Odometry Encoders/Constants
     public final boolean odometryEnabled;
+    public DcMotorEx odL;
+    public DcMotorEx odB;
+    public DcMotorEx odR;
+    public final double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
+    public final double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+
+    public final double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
+
+
     private final boolean debug = false;
-    private final ElapsedTime timer;
-    // State variables for robot position
-    private final double robotX;
-    private final double robotY;
-    private final double robotTheta;
+
+    private final BNO055IMU imu;
+    public static Pose currentPosition = new Pose(0, 0, 0);
+    private int previousLeftOdometryTicks = 0;
+    private int previousBackOdometryTicks = 0;
+    private int previousRightOdometryTicks = 0;
+
 
     /**
      * Initializes the drive subsystem
      *
-     * @param frontLeft   The front left motor in the drive train
-     * @param frontRight  The front right motor
-     * @param rearLeft    The rear left motor
-     * @param rearRight   The rear right motor
+     * @param motors      The motors ...
      * @param telemetry   The telemetry
      * @param elapsedTime The timer for the elapsed time
      */
-    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight, boolean odometryEnabled, Telemetry telemetry, ElapsedTime elapsedTime) {
+    public Drive(MotorGeneric<DcMotorEx> motors, @Nullable DcMotorEx[] odometry, BNO055IMU imu, Telemetry telemetry, ElapsedTime elapsedTime) {
         super(telemetry, "drive");
-        this.timer = elapsedTime;
-        this.odometryEnabled = odometryEnabled;
+        this.odometryEnabled = odometry != null;
+        if (odometryEnabled) {
+            this.odL = odometry[0];
+            this.odB = odometry[1];
+            this.odR = odometry[2];
+        } else {
+            this.odL = null;
+            this.odB = null;
+            this.odR = null;
+        }
         // Set motors
-        this.frontLeft = frontLeft;
-        this.frontRight = frontRight;
-        this.rearLeft = rearLeft;
-        this.rearRight = rearRight;
+        this.motors = motors;
+        this.imu = imu;
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Initialize robot position
-        this.robotX = 0;
-        this.robotY = 0;
-        this.robotTheta = 0;
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
@@ -100,10 +107,10 @@ public class Drive extends Subsystem {
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
-        this.frontLeft.setZeroPowerBehavior(mode);
-        this.frontRight.setZeroPowerBehavior(mode);
-        this.rearLeft.setZeroPowerBehavior(mode);
-        this.rearRight.setZeroPowerBehavior(mode);
+        this.motors.frontLeft.setZeroPowerBehavior(mode);
+        this.motors.frontRight.setZeroPowerBehavior(mode);
+        this.motors.rearLeft.setZeroPowerBehavior(mode);
+        this.motors.rearRight.setZeroPowerBehavior(mode);
     }
 
     /**
@@ -113,10 +120,10 @@ public class Drive extends Subsystem {
      * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
-        this.frontLeft.setMode(mode);
-        this.frontRight.setMode(mode);
-        this.rearLeft.setMode(mode);
-        this.rearRight.setMode(mode);
+        this.motors.frontLeft.setMode(mode);
+        this.motors.frontRight.setMode(mode);
+        this.motors.rearLeft.setMode(mode);
+        this.motors.rearRight.setMode(mode);
     }
 
     /**
@@ -125,22 +132,22 @@ public class Drive extends Subsystem {
      * @param powers the powers to set each of the motors to
      * @see DcMotorEx#setPower(double)
      */
-    public void setDrivePowers(double[] powers) {
-        frontLeft.setPower(powers[0]);
-        frontRight.setPower(powers[1]);
-        rearLeft.setPower(powers[2]);
-        rearRight.setPower(powers[3]);
+    public void setDrivePowers(MotorGeneric<Double> powers) {
+        this.motors.frontLeft.setPower(powers.frontLeft);
+        this.motors.frontRight.setPower(powers.frontRight);
+        this.motors.rearLeft.setPower(powers.rearLeft);
+        this.motors.rearRight.setPower(powers.rearRight);
     }
 
     public void setDrivePowers(double power) {
-        setDrivePowers(new double[]{power, power, power, power});
+        setDrivePowers(new MotorGeneric<>(power, power, power, power));
     }
 
     /**
      * Sets all drive motor powers to zero
      */
     private void stop() {
-        setDrivePowers(0.);
+        setDrivePowers(0.0);
     }
 
     /**
@@ -151,163 +158,147 @@ public class Drive extends Subsystem {
      * @param rightStickX right joystick x position for turning
      * @return A list with the motor powers
      */
-    public double[] calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
+    public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
         double r = Math.hypot(leftStickX, leftStickY);
         double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
         double lrPower = r * Math.sin(robotAngle) + rightStickX;
         double lfPower = r * Math.cos(robotAngle) + rightStickX;
         double rrPower = r * Math.cos(robotAngle) - rightStickX;
         double rfPower = r * Math.sin(robotAngle) - rightStickX;
-        return new double[]{lfPower, rfPower, lrPower, rrPower};
+        return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
+    }
+
+    public void motorController(Targeter targeter, Controller controller) {
+        // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // TODO: Check if acquisition time is correct
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        // Timeout manager for when the robot gets stuck
+        TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
+        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
+        currentPosition = new Pose(0, 0, 0);
+        MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
+        MotorGeneric<Integer> currentTickCounts;
+        while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
+            // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
+            updateCurrentPose();
+            // Feeds pose into targeter to get target ...
+            Pose target = targeter.getTarget(currentPosition);
+            // Feeds target into controller to get motor powers
+            MotorGeneric<Double> motorPowers = controller.calculate(target, currentPosition);
+            // sets the motor powers
+            setDrivePowers(motorPowers);
+            // Checks if the robot is stuck
+            currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
+            if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {
+                timeoutManager.start();
+            } else {
+                timeoutManager.stop();
+            }
+            previousTickCounts = currentTickCounts;
+        }
+        stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
+    }
+
+    private void updateCurrentPose() {
+        if (odometryEnabled) {
+            // https://gm0.org/en/latest/docs/software/concepts/odometry.html
+            int odlTicks = odL.getCurrentPosition();
+            int odbTicks = odB.getCurrentPosition();
+            int odrTicks = odR.getCurrentPosition();
+
+            int deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
+            int deltaOdbTicks = odbTicks - previousBackOdometryTicks;
+            int deltaOdrTicks = odrTicks - previousRightOdometryTicks;
+
+            double deltaOdlMM = deltaOdlTicks / ODOMETRY_COUNTS_PER_MM;
+            double deltaOdbMM = deltaOdbTicks / ODOMETRY_COUNTS_PER_MM;
+            double deltaOdrMM = deltaOdrTicks / ODOMETRY_COUNTS_PER_MM;
+
+            double deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
+            double deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
+            double deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+
+            double deltaX = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
+            double deltaY = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+
+            currentPosition.heading += deltaTheta;
+            currentPosition.x += deltaX;
+            currentPosition.y += deltaY;
+            currentPosition.velocity = new Vector(imu.getVelocity().xVeloc, imu.getVelocity().yVeloc);
+
+            previousLeftOdometryTicks = odlTicks;
+            previousBackOdometryTicks = odbTicks;
+            previousRightOdometryTicks = odrTicks;
+        } else {
+            Position position = imu.getPosition().toUnit(DistanceUnit.MM); // TODO: Ensure accuracy
+            currentPosition.x = position.x;
+            currentPosition.y = position.y;
+            // TODO: Make sure correct angle is being used
+            currentPosition.heading = imu.getAngularOrientation().toAngleUnit(AngleUnit.DEGREES).firstAngle;
+        }
+    }
+
+    public static class TimeoutManager {
+        private final long timeout;
+        private final ElapsedTime timer;
+        private boolean isStarted = false;
+        private long startTime = 0;
+        private boolean isExceeded = false;
+
+        public TimeoutManager(long timeout) {
+            this.timeout = timeout;
+            this.timer = new ElapsedTime();
+        }
+
+        public void start() {
+            isStarted = true;
+            startTime = timer.nanoseconds();
+        }
+
+        public void stop() {
+            isStarted = false;
+        }
+
+        public boolean isExceeded() {
+            if (isStarted) {
+                if (timer.nanoseconds() - startTime > timeout) {
+                    isExceeded = true;
+                }
+            }
+            return isExceeded;
+        }
+    }
+
+    private HolonomicController getHolonomicController() {
+        return new HolonomicController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+    }
+
+
+    public void move(Pose p) {
+        motorController(new StaticTargeter(new Pose(p.x, p.y, p.heading)), getHolonomicController());
+    }
+
+    public void moveVector(Vector vector) {
+        move(new Pose(vector, 0));
     }
 
     /**
-     * PID motor control program to ensure all four motors are synchronized
-     *
-     * @param tickCount How far each motor should go
+     * @param vector
+     * @param angle
+     * @deprecated use {@link #move(Pose)} instead
      */
-    public void allMotorControl(int[] tickCount, MoveSystem[] moveSystems) {
-        logger.info("Moving " + Arrays.toString(tickCount));
-        WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
-        // Refresh motors
-        stop();
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
-
-        // Timeout control (stop loop if motor stalls)
-        long currentTime; // current time in nanoseconds
-        long startTime = timer.nanoseconds();
-        boolean isTimeOutStarted = false;
-        boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
-        int timeOutPeriod = 100_000_000;
-        double timeOutStartedTime = 0.0;
-        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
-
-        // Initialize motor data wrappers
-        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold); // TODO: Odometry implementation
-        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold);
-        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
-        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
-        // TODO: Profile init time
-        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
-//            WebThread.setPercentage("drive", fr.currentCount, fr.targetCount);
-            // Update current variables
-            currentTime = timer.nanoseconds() - startTime;
-            // if only this got fixed ... then I could simplify the code even more
-            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why TODO: Check again ...
-
-            // Run a cycle for each
-            fl.cycle(false);
-            fr.cycle(true);
-            rl.cycle(false);
-            rr.cycle(false);
-            if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
-                if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
-                    isTimeOutExceeded = true;
-                    logger.info("Move failed, timeout exceeded");
-                } else { // time out was not started yet
-                    isTimeOutStarted = true;
-                    timeOutStartedTime = currentTime;
-                }
-            } else {
-                isTimeOutStarted = false;
-            }
-            if (debug) {
-                logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-                logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
-            }
-        }
-        WebThread.removeAction("drive");
+    @Deprecated
+    public void moveVector(Vector vector, double angle) {
+        move(new Pose(vector, angle));
     }
 
-    public void moveVector(Vector v) {
-        moveVector(v, 0);
+    public void moveAngle(int angle) {
+        move(new Pose(0, 0, angle));
     }
 
-    public void moveAngle(double turnAngle) {
-        moveVector(new Vector(0, 0), turnAngle);
-    }
-
-    public void moveVector(Vector v, double turnAngle) {
-        WebThread.position = new Vector(WebThread.position.add(v).toArray()); // TODO: Fix because angle isn't constant
-        WebThread.theta += turnAngle;
-        Vector newV = new Vector(v.getX() * COUNTS_CORRECTION_X * COUNTS_PER_MM, v.getY() * COUNTS_CORRECTION_Y * COUNTS_PER_MM);
-        // Sqrt2 is introduced as a correction factor, since the pi/4 in the next line is required
-        // for the strafer chassis to operate properly
-        double distance = newV.distance(Vector2D.ZERO) * Math.sqrt(2);
-        double angle = Math.atan2(newV.getY(), newV.getX()) - Math.PI / 4;
-
-        int[] tickCount = new int[4]; // All tick counts need to be integers
-        tickCount[0] = (int) ((distance * Math.cos(angle)));
-        tickCount[0] -= (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[1] = (int) ((distance * Math.sin(angle)));
-        tickCount[1] += (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[2] = (int) ((distance * Math.sin(angle)));
-        tickCount[2] -= (int) (turnAngle * COUNTS_PER_DEGREE);
-        tickCount[3] = (int) ((distance * Math.cos(angle)));
-        tickCount[3] += (int) (turnAngle * COUNTS_PER_DEGREE);
-        MoveSystem[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
-        allMotorControl(tickCount, pids);
-        stop();
-    }
-
-    static class MotorControlData {
-        DcMotorEx motor;
-        MoveSystem moveSystem;
-        boolean isNotMoving;
-        boolean isDone;
-        int currentCount;
-        int prevCount;
-        int targetCount;
-        int timeOutThreshold;
-
-        public MotorControlData(DcMotorEx motorEx, MoveSystem mS, int targetTickCount, int timeOutThreshold) {
-            motor = motorEx;
-            moveSystem = mS;
-            isNotMoving = false;
-            isDone = false;
-            prevCount = -1;
-            targetCount = targetTickCount;
-            this.timeOutThreshold = timeOutThreshold;
-        }
-
-        public void updateCurrentCount() {
-            currentCount = motor.getCurrentPosition();
-        }
-
-        public void setPower() {
-            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
-        }
-
-        public void halt() {
-            isDone = true;
-            isNotMoving = true;
-            motor.setPower(0.0);
-        }
-
-        public void updateIsNotMoving() {
-            if (prevCount != -1)
-                isNotMoving = Math.abs(currentCount - prevCount) < timeOutThreshold;
-        }
-
-        public void updatePrevCount() {
-            prevCount = currentCount;
-        }
-
-        public void cycle(boolean fRbypass) {
-            if (!fRbypass)
-                updateCurrentCount(); // House of cards moment
-            setPower();
-            checkMotorDone();
-            updateIsNotMoving();
-            updatePrevCount();
-        }
-
-        public void checkMotorDone() {
-            if (isMotorDone(currentCount, targetCount)) {
-                halt();
-            }
-        }
+    public void purePursuit(Path path) {
+        motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
     }
 }
