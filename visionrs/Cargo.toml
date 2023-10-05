@@ -10,3 +10,5 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 jni = "0.21"
+opencv = "0.84.5"
+anyhow = "1.0"
