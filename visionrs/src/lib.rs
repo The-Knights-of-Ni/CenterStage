@@ -4,6 +4,17 @@ use jni::objects::{JClass, JString};
 use jni::JNIEnv;
 use opencv::prelude::*;
 
+enum MarkerLocation {
+    Left,
+    Middle,
+    Right,
+    Unknown
+}
+
+fn getMarkerLocation() -> MarkerLocation {
+    return MarkerLocation::Unknown; // TODO: Implement
+}
+
 #[no_mangle]
 pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local>(
     // Notice that this `env` argument is mutable. Any `JNIEnv` API that may
@@ -25,7 +36,7 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // Then we have to create a new java string to return. Again, more info
     // in the `strings` module.
     let output = env
-        .new_string(format!("Hello, {}!", input))
+        .new_string("test")
         .expect("Couldn't create java string!");
     output
 }
