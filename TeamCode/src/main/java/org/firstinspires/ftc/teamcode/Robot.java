@@ -4,6 +4,7 @@ import android.os.Build;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebLog;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.BasicAccelerationIntegrator;
 import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 import java.util.HashMap;
@@ -126,10 +128,11 @@ public class Robot {
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile =
-                "BNO055IMUCalibration.json"; // see the calibration sample opmode
+                "IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
+        parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Sorry EU people
 
         telemetryBroadcast("Status", " IMU initializing...");
         imu.initialize(parameters);

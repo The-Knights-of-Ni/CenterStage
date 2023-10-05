@@ -18,4 +18,11 @@ public class StaticTargeter implements Targeter {
     public boolean reachedTarget(Pose currentPosition) {
         return target.fuzzyCompare(currentPosition);
     }
+
+    @Override
+    public String toString() {
+        return "StaticTargeter{" +
+                "target=" + target +
+                '}';
+    }
 }

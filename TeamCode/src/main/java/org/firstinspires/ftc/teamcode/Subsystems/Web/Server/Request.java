@@ -23,19 +23,22 @@ public class Request {
         HashMap<String, String> h = new HashMap<>();
         boolean parsingHeaders = true;
         StringBuilder body = new StringBuilder();
-        for (String header : lines) {
+        for (String line : lines) {
             if (parsingHeaders) {
-                String[] split = HEADER_PATTERN.split(header);
+                String[] split = HEADER_PATTERN.split(line);
                 if (split.length > 1 && !split[0].isEmpty() && !split[1].isEmpty()) {
-                    h.put(split[0], split[1]); // TODO: Handle duplicate headers
-                    // TODO: Handle headers with multiple semicolons
-                } else if (header.isEmpty()) {
+                    if (!h.containsKey(split[0])) {
+                        h.put(split[0], split[1]);
+                    } else {
+                        h.put(split[0], h.get(split[0]) + ";" + split[1]);
+                    }
+                } else if (line.isEmpty()) {
                     parsingHeaders = false;
                 } else {
-                    throw new WebError("Invalid header '" + header + "'", 400, 4001);
+                    throw new WebError("Invalid header '" + line + "'", 400, 4001);
                 }
             } else {
-                body.append(header).append("\n");
+                body.append(line).append("\n");
             }
         }
         String[] split = topLine.split(" ");
