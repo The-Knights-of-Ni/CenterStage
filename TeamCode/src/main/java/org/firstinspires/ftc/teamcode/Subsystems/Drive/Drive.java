@@ -174,6 +174,7 @@ public class Drive extends Subsystem {
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // TODO: Check if acquisition time is correct
         imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        double imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
@@ -182,7 +183,7 @@ public class Drive extends Subsystem {
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
             // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
-            updateCurrentPose();
+            updateCurrentPose(imuHeadingStart);
             // Feeds pose into targeter to get target ...
             Pose target = targeter.getTarget(currentPosition);
             // Feeds target into controller to get motor powers
@@ -198,10 +199,11 @@ public class Drive extends Subsystem {
             }
             previousTickCounts = currentTickCounts;
         }
+        imu.stopAccelerationIntegration();
         stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
     }
 
-    private void updateCurrentPose() {
+    private void updateCurrentPose(double imuHeadingStart) {
         if (odometryEnabled) {
             // https://gm0.org/en/latest/docs/software/concepts/odometry.html
             int odlTicks = odL.getCurrentPosition();
@@ -235,8 +237,7 @@ public class Drive extends Subsystem {
             Position position = imu.getPosition().toUnit(DistanceUnit.MM); // TODO: Ensure accuracy
             currentPosition.x = position.x;
             currentPosition.y = position.y;
-            // TODO: Make sure correct angle is being used
-            currentPosition.heading = imu.getAngularOrientation().toAngleUnit(AngleUnit.DEGREES).firstAngle;
+            currentPosition.heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart;
         }
     }
 
