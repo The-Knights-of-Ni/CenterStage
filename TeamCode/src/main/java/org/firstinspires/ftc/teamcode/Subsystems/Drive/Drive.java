@@ -186,6 +186,8 @@ public class Drive extends Subsystem {
             updateCurrentPose(imuHeadingStart);
             // Feeds pose into targeter to get target ...
             Pose target = targeter.getTarget(currentPosition);
+            logger.verbose("Current: " + currentPosition.toString());
+            logger.debug("Target: " + target.toString());
             // Feeds target into controller to get motor powers
             MotorGeneric<Double> motorPowers = controller.calculate(target, currentPosition);
             // sets the motor powers
