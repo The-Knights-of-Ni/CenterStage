@@ -236,7 +236,7 @@ public class Drive extends Subsystem {
             previousBackOdometryTicks = odbTicks;
             previousRightOdometryTicks = odrTicks;
         } else {
-            Position position = imu.getPosition().toUnit(DistanceUnit.MM); // TODO: Ensure accuracy
+            Position position = imu.getPosition().toUnit(DistanceUnit.MM);
             currentPosition.x = position.x;
             currentPosition.y = position.y;
             currentPosition.heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart;
