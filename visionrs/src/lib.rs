@@ -13,6 +13,7 @@ enum MarkerLocation {
 }
 
 fn getMarkerLocation() -> Result<MarkerLocation> {
+    /*
     let mask = Mat::new();
     Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
@@ -72,6 +73,7 @@ fn getMarkerLocation() -> Result<MarkerLocation> {
 
         return crop;
     return MarkerLocation::Unknown; // TODO: Implement
+    */
 }
 
 #[no_mangle]
