@@ -230,7 +230,8 @@ public class Drive extends Subsystem {
             currentPosition.heading += deltaTheta;
             currentPosition.x += deltaX;
             currentPosition.y += deltaY;
-            currentPosition.velocity = new Vector(imu.getVelocity().xVeloc, imu.getVelocity().yVeloc);
+            Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
+            currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
 
             previousLeftOdometryTicks = odlTicks;
             previousBackOdometryTicks = odbTicks;
