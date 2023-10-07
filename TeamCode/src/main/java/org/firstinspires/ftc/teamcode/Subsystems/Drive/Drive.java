@@ -286,16 +286,6 @@ public class Drive extends Subsystem {
         move(new Pose(vector, 0));
     }
 
-    /**
-     * @param vector
-     * @param angle
-     * @deprecated use {@link #move(Pose)} instead
-     */
-    @Deprecated
-    public void moveVector(Vector vector, double angle) {
-        move(new Pose(vector, angle));
-    }
-
     public void moveAngle(int angle) {
         move(new Pose(0, 0, angle));
     }
