@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive.thetaPIDCoefficients;
+import static org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive.xyPIDCoefficients;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -8,7 +10,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.HolonomicController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -98,5 +103,16 @@ class DriveTest {
             assertEquals(-1170, drive.motors.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(1170, drive.motors.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }
+    }
+
+    @Test
+    void holonomicController() {
+        HolonomicController controller = new HolonomicController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+        MotorGeneric<Double> powers = controller.calculate(new Pose(500, 500, 0), new Pose(0, 0, 0));
+        System.out.println(powers);
+        assertEquals(0, powers.frontLeft, 0.01);
+        assertEquals(0, powers.frontRight, 0.01);
+        assertEquals(0, powers.rearLeft, 0.01);
+        assertEquals(0, powers.rearRight, 0.01);
     }
 }
