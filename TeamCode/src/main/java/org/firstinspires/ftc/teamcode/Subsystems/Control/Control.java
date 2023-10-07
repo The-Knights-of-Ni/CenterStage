@@ -29,7 +29,7 @@ public class Control extends Subsystem {
 
     public void airplaneLaunch(PlaneLaunchRange range) throws InterruptedException {
         //launch plane
-        airplaneLauncher.setPower(range.motorPower);
+        airplaneLauncher.setVelocity(6000);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
