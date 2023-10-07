@@ -17,56 +17,54 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
  */
 public class Drive extends Subsystem {
     // mm per inch
-    public static final double mmPerInch = 25.4;
-    public static final double PURE_PURSUIT_LOOKAHEAD_DISTANCE = 100;
+    public static double mmPerInch = 25.4;
+    public static double PURE_PURSUIT_LOOKAHEAD_DISTANCE = 100;
 
     // DO WITH ENCODERS
-    private static final double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
-    private static final double TICKS_PER_MOTOR_REV_20 = 537.6; // AM Orbital 20 motor
-    private static final double RPM_MAX_NEVERREST_20 = 340;
-    private static final double ANGULAR_V_MAX_NEVERREST_20 = (TICKS_PER_MOTOR_REV_20 * RPM_MAX_NEVERREST_20) / 60.0;
+    public static double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
+    public static double TICKS_PER_MOTOR_REV_20 = 537.6; // AM Orbital 20 motor
+    public static double RPM_MAX_NEVERREST_20 = 340;
+    public static double ANGULAR_V_MAX_NEVERREST_20 = (TICKS_PER_MOTOR_REV_20 * RPM_MAX_NEVERREST_20) / 60.0;
     // NEW Chassis
-    private static final double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
-    private static final double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
-    public static final double COUNTS_PER_MM =
+    public static double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
+    public static double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
+    public static double COUNTS_PER_MM =
             (MOTOR_TICK_PER_REV_YELLOW_JACKET_312 * DRIVE_GEAR_REDUCTION)
                     / (GOBUILDA_MECANUM_DIAMETER_MM * Math.PI);
-    private static final double WHEEL_DIAMETER_MM = 100.0;
-    private static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM / mmPerInch; // For calculating circumference
+    public static double WHEEL_DIAMETER_MM = 100.0;
+    public static double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM / mmPerInch; // For calculating circumference
 
-    private static final double COUNTS_PER_INCH =
+    public static double COUNTS_PER_INCH =
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-    private static final double COUNTS_CORRECTION_X = 1.37;
-    private static final double COUNTS_CORRECTION_Y = 1.0;
-    private static final double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
+    public static double COUNTS_CORRECTION_X = 1.37;
+    public static double COUNTS_CORRECTION_Y = 1.0;
+    public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
     // Default drive speeds
-    private static final double DRIVE_SPEED = 0.60;
-    // Motor PID coefficients
-    private static final PIDCoefficients motorPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003);
+    public static double DRIVE_SPEED = 0.60;
     // Move PID coefficients
-    private static final PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
-    private static final PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public  static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public  static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
     // Drive-train motors
-    public final MotorGeneric<DcMotorEx> motors;
+    private final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
-    public final boolean odometryEnabled;
-    public DcMotorEx odL;
-    public DcMotorEx odB;
-    public DcMotorEx odR;
-    public final double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
-    public final double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+    public boolean odometryEnabled;
+    private final DcMotorEx odL;
+    private final DcMotorEx odB;
+    private final DcMotorEx odR;
+    public double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
+    public double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
 
-    public final double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
+    public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
 
 
-    private final boolean debug = false;
+    public boolean debug = false;
 
-    private final BNO055IMU imu;
+    private BNO055IMU imu;
     public static Pose currentPosition = new Pose(0, 0, 0);
-    private int previousLeftOdometryTicks = 0;
-    private int previousBackOdometryTicks = 0;
-    private int previousRightOdometryTicks = 0;
+    public int previousLeftOdometryTicks = 0;
+    public int previousBackOdometryTicks = 0;
+    public int previousRightOdometryTicks = 0;
 
 
     /**
