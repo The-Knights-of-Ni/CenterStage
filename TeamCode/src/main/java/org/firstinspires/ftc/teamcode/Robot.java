@@ -165,6 +165,7 @@ public class Robot {
         rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         airplaneLauncher = (DcMotorEx)hardwareMap.dcMotor.get("airplane");
+        airplaneLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
     }
 
     private void servoInit() {
