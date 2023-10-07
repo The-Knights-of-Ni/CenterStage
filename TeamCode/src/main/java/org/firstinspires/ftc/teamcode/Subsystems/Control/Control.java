@@ -30,8 +30,6 @@ public class Control extends Subsystem {
     public void airplaneLaunch(PlaneLaunchRange range) throws InterruptedException {
         //launch plane
         airplaneLauncher.setPower(range.motorPower);
-        Thread.sleep(1000);
-        airplaneLauncher.setPower(0);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
