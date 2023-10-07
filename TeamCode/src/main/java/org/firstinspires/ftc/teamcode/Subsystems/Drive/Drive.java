@@ -167,12 +167,19 @@ public class Drive extends Subsystem {
     }
 
     public void motorController(Targeter targeter, Controller controller) {
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // TODO: Check if acquisition time is correct
-        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         double imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
+        double imuXStart = imu.getPosition().x;
+        double imuYStart = imu.getPosition().y;
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
@@ -181,7 +188,7 @@ public class Drive extends Subsystem {
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
             // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
-            updateCurrentPose(imuHeadingStart);
+            updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
             // Feeds pose into targeter to get target ...
             Pose target = targeter.getTarget(currentPosition);
             logger.verbose("Current: " + currentPosition.toString());
@@ -203,7 +210,7 @@ public class Drive extends Subsystem {
         stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
     }
 
-    private void updateCurrentPose(double imuHeadingStart) {
+    private void updateCurrentPose(double imuXStart, double imuYStart, double imuHeadingStart) {
         if (odometryEnabled) {
             // https://gm0.org/en/latest/docs/software/concepts/odometry.html
             int odlTicks = odL.getCurrentPosition();
@@ -236,8 +243,8 @@ public class Drive extends Subsystem {
             previousRightOdometryTicks = odrTicks;
         } else {
             Position position = imu.getPosition().toUnit(DistanceUnit.MM);
-            currentPosition.x = position.x;
-            currentPosition.y = position.y;
+            currentPosition.x = position.x - imuXStart;
+            currentPosition.y = position.y - imuYStart;
             currentPosition.heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart;
             Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
