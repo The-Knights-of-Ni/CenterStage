@@ -169,7 +169,7 @@ public class Drive extends Subsystem {
     public void motorController(Targeter targeter, Controller controller) {
         imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         try {
-            Thread.sleep(100);
+            Thread.sleep(250);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
