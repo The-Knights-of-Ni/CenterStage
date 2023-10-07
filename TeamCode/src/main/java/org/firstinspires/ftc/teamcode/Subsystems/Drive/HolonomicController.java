@@ -27,7 +27,7 @@ public class HolonomicController implements Controller {
     }
 
     @Override
-    public MotorGeneric<Double> calculate(Pose target, Pose current) {
+    public MotorGeneric<Double> calculate(Pose current, Pose target) {
         double xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
         double yPower = yControl.calculate(target.y * Drive.COUNTS_PER_MM, current.y * Drive.COUNTS_PER_MM);
         double thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);

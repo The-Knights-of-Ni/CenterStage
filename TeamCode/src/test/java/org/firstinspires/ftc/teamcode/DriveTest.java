@@ -19,10 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.mockingDetails;
 
 class DriveTest {
     // The margins will get smaller over time, as the mocking improves and the PID becomes more calibrated.
@@ -106,13 +103,19 @@ class DriveTest {
     }
 
     @Test
-    void holonomicController() {
+    void testHolonomicController() {
         HolonomicController controller = new HolonomicController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
-        MotorGeneric<Double> powers = controller.calculate(new Pose(500, 500, 0), new Pose(0, 0, 0));
+        MotorGeneric<Double> powers = controller.calculate(new Pose(0, 0, 0), new Pose(0, 0, 0));
         System.out.println(powers);
         assertEquals(0, powers.frontLeft, 0.01);
         assertEquals(0, powers.frontRight, 0.01);
         assertEquals(0, powers.rearLeft, 0.01);
         assertEquals(0, powers.rearRight, 0.01);
     }
+
+    @Test
+    void testHolonomicController2() {
+
+    }
+
 }
