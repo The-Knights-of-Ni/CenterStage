@@ -43,10 +43,10 @@ public class Drive extends Subsystem {
     // Default drive speeds
     public static double DRIVE_SPEED = 0.60;
     // Move PID coefficients
-    public  static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
-    public  static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.000, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
-    private final MotorGeneric<DcMotorEx> motors;
+    public final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
     public boolean odometryEnabled;
     private final DcMotorEx odL;
