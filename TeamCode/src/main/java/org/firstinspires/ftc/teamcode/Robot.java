@@ -45,6 +45,9 @@ public class Robot {
     public DcMotorEx backEncoder;
     public DcMotorEx rightEncoder;
 
+    // Control motors
+    public DcMotorEx airplaneLauncher;
+
     public BNO055IMU imu;
     // Subsystems
     public Drive drive;
@@ -160,6 +163,8 @@ public class Robot {
         frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+        airplaneLauncher = (DcMotorEx)hardwareMap.dcMotor.get("airplane");
     }
 
     private void servoInit() {
@@ -175,7 +180,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry);
+        control = new Control(telemetry, airplaneLauncher);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
