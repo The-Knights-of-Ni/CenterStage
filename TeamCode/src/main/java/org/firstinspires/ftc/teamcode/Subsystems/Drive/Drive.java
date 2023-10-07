@@ -40,15 +40,13 @@ public class Drive extends Subsystem {
     public static double COUNTS_CORRECTION_Y = 1.0;
     public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
-    // Default drive speeds
-    public static double DRIVE_SPEED = 0.60;
     // Move PID coefficients
-    public  static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
-    public  static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
     // Drive-train motors
-    private final MotorGeneric<DcMotorEx> motors;
+    public final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
-    public boolean odometryEnabled;
+    private final boolean odometryEnabled;
     private final DcMotorEx odL;
     private final DcMotorEx odB;
     private final DcMotorEx odR;
@@ -56,9 +54,6 @@ public class Drive extends Subsystem {
     public double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
 
     public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
-
-
-    public boolean debug = false;
 
     private BNO055IMU imu;
     public static Pose currentPosition = new Pose(0, 0, 0);
