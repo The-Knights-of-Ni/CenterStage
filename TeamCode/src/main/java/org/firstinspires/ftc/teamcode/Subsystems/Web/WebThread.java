@@ -145,6 +145,12 @@ public class WebThread extends Thread {
                         Double.parseDouble(request.getOrDefault("thetaD", String.valueOf(Drive.thetaPIDCoefficients.kD)))
                 );
                 return returnObject(new View.DriveResponse());
+            } else if (Objects.equals(req.method, "/move")) {
+                if (Objects.equals(req.method, "POST")) {
+                    invalidMethod(req.method); // TODO: implement
+                } else {
+                    invalidMethod(req.method);
+                }
             } else {
                 invalidMethod(req.method);
             }
