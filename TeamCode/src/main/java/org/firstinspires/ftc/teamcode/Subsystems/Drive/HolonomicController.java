@@ -26,6 +26,11 @@ public class HolonomicController implements Controller {
         return powers;
     }
 
+    public MotorGeneric<Double> reduceDrivePowers(MotorGeneric<Double> powers, double scalingFactor) {
+        return new MotorGeneric<>(powers.frontLeft * scalingFactor, powers.frontRight * scalingFactor,
+                powers.rearLeft * scalingFactor, powers.rearRight * scalingFactor);
+    }
+
     @Override
     public MotorGeneric<Double> calculate(Pose current, Pose target) {
         double xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
@@ -33,9 +38,9 @@ public class HolonomicController implements Controller {
         double thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);
         double xRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading);
         double yRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
-        return cropMotorPowers(new MotorGeneric<>((xRotated + yRotated + thetaPower),
+        return reduceDrivePowers(cropMotorPowers(new MotorGeneric<>((xRotated + yRotated + thetaPower),
                 (yRotated - xRotated - thetaPower),
                 (yRotated - xRotated + thetaPower),
-                (xRotated + yRotated - thetaPower)));
+                (xRotated + yRotated - thetaPower))), 0.5);
     }
 }
