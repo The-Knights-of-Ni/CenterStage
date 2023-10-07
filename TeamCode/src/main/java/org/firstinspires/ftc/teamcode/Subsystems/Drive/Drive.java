@@ -195,6 +195,7 @@ public class Drive extends Subsystem {
             logger.debug("Target: " + target.toString());
             // Feeds target into controller to get motor powers
             MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
+            logger.verbose("Motor Powers: " + motorPowers.toString());
             // sets the motor powers
             setDrivePowers(motorPowers);
             // Checks if the robot is stuck
