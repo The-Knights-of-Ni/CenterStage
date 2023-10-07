@@ -244,8 +244,8 @@ public class Drive extends Subsystem {
             previousRightOdometryTicks = odrTicks;
         } else {
             Position position = imu.getPosition().toUnit(DistanceUnit.MM);
-            currentPosition.x = position.y - imuYStart;
-            currentPosition.y = position.x - imuXStart; // IMU inverts stuff
+            currentPosition.x = position.x - imuXStart;
+            currentPosition.y = position.y - imuYStart; // IMU inverts stuff
             currentPosition.heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart;
             Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
