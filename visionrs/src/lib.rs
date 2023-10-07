@@ -14,11 +14,10 @@ enum MarkerLocation {
 
 fn getMarkerLocation() -> Result<MarkerLocation> {
     let mask = Mat::new();
-    /*
     Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
     let rectCrop = new Rect(0, 720, 1920, 360);
-    let Mat crop = new Mat(mask, rectCrop);
+    let Mat crop = Mat::new(mask, rectCrop);
     mask.release();
         if (crop.empty()) {
             markerLocation = MarkerLocation.NOT_FOUND;
@@ -73,7 +72,6 @@ fn getMarkerLocation() -> Result<MarkerLocation> {
 
         return crop;
     return MarkerLocation::Unknown; // TODO: Implement
-    */
 }
 
 #[no_mangle]
