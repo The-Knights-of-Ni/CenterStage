@@ -77,4 +77,8 @@ public class PID {
                 ", Kd=" + Kd +
                 '}';
     }
+
+    public void reset() {
+        integralSum = 0; // TODO: test
+    }
 }

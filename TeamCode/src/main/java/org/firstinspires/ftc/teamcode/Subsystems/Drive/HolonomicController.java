@@ -47,4 +47,9 @@ public class HolonomicController implements Controller {
                 ),
                 0.5);
     }
+
+    @Override
+    public void resetHeadingPID() {
+        thetaControl.reset();
+    }
 }

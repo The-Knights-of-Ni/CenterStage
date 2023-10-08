@@ -166,6 +166,16 @@ public class Drive extends Subsystem {
         return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
     }
 
+
+    public static double normalizeAngle(double angle) {
+        if (angle > 180) {
+            return angle - 360;
+        } else if (angle < -180) {
+            return angle + 360;
+        }
+        return angle;
+    }
+
     public void motorController(Targeter targeter, Controller controller) {
         imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         try {
@@ -184,6 +194,7 @@ public class Drive extends Subsystem {
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         currentPosition = new Pose(0, 0, 0);
+        Pose previousPosition = currentPosition;
         MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
@@ -193,6 +204,10 @@ public class Drive extends Subsystem {
             Pose target = targeter.getTarget(currentPosition);
             logger.verbose("Current: " + currentPosition);
             logger.debug("Target: " + target);
+            logger.verbose("Heading: " + currentPosition.heading);
+            if (Math.abs(currentPosition.heading - previousPosition.heading) > 25) {
+                controller.resetHeadingPID();
+            }
             // Feeds target into controller to get motor powers
             MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
             logger.verbose("Motor Powers: " + motorPowers.toString());
@@ -206,6 +221,7 @@ public class Drive extends Subsystem {
                 timeoutManager.stop();
             }
             previousTickCounts = currentTickCounts;
+            previousPosition = currentPosition;
         }
         imu.stopAccelerationIntegration();
         stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
@@ -230,10 +246,11 @@ public class Drive extends Subsystem {
             double deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
             double deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
 
-            double deltaX = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
-            double deltaY = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+            double deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+            double deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
 
             currentPosition.heading += deltaTheta;
+            currentPosition.heading = normalizeAngle(currentPosition.heading);
             currentPosition.x += deltaX;
             currentPosition.y += deltaY;
             Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
@@ -246,7 +263,7 @@ public class Drive extends Subsystem {
             Position position = imu.getPosition().toUnit(DistanceUnit.MM);
             currentPosition.x = position.x - imuXStart;
             currentPosition.y = position.y - imuYStart; // IMU inverts stuff
-            currentPosition.heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart;
+            currentPosition.heading = normalizeAngle(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart);
             Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
         }
