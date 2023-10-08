@@ -60,7 +60,7 @@ public class Drive extends Subsystem {
 
     public boolean debug = false;
 
-    private BNO055IMU imu;
+    public BNO055IMU imu;
     public static Pose currentPosition = new Pose(0, 0, 0);
     public int previousLeftOdometryTicks = 0;
     public int previousBackOdometryTicks = 0;
@@ -167,7 +167,7 @@ public class Drive extends Subsystem {
     }
 
     public void motorController(Targeter targeter, Controller controller) {
-        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         try {
             Thread.sleep(250);
         } catch (InterruptedException e) {
