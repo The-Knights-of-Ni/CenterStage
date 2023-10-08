@@ -28,8 +28,8 @@ public class IMUDirectionalTest extends Auto {
                 new Velocity(DistanceUnit.MM, 0, 0, 0, 0), 100);
         while (opModeIsActive()) {
             telemetry.addData("Heading", robot.drive.imu.getAngularOrientation().firstAngle);
-            telemetry.update();
             telemetry.addData("Position", robot.drive.imu.getPosition());
+            telemetry.update();
             Thread.sleep(10);
         }
     }
