@@ -1,7 +1,7 @@
 import json
 import time
 
-j = json.load(open('strafe log.json'))
+j = json.load(open('logs.json'))
 current_pos_logs = []
 target_pos_logs = []
 motor_powers_logs = []
@@ -17,7 +17,8 @@ for i in j["logs"]:
 
 for i in range(len(current_pos_logs)):
     if not i == 0:
-        print("\033[2A", end="")
-    print("Current Pos: " + str(current_pos_logs[i]["message"]))
-    print("Target Pos: " + str(target_pos_logs[i]["message"]))
+        print("\033[3A", end="")
+    print(str(current_pos_logs[i]["message"]))
+    print(str(target_pos_logs[i]["message"]))
+    print(str(motor_powers_logs[i]["message"]))
     time.sleep(0.1)
