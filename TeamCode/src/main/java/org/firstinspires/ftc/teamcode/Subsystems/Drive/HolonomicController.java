@@ -36,11 +36,15 @@ public class HolonomicController implements Controller {
         double xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
         double yPower = yControl.calculate(target.y * Drive.COUNTS_PER_MM, current.y * Drive.COUNTS_PER_MM);
         double thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);
-        double xRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading);
-        double yRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
-        return reduceDrivePowers(cropMotorPowers(new MotorGeneric<>((xRotated + yRotated + thetaPower),
-                (yRotated - xRotated - thetaPower),
-                (yRotated - xRotated + thetaPower),
-                (xRotated + yRotated - thetaPower))), 0.5);
+        double yRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading); // Inverted bc api
+        double xRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
+        return reduceDrivePowers(cropMotorPowers(
+                        new MotorGeneric<>(
+                                xRotated + yRotated + thetaPower,
+                                xRotated - yRotated + thetaPower,
+                                xRotated - yRotated - thetaPower,
+                                xRotated + yRotated - thetaPower)
+                ),
+                0.5);
     }
 }

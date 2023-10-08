@@ -159,10 +159,10 @@ public class Drive extends Subsystem {
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
         double r = Math.hypot(leftStickX, leftStickY);
         double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        double lrPower = r * Math.sin(robotAngle) + rightStickX;
         double lfPower = r * Math.cos(robotAngle) + rightStickX;
-        double rrPower = r * Math.cos(robotAngle) - rightStickX;
+        double lrPower = r * Math.sin(robotAngle) + rightStickX;
         double rfPower = r * Math.sin(robotAngle) - rightStickX;
+        double rrPower = r * Math.cos(robotAngle) - rightStickX;
         return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
     }
 
@@ -191,8 +191,8 @@ public class Drive extends Subsystem {
             updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
             // Feeds pose into targeter to get target ...
             Pose target = targeter.getTarget(currentPosition);
-            logger.verbose("Current: " + currentPosition.toString());
-            logger.debug("Target: " + target.toString());
+            logger.verbose("Current: " + currentPosition);
+            logger.debug("Target: " + target);
             // Feeds target into controller to get motor powers
             MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
             logger.verbose("Motor Powers: " + motorPowers.toString());
