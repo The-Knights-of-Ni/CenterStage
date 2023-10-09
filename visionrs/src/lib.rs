@@ -23,8 +23,8 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     if crop.empty() {
         return Ok(MarkerLocation::Unknown);
     }
-    let low_hsv = Scalar::new(20.0, 100.0, 100.0);
-    let high_hsv = Scalar::new(30.0, 255.0, 255.0);
+    let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
+    let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
     let mut thresh: Mat = Mat::new();
 
     opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
@@ -45,8 +45,8 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
     }
 
-    let left_x = 0.375 * CAMERA_WIDTH;
-    let right_x = 0.625 * CAMERA_WIDTH;
+    let left_x = (0.375 * CAMERA_WIDTH as f64) as i32;
+    let right_x = (0.625 * CAMERA_WIDTH as f64) as i32;
 
     let mut left = false;
     let mut middle = false;
