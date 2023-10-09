@@ -10,7 +10,7 @@ enum MarkerLocation {
     Left,
     Middle,
     Right,
-    Unknown
+    Unknown,
 }
 
 fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
@@ -38,7 +38,7 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     let mut contoursPoly: Vector<Point2f> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
 
-    for i in 0.. contours.len() {
+    for i in 0..contours.len() {
         contoursPoly[i] = Vector::new();
         imgproc::approx_poly_dp(&contours[i], contoursPoly[i], 3.0, true)?;
         bound_rect[i] = imgproc::bounding_rect(&Vector::from(contoursPoly[i]))?;
