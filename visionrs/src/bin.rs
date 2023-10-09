@@ -11,14 +11,22 @@ fn main() -> anyhow::Result<()> {
     if !opened {
         panic!("Unable to open default camera!");
     }
+    println!("Press the A key to toggle the pipeline. Press any other key to exit.");
+    let mut perform_pipeline = true;
     loop {
         let mut frame = Mat::default();
         cam.read(&mut frame)?;
         if frame.size()?.width > 0 {
-            highgui::imshow(window, &get_edges_pipeline(&frame)?)?;
+            if perform_pipeline {
+                highgui::imshow(window, &get_edges_pipeline(&frame)?)?;
+            } else {
+                highgui::imshow(window, &frame)?;
+            }
         }
         let key = highgui::wait_key(10)?;
-        if key > 0 && key != 255 {
+        if key == 97 { // "a" key
+            perform_pipeline = !perform_pipeline;
+        } else if key > 0 && key != 255 {
             break;
         }
     }

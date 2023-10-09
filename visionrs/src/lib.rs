@@ -33,8 +33,8 @@ pub fn get_edges_pipeline(input: &Mat) -> Result<Mat> {
     if crop.empty() {
         return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to crop image!")));
     }
-    let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
-    let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
+    let low_hsv = Scalar::new(85.0, 100.0, 100.0, 0.0);
+    let high_hsv = Scalar::new(95.0, 255.0, 255.0, 0.0);
     let mut thresh: Mat = Mat::default();
 
     opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
