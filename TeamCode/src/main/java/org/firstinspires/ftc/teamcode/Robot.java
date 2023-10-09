@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import java.util.HashMap;
 
 public class Robot {
-    public static final String name = "Hueil mab Caw";
     public static final double length = 18.0;
     public static final double width = 18.0;
     private final MasterLogger logger;
@@ -132,7 +131,7 @@ public class Robot {
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
-        parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Sorry EU people
+        parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Sorry non-US people
 
         telemetryBroadcast("Status", " IMU initializing...");
         imu.initialize(parameters);
@@ -197,6 +196,8 @@ public class Robot {
             } catch (Exception e) {
                 logger.error("Web Thread init failed " + e.getMessage(), e);
             }
+        } else {
+            logger.warning("Web subsystem init skipped");
         }
         telemetryBroadcast("Status", "all subsystems initialized");
     }

@@ -14,18 +14,19 @@ buildscript {
     }
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.2'
         classpath 'org.mozilla.rust-android-gradle:plugin:0.9.3'
     }
 }
 
-System.setProperty( "user.dir", project.projectDir.toString() )
+System.setProperty("user.dir", project.projectDir.toString())
 System.println("Configuration Started: CenterStage")
 System.println("********************************")
-System.println("projectdir="+project.projectDir.toString())
-System.println("project version="+project.version.toString())
-System.println("gradle version="+gradle.gradleVersion)
-System.println("root project="+gradle.rootProject)
+System.println("project dir=" + project.projectDir.toString())
+System.println("project version=" + project.version.toString())
+System.println("gradle version=" + gradle.gradleVersion)
+System.println("root project=" + gradle.rootProject)
+System.println("gradle java version=" + System.getProperty("java.version"))
 
 
 // This is now required because aapt2 has to be downloaded from the

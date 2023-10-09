@@ -17,56 +17,54 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
  */
 public class Drive extends Subsystem {
     // mm per inch
-    public static final double mmPerInch = 25.4;
-    public static final double PURE_PURSUIT_LOOKAHEAD_DISTANCE = 100;
+    public static double mmPerInch = 25.4;
+    public static double PURE_PURSUIT_LOOKAHEAD_DISTANCE = 100;
 
     // DO WITH ENCODERS
-    private static final double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
-    private static final double TICKS_PER_MOTOR_REV_20 = 537.6; // AM Orbital 20 motor
-    private static final double RPM_MAX_NEVERREST_20 = 340;
-    private static final double ANGULAR_V_MAX_NEVERREST_20 = (TICKS_PER_MOTOR_REV_20 * RPM_MAX_NEVERREST_20) / 60.0;
+    public static double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
+    public static double TICKS_PER_MOTOR_REV_20 = 537.6; // AM Orbital 20 motor
+    public static double RPM_MAX_NEVERREST_20 = 340;
+    public static double ANGULAR_V_MAX_NEVERREST_20 = (TICKS_PER_MOTOR_REV_20 * RPM_MAX_NEVERREST_20) / 60.0;
     // NEW Chassis
-    private static final double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
-    private static final double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
-    public static final double COUNTS_PER_MM =
+    public static double MOTOR_TICK_PER_REV_YELLOW_JACKET_312 = 537.6;
+    public static double GOBUILDA_MECANUM_DIAMETER_MM = 96.0;
+    public static double COUNTS_PER_MM =
             (MOTOR_TICK_PER_REV_YELLOW_JACKET_312 * DRIVE_GEAR_REDUCTION)
                     / (GOBUILDA_MECANUM_DIAMETER_MM * Math.PI);
-    private static final double WHEEL_DIAMETER_MM = 100.0;
-    private static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM / mmPerInch; // For calculating circumference
+    public static double WHEEL_DIAMETER_MM = 100.0;
+    public static double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM / mmPerInch; // For calculating circumference
 
-    private static final double COUNTS_PER_INCH =
+    public static double COUNTS_PER_INCH =
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-    private static final double COUNTS_CORRECTION_X = 1.37;
-    private static final double COUNTS_CORRECTION_Y = 1.0;
-    private static final double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
+    public static double COUNTS_CORRECTION_X = 1.37;
+    public static double COUNTS_CORRECTION_Y = 1.0;
+    public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
     // Default drive speeds
-    private static final double DRIVE_SPEED = 0.60;
-    // Motor PID coefficients
-    private static final PIDCoefficients motorPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003);
+    public static double DRIVE_SPEED = 0.60;
     // Move PID coefficients
-    private static final PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
-    private static final PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.00010, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
     public final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
-    public final boolean odometryEnabled;
-    public DcMotorEx odL;
-    public DcMotorEx odB;
-    public DcMotorEx odR;
-    public final double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
-    public final double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+    public boolean odometryEnabled;
+    private final DcMotorEx odL;
+    private final DcMotorEx odB;
+    private final DcMotorEx odR;
+    public double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
+    public double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
 
-    public final double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
+    public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
 
 
-    private final boolean debug = false;
+    public boolean debug = false;
 
-    private final BNO055IMU imu;
+    public BNO055IMU imu;
     public static Pose currentPosition = new Pose(0, 0, 0);
-    private int previousLeftOdometryTicks = 0;
-    private int previousBackOdometryTicks = 0;
-    private int previousRightOdometryTicks = 0;
+    public int previousLeftOdometryTicks = 0;
+    public int previousBackOdometryTicks = 0;
+    public int previousRightOdometryTicks = 0;
 
 
     /**
@@ -159,34 +157,60 @@ public class Drive extends Subsystem {
      * @return A list with the motor powers
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        double r = Math.hypot(leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        double lrPower = r * Math.sin(robotAngle) + rightStickX;
-        double lfPower = r * Math.cos(robotAngle) + rightStickX;
-        double rrPower = r * Math.cos(robotAngle) - rightStickX;
-        double rfPower = r * Math.sin(robotAngle) - rightStickX;
+        var r = Math.hypot(leftStickX, leftStickY);
+        var robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
+        var lfPower = r * Math.cos(robotAngle) + rightStickX;
+        var lrPower = r * Math.sin(robotAngle) + rightStickX;
+        var rfPower = r * Math.sin(robotAngle) - rightStickX;
+        var rrPower = r * Math.cos(robotAngle) - rightStickX;
         return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
     }
 
+
+    public static double normalizeAngle(double angle) {
+        if (angle > 180) {
+            return angle - 360;
+        } else if (angle < -180) {
+            return angle + 360;
+        }
+        return angle;
+    }
+
     public void motorController(Targeter targeter, Controller controller) {
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // TODO: Check if acquisition time is correct
-        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 100), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        var imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
+        var imuXStart = imu.getPosition().x;
+        var imuYStart = imu.getPosition().y;
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         currentPosition = new Pose(0, 0, 0);
+        var previousPosition = currentPosition;
         MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
             // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
-            updateCurrentPose();
+            updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
             // Feeds pose into targeter to get target ...
-            Pose target = targeter.getTarget(currentPosition);
+            var target = targeter.getTarget(currentPosition);
+            logger.verbose("Current", currentPosition);
+            logger.debug("Target", target);
+            logger.verbose("Heading", currentPosition.heading);
+            if (Math.abs(currentPosition.heading - previousPosition.heading) > 25) {
+                controller.resetHeadingPID();
+            }
             // Feeds target into controller to get motor powers
-            MotorGeneric<Double> motorPowers = controller.calculate(target, currentPosition);
+            MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
+            logger.verbose("Motor Powers", motorPowers.toString());
             // sets the motor powers
             setDrivePowers(motorPowers);
             // Checks if the robot is stuck
@@ -197,46 +221,51 @@ public class Drive extends Subsystem {
                 timeoutManager.stop();
             }
             previousTickCounts = currentTickCounts;
+            previousPosition = currentPosition;
         }
+        imu.stopAccelerationIntegration();
         stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
     }
 
-    private void updateCurrentPose() {
+    private void updateCurrentPose(double imuXStart, double imuYStart, double imuHeadingStart) {
         if (odometryEnabled) {
             // https://gm0.org/en/latest/docs/software/concepts/odometry.html
-            int odlTicks = odL.getCurrentPosition();
-            int odbTicks = odB.getCurrentPosition();
-            int odrTicks = odR.getCurrentPosition();
+            var odlTicks = odL.getCurrentPosition();
+            var odbTicks = odB.getCurrentPosition();
+            var odrTicks = odR.getCurrentPosition();
 
-            int deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
-            int deltaOdbTicks = odbTicks - previousBackOdometryTicks;
-            int deltaOdrTicks = odrTicks - previousRightOdometryTicks;
+            var deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
+            var deltaOdbTicks = odbTicks - previousBackOdometryTicks;
+            var deltaOdrTicks = odrTicks - previousRightOdometryTicks;
 
-            double deltaOdlMM = deltaOdlTicks / ODOMETRY_COUNTS_PER_MM;
-            double deltaOdbMM = deltaOdbTicks / ODOMETRY_COUNTS_PER_MM;
-            double deltaOdrMM = deltaOdrTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdlMM = deltaOdlTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdbMM = deltaOdbTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdrMM = deltaOdrTicks / ODOMETRY_COUNTS_PER_MM;
 
-            double deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
-            double deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
-            double deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+            var deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
+            var deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
+            var deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
 
-            double deltaX = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
-            double deltaY = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+            var deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+            var deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
 
             currentPosition.heading += deltaTheta;
+            currentPosition.heading = normalizeAngle(currentPosition.heading);
             currentPosition.x += deltaX;
             currentPosition.y += deltaY;
-            currentPosition.velocity = new Vector(imu.getVelocity().xVeloc, imu.getVelocity().yVeloc);
+            var velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
+            currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
 
             previousLeftOdometryTicks = odlTicks;
             previousBackOdometryTicks = odbTicks;
             previousRightOdometryTicks = odrTicks;
         } else {
-            Position position = imu.getPosition().toUnit(DistanceUnit.MM); // TODO: Ensure accuracy
-            currentPosition.x = position.x;
-            currentPosition.y = position.y;
-            // TODO: Make sure correct angle is being used
-            currentPosition.heading = imu.getAngularOrientation().toAngleUnit(AngleUnit.DEGREES).firstAngle;
+            var position = imu.getPosition().toUnit(DistanceUnit.MM);
+            currentPosition.x = position.x - imuXStart;
+            currentPosition.y = position.y - imuYStart; // IMU inverts stuff
+            currentPosition.heading = normalizeAngle(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart);
+            var velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
+            currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
         }
     }
 

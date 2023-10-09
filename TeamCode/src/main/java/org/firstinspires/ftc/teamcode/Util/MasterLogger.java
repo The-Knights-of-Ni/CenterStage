@@ -14,24 +14,47 @@ public class MasterLogger {
     }
 
     public void error(String message) {
-        telemetry.addData(tag, message);
-        telemetry.update();
+        if (telemetry != null) {
+            telemetry.addData(tag, message);
+            telemetry.update();
+        }
         Log.e(tag, message);
         WebLog.error(tag, message);
     }
 
-    public void error(String message, Throwable tr) {
-        telemetry.addData(tag, message);
-        telemetry.update();
-        Log.e(tag, message, tr);
-        WebLog.error(tag, message);
+    public void error(String message, Object o) {
+        if (telemetry != null) {
+            telemetry.addData(tag, message, o);
+            telemetry.update();
+        }
+        if (o.getClass().isInstance(Throwable.class)) {
+            Log.e(tag, message, (Throwable) o);
+        } else {
+            Log.e(tag, message);
+        }
+        WebLog.error(tag, message, o);
     }
 
     public void warning(String message) {
-        telemetry.addData(tag, message);
-        telemetry.update();
+        if (telemetry != null) {
+            telemetry.addData(tag, message);
+            telemetry.update();
+        }
         Log.w(tag, message);
         WebLog.warning(tag, message);
+    }
+
+    public void warning(String message, Object o) {
+        if (telemetry != null) {
+            telemetry.addData(tag, message, o);
+            telemetry.update();
+        }
+        if (o.getClass().isInstance(Throwable.class)) {
+            Log.w(tag, message, (Throwable) o);
+        } else {
+            Log.w(tag, message);
+        }
+        WebLog.warning(tag, message, o);
     }
 
     public void info(String message) {
@@ -39,13 +62,40 @@ public class MasterLogger {
         WebLog.info(tag, message);
     }
 
+    public void info(String message, Object o) {
+        if (o.getClass().isInstance(Throwable.class)) {
+            Log.i(tag, message, (Throwable) o);
+        } else {
+            Log.i(tag, message);
+        }
+        WebLog.info(tag, message, o);
+    }
+
     public void debug(String message) {
         Log.d(tag, message);
         WebLog.debug(tag, message);
     }
 
+    public void debug(String message, Object o) {
+        if (o.getClass().isInstance(Throwable.class)) {
+            Log.d(tag, message, (Throwable) o);
+        } else {
+            Log.d(tag, message);
+        }
+        WebLog.debug(tag, message, o);
+    }
+
     public void verbose(String message) {
         Log.v(tag, message);
         WebLog.verbose(tag, message);
+    }
+
+    public void verbose(String message, Object o) {
+        if (o.getClass().isInstance(Throwable.class)) {
+            Log.v(tag, message, (Throwable) o);
+        } else {
+            Log.v(tag, message);
+        }
+        WebLog.verbose(tag, message, o);
     }
 }
