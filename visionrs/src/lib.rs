@@ -13,27 +13,35 @@ enum MarkerLocation {
     Unknown,
 }
 
+fn safe_mat_from_mat_size(mat: &Mat) -> Result<Mat> {
+    unsafe {
+        let size = mat.size()?;
+        let new_mat = Mat::new_size(size, imgproc::COLOR_RGB2HSV)?;
+        return Ok(new_mat);
+    }
+}
+
 fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
-    let mut mask: Mat = Mat::new();
+    let mut mask: Mat = safe_mat_from_mat_size(&input)?;
     imgproc::cvt_color(&input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
     let rect_crop = Rect::new(0, 720, 1920, 360);
-    let crop: Mat = Mat::new(mask, rect_crop);
+    let crop: Mat = Mat::new(mask, rect_crop.y, rect_crop.y + rect_crop.height, rect_crop.x, rect_crop.x + rect_crop.width);
     mask.release()?;
     if crop.empty() {
         return Ok(MarkerLocation::Unknown);
     }
     let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
     let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
-    let mut thresh: Mat = Mat::new();
+    let mut thresh: Mat = safe_mat_from_mat_size(&crop)?;
 
     opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
 
-    let edges = Mat::new();
-    imgproc::canny(&thresh, edges, 100.0, 300.0, 3, false)?;
+    let mut edges = safe_mat_from_mat_size(&thresh)?; // TODO: Check if this is the right way to do this
+    imgproc::canny(&thresh, &mut edges, 100.0, 300.0, 3, false)?;
     thresh.release()?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
-    imgproc::find_contours(edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
+    imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release();
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
@@ -85,19 +93,9 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // this is the class that owns our static method. Not going to be used, but
     // still needs to have an argument slot
     _class: JClass<'local>,
-    input: JString<'local>,
 ) -> JString<'local> {
-    // First, we have to get the string out of java. Check out the `strings`
-    // module for more info on how this works.
-    let input: String = env
-        .get_string(&input)
-        .expect("Couldn't get java string!")
-        .into();
-
-    // Then we have to create a new java string to return. Again, more info
-    // in the `strings` module.
-    let output = env
-        .new_string("test")
+    let output = env // TODO: Actually return proper result
+        .new_string("unknown")
         .expect("Couldn't create java string!");
     output
 }
