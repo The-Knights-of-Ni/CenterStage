@@ -202,15 +202,15 @@ public class Drive extends Subsystem {
             updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
             // Feeds pose into targeter to get target ...
             Pose target = targeter.getTarget(currentPosition);
-            logger.verbose("Current: " + currentPosition);
-            logger.debug("Target: " + target);
-            logger.verbose("Heading: " + currentPosition.heading);
+            logger.verbose("Current", currentPosition);
+            logger.debug("Target", target);
+            logger.verbose("Heading", currentPosition.heading);
             if (Math.abs(currentPosition.heading - previousPosition.heading) > 25) {
                 controller.resetHeadingPID();
             }
             // Feeds target into controller to get motor powers
             MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
-            logger.verbose("Motor Powers: " + motorPowers.toString());
+            logger.verbose("Motor Powers", motorPowers.toString());
             // sets the motor powers
             setDrivePowers(motorPowers);
             // Checks if the robot is stuck

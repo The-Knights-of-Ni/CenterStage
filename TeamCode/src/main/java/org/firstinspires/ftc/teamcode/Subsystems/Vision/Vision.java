@@ -122,7 +122,7 @@ public class Vision extends Subsystem {
 
                     @Override
                     public void onError(int errorCode) { // Listener to log if the camera stops abruptly
-                        logger.error("Error Streaming, aborting");
+                        logger.error("Error Streaming, aborting with error code " + errorCode);
                     }
                 });
     }

@@ -5,32 +5,58 @@ public class WebLog {
     public String message;
     public LogSeverity severity;
     public String timestamp;
+    public Object data;
 
-    public WebLog(String tag, String message, LogSeverity severity) {
+    public WebLog(String tag, String message, LogSeverity severity, Object data) {
         this.TAG = tag;
         this.message = message;
         this.severity = severity;
         this.timestamp = ((Long) System.currentTimeMillis()).toString();
+        this.data = data;
+    }
+
+    public WebLog(String tag, String message, LogSeverity severity) {
+        this(tag, message, severity, null);
     }
 
     public static void verbose(String tag, String message) {
-        WebThread.addLog(new WebLog(tag, message, LogSeverity.VERBOSE));
+        verbose(tag, message, null);
+    }
+
+    public static void verbose(String tag, String message, Object object) {
+        WebThread.addLog(new WebLog(tag, message, LogSeverity.VERBOSE, object));
     }
 
     public static void debug(String tag, String message) {
-        WebThread.addLog(new WebLog(tag, message, LogSeverity.DEBUG));
+        debug(tag, message, null);
+    }
+
+    public static void debug(String tag, String message, Object object) {
+        WebThread.addLog(new WebLog(tag, message, LogSeverity.DEBUG, object));
     }
 
     public static void info(String tag, String message) {
-        WebThread.addLog(new WebLog(tag, message, LogSeverity.INFO));
+        info(tag, message, null);
+    }
+
+    public static void info(String tag, String message, Object object) {
+        WebThread.addLog(new WebLog(tag, message, LogSeverity.INFO, object));
     }
 
     public static void warning(String tag, String message) {
-        WebThread.addLog(new WebLog(tag, message, LogSeverity.WARNING));
+        warning(tag, message, null);
+    }
+
+    public static void warning(String tag, String message, Object object) {
+        WebThread.addLog(new WebLog(tag, message, LogSeverity.WARNING, object));
     }
 
     public static void error(String tag, String message) {
-        WebThread.addLog(new WebLog(tag, message, LogSeverity.ERROR));
+        error(tag, message, null);
+    }
+
+    public static void error(String tag, String message, Object object) {
+        WebThread.addLog(new WebLog(tag, message, LogSeverity.ERROR, object));
     }
 
     public enum LogSeverity {
