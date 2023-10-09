@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerLocation;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -11,7 +11,7 @@ public class AutoRedRight extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.RED);
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        MarkerLocation markerPosition = robot.vision.detectMarkerRun();
         robot.vision.stop();
         waitForStart();
         controlThread.start();

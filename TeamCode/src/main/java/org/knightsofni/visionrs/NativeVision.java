@@ -3,7 +3,7 @@ package org.knightsofni.visionrs;
 public class NativeVision {
     // This declares that the static `hello` method will be provided
     // a native library.
-    private static native byte process();
+    public static native byte process();
 
     static {
         // This actually loads the shared object that we'll be creating.

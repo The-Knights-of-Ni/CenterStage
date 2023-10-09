@@ -43,7 +43,7 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
         contours_poly.set(i, Vector::new())?;
         imgproc::approx_poly_dp(&contours.get(i)?, &mut contours_poly.get(i)?, 3.0, true)?;
         bound_rect[i] = imgproc::bounding_rect(&contours_poly.get(i)?)?;
-//            Imgproc.contourArea(contours_poly[i]); // TODO Maybe implement contour area check for next tourney
+//            imgproc::contourArea(&contours_poly.get(i)); // TODO: Maybe implement contour area check
     }
 
     let left_x = (0.375 * camera_width as f64) as i32;
