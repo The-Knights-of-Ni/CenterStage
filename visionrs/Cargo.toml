@@ -8,6 +8,10 @@ crate-type = ["cdylib", "rlib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "test"
+path = "src/bin.rs"
+
 [dependencies]
 jni = "0.21"
 opencv = { version = "0.84" }

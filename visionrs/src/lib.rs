@@ -15,15 +15,23 @@ enum MarkerLocation {
     Unknown,
 }
 
-fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
-    let mut mask: Mat = Mat::default();
-    imgproc::cvt_color(&input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
+fn get_crop(input: &Mat) -> Result<Mat> {
+    if input.cols() < 1920 {
+        return Ok(input.clone());
+    } else {
+        let rect_crop = Rect::new(0, 720, 1920, 360);
+        Ok(Mat::roi(input, rect_crop)?)
+    }
+}
 
-    let rect_crop = Rect::new(0, 720, 1920, 360);
-    let crop: Mat = Mat::roi(&mask, rect_crop)?;
+pub fn get_edges_pipeline(input: &Mat) -> Result<Mat> {
+    let mut mask: Mat = Mat::default();
+    imgproc::cvt_color(input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
+
+    let crop: Mat = get_crop(&mask)?;
     mask.release()?;
     if crop.empty() {
-        return Ok(MarkerLocation::Unknown);
+        return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to crop image!")));
     }
     let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
     let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
@@ -34,6 +42,11 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
     let mut edges = Mat::default();
     imgproc::canny(&thresh, &mut edges, 100.0, 300.0, 3, false)?;
     thresh.release()?;
+    return Ok(edges);
+}
+
+fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
+    let mut edges = get_edges_pipeline(&input)?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
     imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release()?;
