@@ -4,6 +4,7 @@ use jni::objects::{JClass, JString};
 use jni::JNIEnv;
 use opencv::prelude::*;
 use opencv::core::{Mat, Scalar, Rect};
+use opencv::imgproc;
 
 enum MarkerLocation {
     Left,
@@ -12,66 +13,68 @@ enum MarkerLocation {
     Unknown
 }
 
-fn getMarkerLocation() -> Result<MarkerLocation> {
-    let mask = Mat::new();
-    Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
+fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
+    let mut mask: Mat = Mat::new();
+    imgproc::cvt_color(&input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
-    let rectCrop = new Rect(0, 720, 1920, 360);
-    let Mat crop = Mat::new(mask, rectCrop);
-    mask.release();
-        if (crop.empty()) {
-            markerLocation = MarkerLocation.NOT_FOUND;
-            return input;
-        }
+    let rect_crop = Rect::new(0, 720, 1920, 360);
+    let crop: Mat = Mat::new(mask, rect_crop);
+    mask.release()?;
+    if crop.empty() {
+        return Ok(MarkerLocation::Unknown);
+    }
+    let low_hsv = Scalar::new(20.0, 100.0, 100.0);
+    let high_hsv = Scalar::new(30.0, 255.0, 255.0);
+    let mut thresh: Mat = Mat::new();
 
-        Scalar lowHSV = new Scalar(20, 100, 100);
-        Scalar highHSV = new Scalar(30, 255, 255);
-        Mat thresh = new Mat();
+    opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
 
-        Core.inRange(crop, lowHSV, highHSV, thresh);
+    let edges = Mat::new();
+    imgproc::canny(&thresh, edges, 100.0, 300.0, 3, false)?;
+    thresh.release()?;
+    let mut contours: Vec<MatOfPoint> = Vec::new();
+    let hierarchy = Mat::new();
+    imgproc::find_contours(edges, contours, hierarchy, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE)?;
+    edges.release();
+    let mut contoursPoly: Vec<MatOfPoint2f> = Vec::new();
+    let mut bound_rect: Vec<Rect> = Vec::new();
 
-        Mat edges = new Mat();
-        Imgproc.Canny(thresh, edges, 100, 300);
-        thresh.release();
-
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        edges.release();
-
-        MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
-        Rect[] boundRect = new Rect[contours.size()];
-
-        for (int i = 0; i < contours.size(); i++) {
-            contoursPoly[i] = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
-            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+    for i in 0.. contours.size() {
+        contoursPoly[i] = new MatOfPoint2f();
+        imgproc::approx_poly_dp(MatOfPoint2f::new(contours.get(i).toArray()), contoursPoly[i], 3.0, true);
+        bound_rect[i] = imgproc::bounding_rect((new MatOfPoint(contoursPoly[i].toArray()));
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
-        }
+    }
 
-        double left_x = 0.375 * CAMERA_WIDTH;
-        double right_x = 0.625 * CAMERA_WIDTH;
+    let left_x = 0.375 * CAMERA_WIDTH;
+    let right_x = 0.625 * CAMERA_WIDTH;
 
-        boolean left = false;
-        boolean middle = false;
-        boolean right = false;
+    let mut left = false;
+    let mut middle = false;
+    let mut right = false;
 
-        for (int i = 0; i != boundRect.length; i++) {
-            int midpoint = boundRect[i].x + boundRect[i].width / 2;
-            if (midpoint < left_x)
+        for i in 0..bound_rect.len() {
+            let midpoint = bound_rect[i].x + bound_rect[i].width / 2;
+            if midpoint < left_x {
                 left = true;
-            if (left_x <= midpoint && midpoint <= right_x)
+            }
+            if left_x <= midpoint && midpoint <= right_x {
                 middle = true;
-            if (right_x < midpoint)
+            }
+            if right_x < midpoint {
                 right = true;
+            }
         }
-        if (left) markerLocation = MarkerLocation.LEFT;
-        if (middle) markerLocation = MarkerLocation.MIDDLE;
-        if (right) markerLocation = MarkerLocation.RIGHT;
 
-        return crop;
-    return MarkerLocation::Unknown; // TODO: Implement
+        if left {
+            return Ok(MarkerLocation::Left);
+        } else if middle {
+            return Ok(MarkerLocation::Middle);
+        } else if right {
+            return Ok(MarkerLocation::Right);
+        } else {
+            return Ok(MarkerLocation::Unknown);
+        }
 }
 
 #[no_mangle]
