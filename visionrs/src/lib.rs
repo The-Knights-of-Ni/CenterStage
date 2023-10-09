@@ -3,7 +3,7 @@ use jni;
 use jni::objects::{JClass, JString};
 use jni::JNIEnv;
 use opencv::prelude::*;
-use opencv::core::{Mat, Scalar, Rect};
+use opencv::core::{Mat, Scalar, Rect, Point, Vector, Point2f};
 use opencv::imgproc;
 
 enum MarkerLocation {
@@ -33,16 +33,15 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     imgproc::canny(&thresh, edges, 100.0, 300.0, 3, false)?;
     thresh.release()?;
     let mut contours: Vec<MatOfPoint> = Vec::new();
-    let hierarchy = Mat::new();
-    imgproc::find_contours(edges, contours, hierarchy, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE)?;
+    imgproc::find_contours(edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release();
-    let mut contoursPoly: Vec<MatOfPoint2f> = Vec::new();
+    let mut contoursPoly: Vector<Point2f> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
 
     for i in 0.. contours.size() {
-        contoursPoly[i] = new MatOfPoint2f();
-        imgproc::approx_poly_dp(MatOfPoint2f::new(contours.get(i).toArray()), contoursPoly[i], 3.0, true);
-        bound_rect[i] = imgproc::bounding_rect((new MatOfPoint(contoursPoly[i].toArray()));
+        contoursPoly[i] = Vector::new();
+        imgproc::approx_poly_dp(&Vector::from(contours[i]), contoursPoly[i], 3.0, true)?;
+        bound_rect[i] = imgproc::bounding_rect(&Vector::from(contoursPoly[i]))?;
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
     }
 
@@ -53,28 +52,28 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     let mut middle = false;
     let mut right = false;
 
-        for i in 0..bound_rect.len() {
-            let midpoint = bound_rect[i].x + bound_rect[i].width / 2;
-            if midpoint < left_x {
-                left = true;
-            }
-            if left_x <= midpoint && midpoint <= right_x {
-                middle = true;
-            }
-            if right_x < midpoint {
-                right = true;
-            }
+    for i in 0..bound_rect.len() {
+        let midpoint = bound_rect[i].x + bound_rect[i].width / 2;
+        if midpoint < left_x {
+            left = true;
         }
+        if left_x <= midpoint && midpoint <= right_x {
+            middle = true;
+        }
+        if right_x < midpoint {
+            right = true;
+        }
+    }
 
-        if left {
-            return Ok(MarkerLocation::Left);
-        } else if middle {
-            return Ok(MarkerLocation::Middle);
-        } else if right {
-            return Ok(MarkerLocation::Right);
-        } else {
-            return Ok(MarkerLocation::Unknown);
-        }
+    if left {
+        return Ok(MarkerLocation::Left);
+    } else if middle {
+        return Ok(MarkerLocation::Middle);
+    } else if right {
+        return Ok(MarkerLocation::Right);
+    } else {
+        return Ok(MarkerLocation::Unknown);
+    }
 }
 
 #[no_mangle]
