@@ -66,4 +66,15 @@ public class WebLog {
         WARNING,
         ERROR
     }
+
+    @Override
+    public String toString() {
+        return "WebLog{" +
+                "tag='" + tag + '\'' +
+                ", message='" + message + '\'' +
+                ", severity=" + severity +
+                ", timestamp='" + timestamp + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
