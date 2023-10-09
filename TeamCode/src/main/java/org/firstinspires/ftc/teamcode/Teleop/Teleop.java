@@ -59,7 +59,7 @@ public class Teleop extends LinearOpMode {
 
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
         final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
-        boolean twoGamepads = true;
+        var twoGamepads = true;
 
         while (opModeIsActive()) {
             Robot.updateGamepads();

@@ -15,13 +15,13 @@ buildscript {
     }
 }
 
-System.setProperty( "user.dir", project.projectDir.toString() )
+System.setProperty("user.dir", project.projectDir.toString())
 System.println("Configuration Started: CenterStage")
 System.println("********************************")
-System.println("projectdir="+project.projectDir.toString())
-System.println("project version="+project.version.toString())
-System.println("gradle version="+gradle.gradleVersion)
-System.println("root project="+gradle.rootProject)
+System.println("project dir=" + project.projectDir.toString())
+System.println("project version=" + project.version.toString())
+System.println("gradle version=" + gradle.gradleVersion)
+System.println("root project=" + gradle.rootProject)
 
 
 // This is now required because aapt2 has to be downloaded from the

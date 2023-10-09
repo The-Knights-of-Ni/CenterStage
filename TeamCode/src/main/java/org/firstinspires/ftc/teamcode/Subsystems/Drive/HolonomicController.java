@@ -17,7 +17,7 @@ public class HolonomicController implements Controller {
 
 
     public MotorGeneric<Double> cropMotorPowers(MotorGeneric<Double> powers) {
-        double max = Math.max(Math.max(Math.abs(powers.frontLeft), Math.abs(powers.frontRight)),
+        var max = Math.max(Math.max(Math.abs(powers.frontLeft), Math.abs(powers.frontRight)),
                 Math.max(Math.abs(powers.rearLeft), Math.abs(powers.rearRight)));
         if (max > 1) {
             return new MotorGeneric<>(powers.frontLeft / max, powers.frontRight / max,
@@ -33,11 +33,11 @@ public class HolonomicController implements Controller {
 
     @Override
     public MotorGeneric<Double> calculate(Pose current, Pose target) {
-        double xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
-        double yPower = yControl.calculate(target.y * Drive.COUNTS_PER_MM, current.y * Drive.COUNTS_PER_MM);
-        double thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);
-        double yRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading); // Inverted bc api
-        double xRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
+        var xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
+        var yPower = yControl.calculate(target.y * Drive.COUNTS_PER_MM, current.y * Drive.COUNTS_PER_MM);
+        var thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);
+        var yRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading); // Inverted bc api
+        var xRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
         return reduceDrivePowers(cropMotorPowers(
                         new MotorGeneric<>(
                                 xRotated + yRotated + thetaPower,

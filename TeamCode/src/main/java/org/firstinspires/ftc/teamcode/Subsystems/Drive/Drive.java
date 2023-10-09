@@ -157,12 +157,12 @@ public class Drive extends Subsystem {
      * @return A list with the motor powers
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        double r = Math.hypot(leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        double lfPower = r * Math.cos(robotAngle) + rightStickX;
-        double lrPower = r * Math.sin(robotAngle) + rightStickX;
-        double rfPower = r * Math.sin(robotAngle) - rightStickX;
-        double rrPower = r * Math.cos(robotAngle) - rightStickX;
+        var r = Math.hypot(leftStickX, leftStickY);
+        var robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
+        var lfPower = r * Math.cos(robotAngle) + rightStickX;
+        var lrPower = r * Math.sin(robotAngle) + rightStickX;
+        var rfPower = r * Math.sin(robotAngle) - rightStickX;
+        var rrPower = r * Math.cos(robotAngle) - rightStickX;
         return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
     }
 
@@ -187,21 +187,21 @@ public class Drive extends Subsystem {
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // TODO: Check if acquisition time is correct
-        double imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
-        double imuXStart = imu.getPosition().x;
-        double imuYStart = imu.getPosition().y;
+        var imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
+        var imuXStart = imu.getPosition().x;
+        var imuYStart = imu.getPosition().y;
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         currentPosition = new Pose(0, 0, 0);
-        Pose previousPosition = currentPosition;
+        var previousPosition = currentPosition;
         MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
             // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
             updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
             // Feeds pose into targeter to get target ...
-            Pose target = targeter.getTarget(currentPosition);
+            var target = targeter.getTarget(currentPosition);
             logger.verbose("Current", currentPosition);
             logger.debug("Target", target);
             logger.verbose("Heading", currentPosition.heading);
@@ -230,41 +230,41 @@ public class Drive extends Subsystem {
     private void updateCurrentPose(double imuXStart, double imuYStart, double imuHeadingStart) {
         if (odometryEnabled) {
             // https://gm0.org/en/latest/docs/software/concepts/odometry.html
-            int odlTicks = odL.getCurrentPosition();
-            int odbTicks = odB.getCurrentPosition();
-            int odrTicks = odR.getCurrentPosition();
+            var odlTicks = odL.getCurrentPosition();
+            var odbTicks = odB.getCurrentPosition();
+            var odrTicks = odR.getCurrentPosition();
 
-            int deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
-            int deltaOdbTicks = odbTicks - previousBackOdometryTicks;
-            int deltaOdrTicks = odrTicks - previousRightOdometryTicks;
+            var deltaOdlTicks = odlTicks - previousLeftOdometryTicks;
+            var deltaOdbTicks = odbTicks - previousBackOdometryTicks;
+            var deltaOdrTicks = odrTicks - previousRightOdometryTicks;
 
-            double deltaOdlMM = deltaOdlTicks / ODOMETRY_COUNTS_PER_MM;
-            double deltaOdbMM = deltaOdbTicks / ODOMETRY_COUNTS_PER_MM;
-            double deltaOdrMM = deltaOdrTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdlMM = deltaOdlTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdbMM = deltaOdbTicks / ODOMETRY_COUNTS_PER_MM;
+            var deltaOdrMM = deltaOdrTicks / ODOMETRY_COUNTS_PER_MM;
 
-            double deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
-            double deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
-            double deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+            var deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
+            var deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
+            var deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
 
-            double deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
-            double deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
+            var deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
+            var deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
 
             currentPosition.heading += deltaTheta;
             currentPosition.heading = normalizeAngle(currentPosition.heading);
             currentPosition.x += deltaX;
             currentPosition.y += deltaY;
-            Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
+            var velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
 
             previousLeftOdometryTicks = odlTicks;
             previousBackOdometryTicks = odbTicks;
             previousRightOdometryTicks = odrTicks;
         } else {
-            Position position = imu.getPosition().toUnit(DistanceUnit.MM);
+            var position = imu.getPosition().toUnit(DistanceUnit.MM);
             currentPosition.x = position.x - imuXStart;
             currentPosition.y = position.y - imuYStart; // IMU inverts stuff
             currentPosition.heading = normalizeAngle(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart);
-            Velocity velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
+            var velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
         }
     }
