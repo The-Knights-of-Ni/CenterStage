@@ -32,17 +32,17 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     let edges = Mat::new();
     imgproc::canny(&thresh, edges, 100.0, 300.0, 3, false)?;
     thresh.release()?;
-    let mut contours: Vec<Vector<Point>> = Vec::new();
+    let mut contours: Vector<Vector<Point>> = Vector::new();
     imgproc::find_contours(edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release();
-    let mut contoursPoly: Vector<Point2f> = Vector::new();
+    let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
 
     for i in 0..contours.len() {
-        contoursPoly[i] = Vector::new();
-        imgproc::approx_poly_dp(&contours[i], contoursPoly[i], 3.0, true)?;
-        bound_rect[i] = imgproc::bounding_rect(&Vector::from(contoursPoly[i]))?;
-//            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
+        contours_poly.set(i, Vector::new())?;
+        imgproc::approx_poly_dp(&contours.get(i)?, &mut contours_poly.get(i)?, 3.0, true)?;
+        bound_rect[i] = imgproc::bounding_rect(&contours_poly.get(i)?)?;
+//            Imgproc.contourArea(contours_poly[i]); // TODO Maybe implement contour area check for next tourney
     }
 
     let left_x = (0.375 * CAMERA_WIDTH as f64) as i32;
