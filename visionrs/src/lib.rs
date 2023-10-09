@@ -1,4 +1,5 @@
-use anyhow::Result;
+use std::io::ErrorKind;
+use anyhow::{Error, Result};
 use jni;
 use jni::objects::JClass;
 use jni::JNIEnv;
@@ -22,7 +23,7 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
     let crop: Mat = Mat::roi(&mask, rect_crop)?;
     mask.release()?;
     if crop.empty() {
-        Ok(MarkerLocation::Unknown)
+        return Ok(MarkerLocation::Unknown);
     }
     let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
     let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
@@ -81,14 +82,14 @@ fn get_marker_location() -> Result<MarkerLocation> {
     let mut camera = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     let opened = videoio::VideoCapture::is_opened(&camera)?;
     if !opened {
-        Err("Unable to open default camera!")
+        return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to open default camera!")));
     }
     let mut frame = Mat::default();
     camera.read(&mut frame)?;
     get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i64)
 }
 
-fn marker_location_to_int(marker_location: MarkerLocation) -> u8 {
+fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
     match marker_location {
         MarkerLocation::Unknown => 3,
         MarkerLocation::Left => 0,
