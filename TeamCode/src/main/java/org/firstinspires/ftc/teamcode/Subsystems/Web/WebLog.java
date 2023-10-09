@@ -1,18 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-public class WebLog {
-    public String TAG;
-    public String message;
-    public LogSeverity severity;
-    public String timestamp;
-    public Object data;
-
+public record WebLog(String TAG, String message, LogSeverity severity, String timestamp, Object data) {
     public WebLog(String tag, String message, LogSeverity severity, Object data) {
-        this.TAG = tag;
-        this.message = message;
-        this.severity = severity;
-        this.timestamp = ((Long) System.currentTimeMillis()).toString();
-        this.data = data;
+        this(tag, message, severity, ((Long) System.currentTimeMillis()).toString(), data);
     }
 
     public WebLog(String tag, String message, LogSeverity severity) {
