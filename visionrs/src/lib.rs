@@ -2,6 +2,7 @@ use anyhow::Result;
 use jni;
 use jni::objects::{JClass, JString};
 use jni::JNIEnv;
+use jni::sys::jint;
 use opencv::prelude::*;
 use opencv::core::{Mat, Scalar, Rect, Point, Vector, Point2f};
 use opencv::imgproc;
@@ -93,9 +94,6 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // this is the class that owns our static method. Not going to be used, but
     // still needs to have an argument slot
     _class: JClass<'local>,
-) -> JString<'local> {
-    let output = env // TODO: Actually return proper result
-        .new_string("unknown")
-        .expect("Couldn't create java string!");
-    output
+) -> jint {
+    jint::from(3)
 }
