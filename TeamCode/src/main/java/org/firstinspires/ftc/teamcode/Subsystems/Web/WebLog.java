@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
-public record WebLog(String TAG, String message, LogSeverity severity, String timestamp, Object data) {
+public record WebLog(String tag, String message, LogSeverity severity, String timestamp, Object data) {
     public WebLog(String tag, String message, LogSeverity severity, Object data) {
         this(tag, message, severity, ((Long) System.currentTimeMillis()).toString(), data);
     }
