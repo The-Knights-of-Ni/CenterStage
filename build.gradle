@@ -22,6 +22,7 @@ System.println("project dir=" + project.projectDir.toString())
 System.println("project version=" + project.version.toString())
 System.println("gradle version=" + gradle.gradleVersion)
 System.println("root project=" + gradle.rootProject)
+System.println("gradle java version=" + System.getProperty("java.version"))
 
 
 // This is now required because aapt2 has to be downloaded from the
