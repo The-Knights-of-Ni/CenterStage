@@ -1,11 +1,11 @@
 use anyhow::Result;
 use jni;
-use jni::objects::{JClass, JString};
+use jni::objects::JClass;
 use jni::JNIEnv;
-use jni::sys::jint;
+use jni::sys::jbyte;
 use opencv::prelude::*;
 use opencv::core::{Mat, Scalar, Rect, Point, Vector, Point2f};
-use opencv::imgproc;
+use opencv::{imgproc, videoio};
 
 enum MarkerLocation {
     Left,
@@ -14,31 +14,23 @@ enum MarkerLocation {
     Unknown,
 }
 
-fn safe_mat_from_mat_size(mat: &Mat) -> Result<Mat> {
-    unsafe {
-        let size = mat.size()?;
-        let new_mat = Mat::new_size(size, imgproc::COLOR_RGB2HSV)?;
-        return Ok(new_mat);
-    }
-}
-
-fn getMarkerLocation(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
-    let mut mask: Mat = safe_mat_from_mat_size(&input)?;
+fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
+    let mut mask: Mat = Mat::default();
     imgproc::cvt_color(&input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
     let rect_crop = Rect::new(0, 720, 1920, 360);
     let crop: Mat = Mat::roi(&mask, rect_crop)?;
     mask.release()?;
     if crop.empty() {
-        return Ok(MarkerLocation::Unknown);
+        Ok(MarkerLocation::Unknown)
     }
     let low_hsv = Scalar::new(20.0, 100.0, 100.0, 0.0);
     let high_hsv = Scalar::new(30.0, 255.0, 255.0, 0.0);
-    let mut thresh: Mat = safe_mat_from_mat_size(&crop)?;
+    let mut thresh: Mat = Mat::default();
 
     opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
 
-    let mut edges = safe_mat_from_mat_size(&thresh)?; // TODO: Check if this is the right way to do this
+    let mut edges = Mat::default();
     imgproc::canny(&thresh, &mut edges, 100.0, 300.0, 3, false)?;
     thresh.release()?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
@@ -75,13 +67,33 @@ fn getMarkerLocation(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
     }
 
     if left {
-        return Ok(MarkerLocation::Left);
+        Ok(MarkerLocation::Left)
     } else if middle {
-        return Ok(MarkerLocation::Middle);
+        Ok(MarkerLocation::Middle)
     } else if right {
-        return Ok(MarkerLocation::Right);
+        Ok(MarkerLocation::Right)
     } else {
-        return Ok(MarkerLocation::Unknown);
+        Ok(MarkerLocation::Unknown)
+    }
+}
+
+fn get_marker_location() -> Result<MarkerLocation> {
+    let mut camera = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
+    let opened = videoio::VideoCapture::is_opened(&camera)?;
+    if !opened {
+        Err("Unable to open default camera!")
+    }
+    let mut frame = Mat::default();
+    camera.read(&mut frame)?;
+    get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i64)
+}
+
+fn marker_location_to_int(marker_location: MarkerLocation) -> u8 {
+    match marker_location {
+        MarkerLocation::Unknown => 3,
+        MarkerLocation::Left => 0,
+        MarkerLocation::Middle => 1,
+        MarkerLocation::Right => 2
     }
 }
 
@@ -90,10 +102,11 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // Notice that this `env` argument is mutable. Any `JNIEnv` API that may
     // allocate new object references will take a mutable reference to the
     // environment.
-    mut env: JNIEnv<'local>,
+    mut _env: JNIEnv<'local>,
     // this is the class that owns our static method. Not going to be used, but
     // still needs to have an argument slot
     _class: JClass<'local>,
-) -> jint {
-    jint::from(3)
+) -> jbyte {
+    // TODO: Throw java exception on error instead of panicking
+    jbyte::from(marker_location_to_int(get_marker_location().unwrap()))
 }
