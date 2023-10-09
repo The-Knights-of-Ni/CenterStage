@@ -21,12 +21,12 @@ fn safe_mat_from_mat_size(mat: &Mat) -> Result<Mat> {
     }
 }
 
-fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
+fn getMarkerLocation(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
     let mut mask: Mat = safe_mat_from_mat_size(&input)?;
     imgproc::cvt_color(&input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
     let rect_crop = Rect::new(0, 720, 1920, 360);
-    let crop: Mat = Mat::new(mask, rect_crop.y, rect_crop.y + rect_crop.height, rect_crop.x, rect_crop.x + rect_crop.width);
+    let crop: Mat = Mat::roi(&mask, rect_crop)?;
     mask.release()?;
     if crop.empty() {
         return Ok(MarkerLocation::Unknown);
@@ -42,7 +42,7 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
     thresh.release()?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
     imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
-    edges.release();
+    edges.release()?;
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
 
@@ -53,8 +53,8 @@ fn getMarkerLocation(input: Mat, CAMERA_WIDTH: i64) -> Result<MarkerLocation> {
 //            Imgproc.contourArea(contours_poly[i]); // TODO Maybe implement contour area check for next tourney
     }
 
-    let left_x = (0.375 * CAMERA_WIDTH as f64) as i32;
-    let right_x = (0.625 * CAMERA_WIDTH as f64) as i32;
+    let left_x = (0.375 * camera_width as f64) as i32;
+    let right_x = (0.625 * camera_width as f64) as i32;
 
     let mut left = false;
     let mut middle = false;
