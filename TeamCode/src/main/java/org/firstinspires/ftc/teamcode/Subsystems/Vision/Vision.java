@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Vision;
 
+import android.util.Log;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -8,16 +9,11 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.knightsofni.visionrs.NativeVision;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
 /**
  * The Vision Subsystem
- *
- * @see <a href="https://github.com/OpenFTC/EasyOpenCV">EasyOpenCV</a>
  */
 public class Vision extends Subsystem {
     public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
@@ -103,10 +99,17 @@ public class Vision extends Subsystem {
     public MarkerLocation detectMarkerRun() {
         // Return the marker location
         return switch (NativeVision.process()) {
-            case 0 -> MarkerLocation.LEFT;
-            case 1 -> MarkerLocation.MIDDLE;
-            case 2 -> MarkerLocation.RIGHT;
-            default -> MarkerLocation.UNKNOWN;
+            case 0:
+                yield MarkerLocation.LEFT;
+            case 1:
+                yield MarkerLocation.MIDDLE;
+            case 2:
+                yield MarkerLocation.RIGHT;
+            case -1:
+                Log.e("Vision", "Unknown rust error");
+                yield MarkerLocation.UNKNOWN;
+            default:
+                yield MarkerLocation.UNKNOWN;
         };
     }
 }
