@@ -8,7 +8,7 @@ use opencv::prelude::*;
 use opencv::core::{Mat, Scalar, Rect, Point, Vector, Point2f};
 use opencv::{imgproc, videoio};
 
-enum MarkerLocation {
+pub enum MarkerLocation {
     Left,
     Middle,
     Right,
@@ -34,7 +34,7 @@ pub fn get_edges_pipeline(input: &Mat) -> Result<Mat> {
         return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to crop image!")));
     }
     let low_hsv = Scalar::new(85.0, 100.0, 100.0, 0.0);
-    let high_hsv = Scalar::new(95.0, 255.0, 255.0, 0.0);
+    let high_hsv = Scalar::new(95.0, 255.0, 235.0, 0.0);
     let mut thresh: Mat = Mat::default();
 
     opencv::core::in_range(&crop, &low_hsv, &high_hsv, &mut thresh)?;
@@ -51,13 +51,15 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
     imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release()?;
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
-    let mut bound_rect: Vec<Rect> = Vec::new();
+    let mut bound_rect: Vec<Rect> = Vec::new(); // TODO: Maybe use Vector instead of Vec
 
     for i in 0..contours.len() {
-        contours_poly.set(i, Vector::new())?;
-        imgproc::approx_poly_dp(&contours.get(i)?, &mut contours_poly.get(i)?, 3.0, true)?;
-        bound_rect[i] = imgproc::bounding_rect(&contours_poly.get(i)?)?;
-//            imgproc::contourArea(&contours_poly.get(i)); // TODO: Maybe implement contour area check
+        let mut v: Vector<Point2f> = Vector::new();;
+        imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
+        contours_poly.push(v);
+        bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
+        // let _area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
+        // TODO: Maybe implement contour area check
     }
 
     let left_x = (0.375 * camera_width as f64) as i32;
@@ -91,7 +93,7 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
     }
 }
 
-fn get_marker_location() -> Result<MarkerLocation> {
+pub fn get_marker_location() -> Result<MarkerLocation> {
     let mut camera = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     let opened = videoio::VideoCapture::is_opened(&camera)?;
     if !opened {
@@ -102,7 +104,7 @@ fn get_marker_location() -> Result<MarkerLocation> {
     get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i64)
 }
 
-fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
+pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
     match marker_location {
         MarkerLocation::Unknown => 3,
         MarkerLocation::Left => 0,
