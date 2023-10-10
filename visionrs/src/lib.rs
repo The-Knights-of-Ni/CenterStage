@@ -16,7 +16,7 @@ pub enum MarkerLocation {
 }
 
 fn get_crop(input: &Mat, camera_width: i32, camera_height: i32) -> Result<Mat> {
-    let y_height = camera_height / 3;
+    let y_height = 2 * camera_height / 3;
     let y_offset = camera_height - y_height;
     let rect_crop = Rect::new(0, y_offset, camera_width, y_height);
     Ok(Mat::roi(input, rect_crop)?)
