@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.BasicAccelerationIntegrator;
 import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Robot {
@@ -64,7 +65,16 @@ public class Robot {
         this.telemetry = telemetry;
         this.logger = new MasterLogger(telemetry, "Robot");
         logger.info("started");
-        logger.verbose("android version: " + Build.VERSION.RELEASE);
+        logger.verbose("OS_NAME: " + System.getProperty("os.name"));
+        logger.verbose("ANDROID_VERSION: " + Build.VERSION.RELEASE);
+        logger.verbose("ANDROID_API_LEVEL: " + Build.VERSION.SDK_INT);
+        logger.verbose("SUPPORTED_ABIS: " + Arrays.toString(Build.SUPPORTED_ABIS));
+        logger.verbose("SUPPORTED_32_BIT_ABIS: " + Arrays.toString(Build.SUPPORTED_32_BIT_ABIS));
+        logger.verbose("SUPPORTED_64_BIT_ABIS: " + Arrays.toString(Build.SUPPORTED_64_BIT_ABIS));
+        logger.verbose("OS_ARCH: " + System.getProperty("os.arch"));
+        logger.verbose("JAVA_VERSION: " + System.getProperty("java.version"));
+
+
         this.hardwareMap = hardwareMap;
         double batteryVoltage = getBatteryVoltage();
         if (batteryVoltage < 11) {
