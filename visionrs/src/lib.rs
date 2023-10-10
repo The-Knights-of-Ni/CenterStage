@@ -15,20 +15,18 @@ pub enum MarkerLocation {
     Unknown,
 }
 
-fn get_crop(input: &Mat) -> Result<Mat> {
-    if input.cols() < 1920 {
-        return Ok(input.clone());
-    } else {
-        let rect_crop = Rect::new(0, 720, 1920, 360);
-        Ok(Mat::roi(input, rect_crop)?)
-    }
+fn get_crop(input: &Mat, camera_width: i32, camera_height: i32) -> Result<Mat> {
+    let y_height = camera_height / 3;
+    let y_offset = camera_height - y_height;
+    let rect_crop = Rect::new(0, y_offset, camera_width, y_height);
+    Ok(Mat::roi(input, rect_crop)?)
 }
 
-pub fn get_edges_pipeline(input: &Mat) -> Result<Mat> {
+pub fn get_edges_pipeline(input: &Mat, camera_width: i32, camera_height: i32) -> Result<Mat> {
     let mut mask: Mat = Mat::default();
     imgproc::cvt_color(input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
-    let crop: Mat = get_crop(&mask)?;
+    let crop: Mat = get_crop(&mask, camera_width, camera_height)?;
     mask.release()?;
     if crop.empty() {
         return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to crop image!")));
@@ -45,8 +43,8 @@ pub fn get_edges_pipeline(input: &Mat) -> Result<Mat> {
     return Ok(edges);
 }
 
-fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerLocation> {
-    let mut edges = get_edges_pipeline(&input)?;
+fn get_marker_location_pipeline(input: Mat, camera_width: i32, camera_height: i32) -> Result<MarkerLocation> {
+    let mut edges = get_edges_pipeline(&input, camera_width, camera_height)?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
     imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
     edges.release()?;
@@ -54,12 +52,12 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i64) -> Result<MarkerL
     let mut bound_rect: Vec<Rect> = Vec::new(); // TODO: Maybe use Vector instead of Vec
 
     for i in 0..contours.len() {
-        let mut v: Vector<Point2f> = Vector::new();;
+        let mut v: Vector<Point2f> = Vector::new();
         imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
         contours_poly.push(v);
         bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
         // let _area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
-        // TODO: Maybe implement contour area check
+        // TODO: Maybe implement contour area check (above code causes a runtime error)
     }
 
     let left_x = (0.375 * camera_width as f64) as i32;
@@ -101,7 +99,7 @@ pub fn get_marker_location() -> Result<MarkerLocation> {
     }
     let mut frame = Mat::default();
     camera.read(&mut frame)?;
-    get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i64)
+    get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32, camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32)
 }
 
 pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
@@ -124,5 +122,10 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     _class: JClass<'local>,
 ) -> jbyte {
     // TODO: Throw java exception on error instead of panicking
-    jbyte::from(marker_location_to_int(get_marker_location().unwrap()))
+    let marker_location_result = get_marker_location();
+    if marker_location_result.is_ok() {
+        return jbyte::from(marker_location_to_int(marker_location_result.unwrap())) // TODO: Fix unwrap
+    } else {
+        return jbyte::from(-1);
+    }
 }
