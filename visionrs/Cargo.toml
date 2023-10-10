@@ -16,3 +16,8 @@ path = "src/bin.rs"
 jni = "0.21"
 opencv = { version = "0.84" }
 anyhow = "1.0"
+
+[profile.release]
+strip = true
+# Profiling configuration
+#debug = 1
