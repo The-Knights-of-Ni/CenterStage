@@ -127,6 +127,7 @@ repositories {
 
 cargo {
     module = "../visionrs"       // Or whatever directory contains your Cargo.toml
+    extraCargoBuildArguments = ['-vv']
     libname = "visionrs"          // Or whatever matches Cargo.toml's [package] name.
-    targets = ["arm", "x86"]  // See bellow for a longer list of options
+    targets = ["arm", "arm64"]  // See bellow for a longer list of options
 }
