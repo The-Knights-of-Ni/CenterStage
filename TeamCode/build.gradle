@@ -43,3 +43,9 @@ tasks.withType(Test) {
         showStandardStreams true
     }
 }
+
+tasks.whenTaskAdded { task ->
+    if ((task.name == 'javaPreCompileDebug' || task.name == 'javaPreCompileRelease')) {
+        task.dependsOn 'cargoBuild'
+    }
+}
