@@ -83,3 +83,4 @@ lint/tmp/
 # rust
 **/target/
 **/Cargo.lock
+/opencv-build/*
