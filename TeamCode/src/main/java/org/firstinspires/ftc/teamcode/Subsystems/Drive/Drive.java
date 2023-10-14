@@ -50,8 +50,8 @@ public class Drive extends Subsystem {
     private final DcMotorEx odL;
     private final DcMotorEx odB;
     private final DcMotorEx odR;
-    public double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
-    public double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+    public double ODOMETRY_TRACKWIDTH = 406.4;
+    public double ODOMETRY_FOWARD_DISPLACEMENT = -50.8; // How far back the back odometry wheel is
 
     public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
 
@@ -241,7 +241,7 @@ public class Drive extends Subsystem {
 
             var deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
             var deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
-            var deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+            var deltaPerpendicular = deltaOdbMM - ODOMETRY_FOWARD_DISPLACEMENT * deltaTheta;
 
             var deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
             var deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);
