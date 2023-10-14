@@ -41,35 +41,27 @@ public class Control extends Subsystem {
     }
 
     public void setLinearSlideMotorPower(double power) {
-
     }
 
     public void setClaw(ClawState clawState) {
-
     }
 
     public void setClawSync(ClawState clawState) {
-
     }
 
     public void openClaw() {
-
     }
 
     public void closeClaw() {
-
     }
 
     public void openClawSync() {
-
     }
 
     public void closeClawSync() {
-
     }
 
     public void moveCrane(CraneState craneState) {
-
     }
 
     public enum ClawState { //TODO: Calibrate claw constants
