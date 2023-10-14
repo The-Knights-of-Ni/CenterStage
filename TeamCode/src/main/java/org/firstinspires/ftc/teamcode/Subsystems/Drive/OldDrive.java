@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
+import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.Arrays;
@@ -128,10 +129,16 @@ public class OldDrive extends Subsystem {
         rearRight.setPower(powers[3]);
     }
 
-    public void setDrivePowers(double power) {
-        setDrivePowers(new double[]{power, power, power, power});
+    public void setDrivePowers(MotorGeneric<Double> powers) {
+        this.frontLeft.setPower(powers.frontLeft);
+        this.frontRight.setPower(powers.frontRight);
+        this.rearLeft.setPower(powers.rearLeft);
+        this.rearRight.setPower(powers.rearRight);
     }
 
+    public void setDrivePowers(double power) {
+        setDrivePowers(new MotorGeneric<>(power, power, power, power));
+    }
     /**
      * Sets all drive motor powers to zero
      */
@@ -147,15 +154,16 @@ public class OldDrive extends Subsystem {
      * @param rightStickX right joystick x position for turning
      * @return A list with the motor powers
      */
-    public double[] calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        double r = Math.hypot(leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        double lrPower = r * Math.sin(robotAngle) + rightStickX;
-        double lfPower = r * Math.cos(robotAngle) + rightStickX;
-        double rrPower = r * Math.cos(robotAngle) - rightStickX;
-        double rfPower = r * Math.sin(robotAngle) - rightStickX;
-        return new double[]{lfPower, rfPower, lrPower, rrPower};
+    public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
+        var r = Math.hypot(leftStickX, leftStickY);
+        var robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
+        var lfPower = r * Math.cos(robotAngle) + rightStickX;
+        var lrPower = r * Math.sin(robotAngle) + rightStickX;
+        var rfPower = r * Math.sin(robotAngle) - rightStickX;
+        var rrPower = r * Math.cos(robotAngle) - rightStickX;
+        return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
     }
+
 
     /**
      * PID motor control program to ensure all four motors are synchronized
@@ -303,5 +311,9 @@ public class OldDrive extends Subsystem {
                 halt();
             }
         }
+    }
+
+    public void move(Pose pose) {
+        moveVector(pose.getCoordinate(), pose.heading);
     }
 }
