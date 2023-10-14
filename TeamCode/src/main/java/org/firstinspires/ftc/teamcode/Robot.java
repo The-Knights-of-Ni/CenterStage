@@ -46,7 +46,7 @@ public class Robot {
     public DcMotorEx rightEncoder;
 
     // Control motors
-    public DcMotorEx airplaneLauncher;
+    public Servo airplaneLauncher;
 
     public BNO055IMU imu;
     // Subsystems
@@ -164,8 +164,8 @@ public class Robot {
         rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        airplaneLauncher = (DcMotorEx)hardwareMap.dcMotor.get("airplane");
-        airplaneLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        airplaneLauncher = hardwareMap.servo.get("airplane");
+        airplaneLauncher.setDirection(Servo.Direction.FORWARD);
     }
 
     private void servoInit() {

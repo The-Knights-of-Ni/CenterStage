@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
@@ -14,9 +14,9 @@ public class Control extends Subsystem {
     public static SlidePosition RETRACTED_SLIDE = new SlidePosition(0);
     public static SlidePosition SCORE_LOW_SLIDE = new SlidePosition(0);
 
-    private DcMotorEx airplaneLauncher;
+    private Servo airplaneLauncher;
 
-    public Control(Telemetry telemetry, DcMotorEx airplaneLauncher) {
+    public Control(Telemetry telemetry, Servo airplaneLauncher) {
         super(telemetry, "control");
         this.airplaneLauncher = airplaneLauncher;
     }
@@ -27,9 +27,9 @@ public class Control extends Subsystem {
     public void initDevicesTeleop() {
     }
 
-    public void airplaneLaunch(PlaneLaunchRange range) throws InterruptedException {
+    public void airplaneLaunch() throws InterruptedException {
         //launch plane
-        airplaneLauncher.setPower(range.motorPower);
+        airplaneLauncher.setPosition(1.0);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
@@ -79,19 +79,6 @@ public class Control extends Subsystem {
 
         ClawState(double position) {
             this.position = position;
-        }
-    }
-
-    public enum PlaneLaunchRange { //TODO: Calibrate Motor Powers
-        LONG(1.0),
-        MEDIUM(0.7),
-        SHORT(0.3),
-        OFF(0);
-
-        private final double motorPower;
-
-        PlaneLaunchRange(double motorPower) {
-            this.motorPower = motorPower;
         }
     }
 
