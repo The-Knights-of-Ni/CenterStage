@@ -58,7 +58,7 @@ public class Teleop extends LinearOpMode {
 
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
         final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
-        var twoGamepads = true;
+        boolean twoGamepads = true;
 
         while (opModeIsActive()) {
             Robot.updateGamepads();
@@ -83,14 +83,7 @@ public class Teleop extends LinearOpMode {
 
                 // Paper Drone
                 if (Robot.gamepad1.dPadUp.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-                } else if (Robot.gamepad1.dPadRight.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
-                } else if (Robot.gamepad1.dPadLeft.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
-                }
-                if (Robot.gamepad1.dPadDown.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+                    robot.control.airplaneLaunch();
                 }
 
 
@@ -161,14 +154,7 @@ public class Teleop extends LinearOpMode {
 
                 // Paper Drone
                 if (Robot.gamepad1.dPadUp.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-                } else if (Robot.gamepad1.dPadRight.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
-                } else if (Robot.gamepad1.dPadLeft.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
-                }
-                if (Robot.gamepad1.dPadDown.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+                    robot.control.airplaneLaunch();
                 }
 
                 if ((Robot.gamepad1.bButton.isPressed() && Robot.gamepad1.xButton.isPressed()) || (Robot.gamepad2.bButton.isPressed() && Robot.gamepad2.xButton.isPressed())) {
