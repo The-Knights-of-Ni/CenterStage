@@ -18,9 +18,9 @@ public class PurePursuit implements Targeter {
     }
 
     public Pose getTarget(Pose currentPosition) {
-        Circle circle = new Circle(currentPosition.getCoordinate(), lookaheadDistance);
-        Vector target = path.end().getCoordinate();
-        Pose targetWaypoint = path.end();
+        var circle = new Circle(currentPosition.getCoordinate(), lookaheadDistance);
+        var target = path.end().getCoordinate();
+        var targetWaypoint = path.end();
         for (Line lineSegment : path.lines) {
             target = circle.segmentIntersections(lineSegment) // Gets the intersections
                     .stream() // Converts to stream (for comparing)
