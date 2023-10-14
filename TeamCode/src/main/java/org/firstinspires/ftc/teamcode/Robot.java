@@ -202,6 +202,8 @@ public class Robot {
             } catch (Exception e) {
                 logger.error("Web Thread init failed " + e.getMessage(), e);
             }
+        } else {
+            logger.warning("Web subsystem init skipped");
         }
         telemetryBroadcast("Status", "all subsystems initialized");
     }

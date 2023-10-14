@@ -89,9 +89,6 @@ public class AprilTagDetectionThread extends Thread {
     }
 
 
-    /**
-     * Add telemetry about AprilTag detections.
-     */
     private void updateAprilTagList() {
         currentDetections = aprilTag.getDetections();
     }
