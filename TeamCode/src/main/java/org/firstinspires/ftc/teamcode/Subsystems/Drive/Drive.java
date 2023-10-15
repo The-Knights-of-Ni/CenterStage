@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.Controller;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfile;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.StaticTargeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.Targeter;
@@ -334,5 +335,10 @@ public class Drive extends Subsystem {
 
     public void purePursuit(Path path) {
         motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
+    }
+
+
+    public void followProfile(MotionProfile profile) {
+        // TODO: Implement
     }
 }
