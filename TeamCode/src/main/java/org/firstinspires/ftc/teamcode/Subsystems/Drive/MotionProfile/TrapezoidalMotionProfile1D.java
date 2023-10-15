@@ -18,7 +18,7 @@ public class TrapezoidalMotionProfile1D implements MotionProfile1D {
      * @return Target position
      */
     @Override
-    public double calculate(double time) {
+    public MotionProfileOutput1D calculate(double time) {
         var acceleration_dt = maxVelocity / maxAcceleration;
         // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
         var halfway_distance = distance / 2;
@@ -41,19 +41,19 @@ public class TrapezoidalMotionProfile1D implements MotionProfile1D {
         // check if we're still in the motion profile
         var entire_dt = acceleration_dt + cruise_dt + deacceleration_dt;
         if (time > entire_dt) {
-            return distance;
+            return new MotionProfileOutput1D(distance, 0, -0.1);
         }
         // if we're accelerating
         if (time < acceleration_dt) {
             // use the kinematic equation for acceleration
-            return 0.5 * maxAcceleration * Math.pow(time, 2);
+            return new MotionProfileOutput1D(0.5 * maxAcceleration * Math.pow(time, 2), maxAcceleration * time, maxAcceleration);
         }
         // if we're cruising
         else if (time < deacceleration_time) {
             acceleration_distance = 0.5 * maxAcceleration * Math.pow(acceleration_dt, 2);
             var cruise_current_dt = time - acceleration_dt;
             // use the kinematic equation for constant velocity
-            return acceleration_distance + maxVelocity * cruise_current_dt;
+            return new MotionProfileOutput1D(acceleration_distance + maxVelocity * cruise_current_dt, maxVelocity, 0.0);
         }
         // if we're decelerating
         else {
@@ -61,7 +61,7 @@ public class TrapezoidalMotionProfile1D implements MotionProfile1D {
             cruise_distance = maxVelocity * cruise_dt;
             deacceleration_time = time - deacceleration_time;
             // use the kinematic equations to calculate the instantaneous desired position
-            return acceleration_distance + cruise_distance + maxVelocity * deacceleration_time - 0.5 * maxAcceleration * Math.pow(deacceleration_time, 2);
+            return new MotionProfileOutput1D(acceleration_distance + cruise_distance + maxVelocity * deacceleration_time - 0.5 * maxAcceleration * Math.pow(deacceleration_time, 2), maxVelocity - maxAcceleration * deacceleration_time, -maxAcceleration); // TODO: double check math
         }
     }
 }
