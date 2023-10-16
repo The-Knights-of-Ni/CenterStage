@@ -231,7 +231,7 @@ public class Drive extends Subsystem {
             previousPosition = currentPosition;
         }
         imu.stopAccelerationIntegration();
-        stop(); // Stops the robot ... TODO: Maybe don't stop the robot if the target has a specified velocity?
+        stop(); // Stops the robot
     }
 
     private void updateCurrentPose(double imuXStart, double imuYStart, double imuHeadingStart) {
@@ -343,6 +343,9 @@ public class Drive extends Subsystem {
         var timeoutManager = new TimeoutManager(100_000_000);
         var timer = new ElapsedTime();
         timer.reset();
+        MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
+        MotorGeneric<Integer> currentTickCounts;
+        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         while (!profile.isFinished(timer.seconds()) && !timeoutManager.isExceeded()) {
             updateCurrentPose(0, 0, 0); // TODO: Fix
             var target = profile.calculate(timer.seconds());
@@ -352,7 +355,13 @@ public class Drive extends Subsystem {
             var feedforwardMotorPowers = vaController.calculate(currentPosition.heading, target);
             var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers);
             setDrivePowers(motorPowers);
-            // TODO: Implement timeout manager
+            currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
+            if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {
+                timeoutManager.start();
+            } else {
+                timeoutManager.stop();
+            }
+            previousTickCounts = currentTickCounts;
         }
     }
 }
