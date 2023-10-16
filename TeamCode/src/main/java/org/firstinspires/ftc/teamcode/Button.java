@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 public class Button {
-    public ButtonStatus status;
+    private ButtonStatus status;
+    public ButtonStatus previousStatus;
     public boolean toggle = false;
 
     public Button() {
@@ -9,7 +10,8 @@ public class Button {
     }
 
     public void update(boolean value) {
-        switch (status) {
+        var s = status;
+        switch (s) {
             case NOTCLICKED:
                 if (value) {
                     status = ButtonStatus.CLICKING;
@@ -26,10 +28,11 @@ public class Button {
                     toggle = !toggle;
                 }
         }
+        previousStatus = s;
     }
 
     public boolean isPressed() {
-        return status == ButtonStatus.CLICKING;
+        return status == ButtonStatus.CLICKING && previousStatus != ButtonStatus.CLICKING;
     }
 
     public boolean hasPressedPrev() {
