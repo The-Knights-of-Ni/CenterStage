@@ -24,11 +24,12 @@ public class IMUDirectionalTest extends Auto {
         initAuto(AllianceColor.RED);
         waitForStart();
         timer.reset();
-        robot.drive.imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 0),
-                new Velocity(DistanceUnit.MM, 0, 0, 0, 0), 100);
+//        TODO: re-enable when new drive is enabled
+//        robot.drive.imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 0),
+//                new Velocity(DistanceUnit.MM, 0, 0, 0, 0), 100);
         while (opModeIsActive()) {
-            telemetry.addData("Heading", robot.drive.imu.getAngularOrientation().firstAngle);
-            telemetry.addData("Position", robot.drive.imu.getPosition());
+//            telemetry.addData("Heading", robot.drive.imu.getAngularOrientation().firstAngle);
+//            telemetry.addData("Position", robot.drive.imu.getPosition());
             telemetry.update();
             Thread.sleep(10);
         }

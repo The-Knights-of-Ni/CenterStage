@@ -46,23 +46,20 @@ public class Drive extends Subsystem {
     public static double COUNTS_CORRECTION_Y = 1.0;
     public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
 
-    // Default drive speeds
-    public static double DRIVE_SPEED = 0.60;
     // Move PID coefficients
     public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
     public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.00010, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
     public final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
-    public boolean odometryEnabled;
+    private final boolean odometryEnabled;
     private final DcMotorEx odL;
     private final DcMotorEx odB;
     private final DcMotorEx odR;
-    public double ODOMETRY_TRACKWIDTH = 10.0; // TODO: Calibrate
-    public double ODOMETRY_BACK_DISPLACEMENT = 10.0; // How far back the back odometry wheel is TODO: Calibrate
+    public double ODOMETRY_TRACKWIDTH = 406.4;
+    public double ODOMETRY_FOWARD_DISPLACEMENT = -50.8; // How far back the back odometry wheel is
 
     public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
-
 
     public boolean debug = false;
 
@@ -250,7 +247,7 @@ public class Drive extends Subsystem {
 
             var deltaTheta = (deltaOdlMM - deltaOdrMM) / (ODOMETRY_TRACKWIDTH);
             var deltaXC = (deltaOdlMM + deltaOdrMM) / 2;
-            var deltaPerpendicular = deltaOdbMM - ODOMETRY_BACK_DISPLACEMENT * deltaTheta;
+            var deltaPerpendicular = deltaOdbMM - ODOMETRY_FOWARD_DISPLACEMENT * deltaTheta;
 
             var deltaX = deltaXC * Math.sin(currentPosition.heading) + deltaPerpendicular * Math.cos(currentPosition.heading);
             var deltaY = deltaXC * Math.cos(currentPosition.heading) - deltaPerpendicular * Math.sin(currentPosition.heading);

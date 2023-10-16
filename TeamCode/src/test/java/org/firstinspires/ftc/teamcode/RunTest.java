@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.*;
@@ -21,6 +24,7 @@ public class RunTest {
     Robot init(HashMap<String, Boolean> flags) {
         HardwareMap hardwareMap = mock(HardwareMap.class);
         hardwareMap.dcMotor = (HardwareMap.DeviceMapping<DcMotor>) mock(HardwareMap.DeviceMapping.class);
+        when(hardwareMap.get("imu")).thenReturn(mock(HardwareDevice.class)); // TODO: Fix this statement
         when(hardwareMap.dcMotor.get("fl")).thenReturn(new MockDcMotorEx());
         when(hardwareMap.dcMotor.get("fr")).thenReturn(new MockDcMotorEx());
         when(hardwareMap.dcMotor.get("rl")).thenReturn(new MockDcMotorEx());
@@ -43,9 +47,8 @@ public class RunTest {
     void testWeb() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             HashMap<String, Boolean> flags = new HashMap<>();
-            flags.put("web", true);
-            Robot robot = init(flags);
-            robot.drive.moveVector(new Vector(0, 25000));
+            WebThread web = new WebThread();
+            web.start();
             WebThread.addLog(new WebLog("test", "Testing stuff", WebLog.LogSeverity.INFO));
             WebThread.addAction(new WebAction("test", "Doing nothing for 100 seconds"));
             for (int i = 0; i < 101; i++) {
@@ -53,7 +56,7 @@ public class RunTest {
                 WebThread.setPercentage("test", i);
             }
             WebThread.removeAction("test");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }

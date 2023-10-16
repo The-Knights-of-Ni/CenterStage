@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Web.Server;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,28 +18,21 @@ public class Request {
 
 
     public Request(String text) throws WebError {
-        List<String> lines = Arrays.stream(text.split("\n")).collect(Collectors.toList());
+        List<String> lines = new ArrayList<>(Arrays.asList(text.split("\\r?\\n")));
         String topLine = lines.get(0);
         lines.remove(0);
         HashMap<String, String> h = new HashMap<>();
-        boolean parsingHeaders = true;
-        StringBuilder body = new StringBuilder();
+        String body = "";
         for (String line : lines) {
-            if (parsingHeaders) {
-                String[] split = HEADER_PATTERN.split(line);
-                if (split.length > 1 && !split[0].isEmpty() && !split[1].isEmpty()) {
-                    if (!h.containsKey(split[0])) {
-                        h.put(split[0], split[1]);
-                    } else {
-                        h.put(split[0], h.get(split[0]) + ";" + split[1]);
-                    }
-                } else if (line.isEmpty()) {
-                    parsingHeaders = false;
+            String[] split = HEADER_PATTERN.split(line);
+            if (split.length > 1 && !split[0].isEmpty() && !split[1].isEmpty()) {
+                if (!h.containsKey(split[0])) {
+                    h.put(split[0], split[1]);
                 } else {
-                    throw new WebError("Invalid header '" + line + "'", 400, 4001);
+                    h.put(split[0], h.get(split[0]) + ";" + split[1]);
                 }
             } else {
-                body.append(line).append("\n");
+                throw new WebError("Invalid header '" + line + "'", 400, 4001);
             }
         }
         String[] split = topLine.split(" ");

@@ -2,19 +2,23 @@ package org.firstinspires.ftc.teamcode.Subsystems.Web;
 
 import android.util.Log;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.PIDCoefficients;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Canvas.WebCanvas;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Request;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.Response;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.Server.WebError;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -62,7 +66,7 @@ public class WebThread extends Thread {
         actions.removeIf(action -> Objects.equals(action.name, task));
     }
 
-    private static String readToEnd(InputStreamReader reader) throws IOException {
+    private static String readHeaders(InputStreamReader reader) throws IOException {
         StringBuilder str = new StringBuilder();
         boolean exit = false;
         int prev = 0;
@@ -123,6 +127,33 @@ public class WebThread extends Thread {
             } else {
                 invalidMethod(req.method);
             }
+        } else if (Objects.equals(req.url, "/drive")) {
+            if (Objects.equals(req.method, "GET")) {
+                return returnObject(new View.DriveResponse());
+            } else if (Objects.equals(req.method, "PATCH")) {
+                Type type = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> request = gson.fromJson(req.data, type);
+                Drive.xyPIDCoefficients = new PIDCoefficients(
+                        Double.parseDouble(request.getOrDefault("xyP", String.valueOf(Drive.xyPIDCoefficients.kP))),
+                        Double.parseDouble(request.getOrDefault("xyI", String.valueOf(Drive.xyPIDCoefficients.kI))),
+                        Double.parseDouble(request.getOrDefault("xyD", String.valueOf(Drive.xyPIDCoefficients.kD)))
+                );
+                Drive.thetaPIDCoefficients = new PIDCoefficients(
+                        Double.parseDouble(request.getOrDefault("thetaP", String.valueOf(Drive.thetaPIDCoefficients.kP))),
+                        Double.parseDouble(request.getOrDefault("thetaI", String.valueOf(Drive.thetaPIDCoefficients.kI))),
+                        Double.parseDouble(request.getOrDefault("thetaD", String.valueOf(Drive.thetaPIDCoefficients.kD)))
+                );
+                return returnObject(new View.DriveResponse());
+            } else if (Objects.equals(req.method, "/move")) {
+                if (Objects.equals(req.method, "POST")) {
+                    invalidMethod(req.method); // TODO: implement
+                } else {
+                    invalidMethod(req.method);
+                }
+            } else {
+                invalidMethod(req.method);
+            }
         } else if (Objects.equals(req.url, "/canvas")) {
             if (Objects.equals(req.method, "GET")) {
                 HashMap<String, String> headers = new HashMap<>(2);
@@ -157,9 +188,12 @@ public class WebThread extends Thread {
             try {
                 Socket socket = serverSocket.accept();
                 InputStreamReader reader = new InputStreamReader(socket.getInputStream());
-                String inputString = readToEnd(reader);
+                String headers = readHeaders(reader);
                 try {
-                    Request req = new Request(inputString);
+                    Request req = new Request(headers); // TODO: Fix tech debt
+                    for (int i = 0; i <= Integer.parseInt(req.headers.getOrDefault("Content-Length", "0")); i++) {
+                        req.data += (char) reader.read();
+                    }
                     System.out.println(req.method + " " + req.url + " " + socket.getInetAddress().getHostAddress());
                     Response resp = handleRequest(req);
                     OutputStream output = socket.getOutputStream();
@@ -176,6 +210,7 @@ public class WebThread extends Thread {
                     output.write(resp.toBytes());
                     output.close();
                     System.out.println("Unhandled Error on WebThread, graceful exit performed: " + e.getMessage());
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
                 System.out.println("Unhandled Error on WebThread, hard exit: " + e.getMessage());

@@ -9,6 +9,8 @@ public class PID {
     protected double previousError = 0;
     protected double integralSum = 0;
     protected double derivative = 0;
+    protected double previousDerivative = 0;
+    private double derivativeInverseFilterStrength = 0.7;
     private final double Kp;
     private final double Ki;
     private final double Kd;
@@ -65,7 +67,9 @@ public class PID {
     }
 
     protected double calculateDerivative(double error, double dt) {
+        previousDerivative = derivative;
         derivative = (error - previousError) / dt;
+        derivative = derivativeInverseFilterStrength * previousDerivative + derivative * (1 - derivativeInverseFilterStrength);
         return derivative;
     }
 

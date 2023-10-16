@@ -30,7 +30,8 @@ public class PurePursuit extends Auto {
                 Arrays.asList(new Pose(10 * mmPerInch, 10 * mmPerInch, 0),
                         new Pose(25 * mmPerInch, 0, 0)));
         Path path = new Path(poses);
-        robot.drive.purePursuit(path);
+//        TODO: Re-enable
+//        robot.drive.purePursuit(path);
         sleep(2000);
     }
 }
