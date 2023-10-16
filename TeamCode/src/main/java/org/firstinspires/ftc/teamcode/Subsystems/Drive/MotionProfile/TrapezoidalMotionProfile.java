@@ -23,4 +23,9 @@ public class TrapezoidalMotionProfile implements MotionProfile {
     public MotionProfileOutput2D calculate(double time) {
         return new MotionProfileOutput2D(x.calculate(time), y.calculate(time), heading.calculate(time));
     }
+
+    @Override
+    public boolean isFinished(double time) {
+        return x.isFinished(time) && y.isFinished(time) && heading.isFinished(time);
+    }
 }

@@ -340,7 +340,7 @@ public class Drive extends Subsystem {
         var timer = new ElapsedTime();
         timer.reset();
         var feedforward = new FeedForward(0.7, 0.7); // TODO: calibrate and make constants ...
-        while (!profile.isFinished() && !timeoutManager.isExceeded()) {
+        while (!profile.isFinished(timer.seconds()) && !timeoutManager.isExceeded()) {
             updateCurrentPose(0, 0, 0); // TODO: Fix
             var target = profile.calculate(timer.seconds());
             var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
@@ -348,7 +348,7 @@ public class Drive extends Subsystem {
                     target.heading().position()));
             // TODO: Feedforward implementation
             // TODO: mix both
-            setDrivePowers(motorPowers);
+//            setDrivePowers(motorPowers);
             // TODO: Implement timeout manager
         }
     }
