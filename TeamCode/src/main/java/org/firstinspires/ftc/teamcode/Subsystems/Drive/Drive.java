@@ -102,10 +102,6 @@ public class Drive extends Subsystem {
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    private static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
-    }
-
     /**
      * Uniformly sets zero power behavior of all drive motors
      *
@@ -185,11 +181,13 @@ public class Drive extends Subsystem {
     }
 
     public void motorController(Targeter targeter, PositionController positionController) {
-        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        if (!odometryEnabled) {
+            imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        }
         try {
             Thread.sleep(250);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("error when sleeping", e);
         }
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -231,7 +229,9 @@ public class Drive extends Subsystem {
             previousTickCounts = currentTickCounts;
             previousPosition = currentPosition;
         }
-        imu.stopAccelerationIntegration();
+        if (!odometryEnabled) {
+            imu.stopAccelerationIntegration();
+        }
         stop(); // Stops the robot
     }
 
@@ -354,7 +354,7 @@ public class Drive extends Subsystem {
                     target.y().position(),
                     target.heading().position())); // TODO: deal with angles properly
             var feedforwardMotorPowers = vaController.calculate(currentPosition.heading, target);
-            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers); // TODO: fix mix function with scaling
+            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers, 1, 4);
             setDrivePowers(motorPowers);
             currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
             if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {

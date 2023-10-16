@@ -20,12 +20,17 @@ public abstract class Localizer {
 
     public abstract MotorGeneric<Double> localize(ControllerOutput output);
 
-    public MotorGeneric<Double> mix(ControllerOutput first, ControllerOutput second) {
+    public MotorGeneric<Double> mix(ControllerOutput first, ControllerOutput second, int firstMultiplier, int secondMultiplier) {
         var firstMotorPowers = localize(first);
         var secondMotorPowers = localize(second);
-        return cropMotorPowers(new MotorGeneric<>(firstMotorPowers.frontLeft + secondMotorPowers.frontLeft,
-                firstMotorPowers.frontRight + secondMotorPowers.frontRight,
-                firstMotorPowers.rearLeft + secondMotorPowers.rearLeft,
-                firstMotorPowers.rearRight + secondMotorPowers.rearRight));
+        return cropMotorPowers(new MotorGeneric<>(firstMotorPowers.frontLeft * firstMultiplier + secondMotorPowers.frontLeft * secondMultiplier,
+                firstMotorPowers.frontRight * firstMultiplier + secondMotorPowers.frontRight * secondMultiplier,
+                firstMotorPowers.rearLeft * firstMultiplier + secondMotorPowers.rearLeft * secondMultiplier,
+                firstMotorPowers.rearRight * firstMultiplier + secondMotorPowers.rearRight * secondMultiplier
+        ));
+    }
+
+    public MotorGeneric<Double> mix(ControllerOutput first, ControllerOutput second) {
+        return mix(first, second, 1, 1);
     }
 }

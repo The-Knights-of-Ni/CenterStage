@@ -10,12 +10,12 @@ public class TrapezoidalMotionProfile implements MotionProfile {
     public TrapezoidalMotionProfile1D y;
     public TrapezoidalMotionProfile1D heading;
 
-    public TrapezoidalMotionProfile(double max_acceleration, double max_velocity, Pose target) {
-        this.maxAcceleration = max_acceleration;
-        this.maxVelocity = max_velocity;
+    public TrapezoidalMotionProfile(double maxAcceleration, double maxVelocity, Pose target) {
+        this.maxAcceleration = maxAcceleration;
+        this.maxVelocity = maxVelocity;
         this.target = target;
-        this.x = new TrapezoidalMotionProfile1D(max_acceleration, max_velocity, target.x);
-        this.y = new TrapezoidalMotionProfile1D(max_acceleration, max_velocity, target.y);
+        this.x = new TrapezoidalMotionProfile1D(maxAcceleration, maxVelocity, target.x);
+        this.y = new TrapezoidalMotionProfile1D(maxAcceleration, maxVelocity, target.y);
         this.heading = new TrapezoidalMotionProfile1D(0, 0, 0); // TODO: Implement heading with non-trapezoidal
     }
 
