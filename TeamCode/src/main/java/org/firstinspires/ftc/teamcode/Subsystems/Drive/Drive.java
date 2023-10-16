@@ -351,9 +351,9 @@ public class Drive extends Subsystem {
             var target = profile.calculate(timer.seconds());
             var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
                     target.y().position(),
-                    target.heading().position()));
+                    target.heading().position())); // TODO: deal with angles properly
             var feedforwardMotorPowers = vaController.calculate(currentPosition.heading, target);
-            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers);
+            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers); // TODO: fix mix function with scaling
             setDrivePowers(motorPowers);
             currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
             if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {
