@@ -335,7 +335,21 @@ public class Drive extends Subsystem {
     }
 
 
-    public void followProfile(MotionProfile profile) {
-        // TODO: Implement
+    public void followProfile(MotionProfile profile, Controller positionController) {
+        var timeoutManager = new TimeoutManager(100_000_000);
+        var timer = new ElapsedTime();
+        timer.reset();
+        var feedforward = new FeedForward(0.7, 0.7); // TODO: calibrate and make constants ...
+        while (!profile.isFinished() && !timeoutManager.isExceeded()) {
+            updateCurrentPose(0, 0, 0); // TODO: Fix
+            var target = profile.calculate(timer.seconds());
+            var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
+                    target.y().position(),
+                    target.heading().position()));
+            // TODO: Feedforward implementation
+            // TODO: mix both
+            setDrivePowers(motorPowers);
+            // TODO: Implement timeout manager
+        }
     }
 }
