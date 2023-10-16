@@ -1,0 +1,229 @@
+[package]
+name = "opencv"
+description = "Rust bindings for OpenCV"
+documentation = "https://docs.rs/opencv"
+repository = "https://github.com/twistedfall/opencv-rust"
+readme = "README.md"
+keywords = ["opencv", "vision"]
+license = "MIT"
+version = "0.85.1"
+edition = "2021"
+rust-version = "1.59"
+authors = ["Pro <twisted.fall@gmail.com>", "Mathieu Poumeyrol <kali@zoy.org>"]
+autoexamples = false # not all examples compile on just any system
+exclude = ["/.github", "/ci", "/tools", "release.toml", "rustfmt.toml"]
+
+[lib]
+doctest = false
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[workspace]
+members = ["binding-generator"]
+
+# requires CUDA
+#[[example]]
+#name = "cuda"
+
+[[example]]
+name = "discrete_fourier_transform"
+
+# requires Graph-API module
+#[[example]]
+#name = "gapi_api_example"
+
+[[example]]
+name = "hough_lines"
+
+[[example]]
+name = "opencl"
+
+# requires OpenCV 4.5.1+
+#[[example]]
+#name = "text_detection"
+
+[[example]]
+name = "video_capture"
+
+[[example]]
+name = "video_facedetect"
+
+[[example]]
+name = "video_features"
+
+[[example]]
+name = "video_to_gray"
+
+[[example]]
+name = "warp_perspective_demo"
+
+[[example]]
+name = "window"
+
+[dependencies]
+libc = "0.2"
+num-traits = "0.2"
+once_cell = "1"
+# version 0.8.20 doesn't contain the deficiency mentioned in https://deps.rs/crate/opencv/0.59.0#vulnerabilities
+rgb = { version = "0.8.20", features = ["argb"], optional = true }
+
+[build-dependencies]
+opencv-binding-generator = { version = "0.73.0", path = "binding-generator" }
+# cc starting with version 1.0.80 hangs on build https://github.com/twistedfall/opencv-rust/issues/480
+cc = { version = "<=1.0.79", features = ["parallel"] }
+dunce = "1"
+# jobserver-0.1.25 is the first one that has Client::available() method
+# 0.1.27 fails with error[E0412]: cannot find type `RawFd` in `std::os::fd` on rustc-1.59, bump when MSRV is 1.66+
+jobserver = ">=0.1.25,<0.1.27"
+once_cell = "1"
+pkg-config = "0.3"
+semver = "1"
+shlex = "1"
+# vcpkg-0.2.9 is the first one that has accessible find_vcpkg_root()
+vcpkg = "0.2.9"
+
+[dev-dependencies]
+matches = "0.1"
+
+[features]
+default = [
+	"alphamat",
+	"aruco",
+	"aruco_detector",
+	"barcode",
+	"bgsegm",
+	"bioinspired",
+	"calib3d",
+	"ccalib",
+	"cudaarithm",
+	"cudabgsegm",
+	"cudacodec",
+	"cudafeatures2d",
+	"cudafilters",
+	"cudaimgproc",
+	"cudaobjdetect",
+	"cudaoptflow",
+	"cudastereo",
+	"cudawarping",
+	"cvv",
+	"dnn",
+	"dnn_superres",
+	"dpm",
+	"face",
+	"features2d",
+	"flann",
+	"freetype",
+	"fuzzy",
+	"gapi",
+	"hdf",
+	"hfs",
+	"highgui",
+	"img_hash",
+	"imgcodecs",
+	"imgproc",
+	"intensity_transform",
+	"line_descriptor",
+	"mcc",
+	"ml",
+	"objdetect",
+	"optflow",
+	"ovis",
+	"phase_unwrapping",
+	"photo",
+	"plot",
+	"quality",
+	"rapid",
+	"rgbd",
+	"saliency",
+	"sfm",
+	"shape",
+	"stereo",
+	"stitching",
+	"structured_light",
+	"superres",
+	"surface_matching",
+	"text",
+	"tracking",
+	"video",
+	"videoio",
+	"videostab",
+	"viz",
+	"wechat_qrcode",
+	"xfeatures2d",
+	"ximgproc",
+	"xobjdetect",
+	"xphoto",
+]
+
+# OpenCV modules
+alphamat = []
+aruco = []
+aruco_detector = ["aruco"]
+barcode = []
+bgsegm = ["video"]
+bioinspired = []
+calib3d = ["features2d"]
+ccalib = ["features2d"]
+cudaarithm = []
+cudabgsegm = ["video"]
+cudacodec = []
+cudafeatures2d = ["features2d"]
+cudafilters = []
+cudaimgproc = ["imgproc"]
+cudaobjdetect = ["objdetect"]
+cudaoptflow = []
+cudastereo = ["calib3d"]
+cudawarping = []
+cvv = []
+dnn = []
+dnn_superres = []
+dpm = []
+face = ["objdetect"]
+features2d = ["flann"]
+flann = []
+freetype = []
+fuzzy = []
+gapi = []
+hdf = []
+hfs = []
+highgui = []
+img_hash = []
+imgcodecs = []
+imgproc = []
+intensity_transform = []
+line_descriptor = []
+mcc = ["dnn"]
+ml = []
+objdetect = []
+optflow = ["video"]
+ovis = []
+phase_unwrapping = []
+photo = []
+plot = []
+quality = ["ml"]
+rapid = []
+rgbd = []
+saliency = []
+sfm = []
+shape = []
+stereo = []
+stitching = ["features2d", "imgproc"]
+structured_light = []
+superres = []
+surface_matching = []
+text = []
+tracking = ["video"]
+video = []
+videoio = []
+videostab = ["features2d"]
+viz = []
+xfeatures2d = ["features2d"]
+ximgproc = ["calib3d"]
+xobjdetect = []
+xphoto = ["photo"]
+wechat_qrcode = []
+clang-runtime = ["opencv-binding-generator/clang-runtime"]
+
+[package.metadata.docs.rs]
+no-default-features = true

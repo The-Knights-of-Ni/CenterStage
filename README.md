@@ -41,3 +41,17 @@ Follow the step-by-step instructions for your OS.
 
 - Double-check clang and opencv are in your path
 - Read this README: https://github.com/twistedfall/opencv-rust#rust-opencv-bindings
+
+## opencv compilation
+
+You must have ninja and cmake installed. You must also have the android ndk installed.
+
+```shell
+cmake -Hopencv -Bopencv-build -DANDROID_ABI=armeabi-v7a -DANDROID_PLATFORM=android-26 -DANDROID_NDK="C:\Users\ariha\AppData\Local\Android\Sdk\ndk\26.0.10792818\" -DCMAKE_TOOLCHAIN_FILE="C:\Users\ariha\AppData\Local\Android\Sdk\ndk\26.0.10792818\build\cmake\android.toolchain.cmake" -G Ninja
+```
+
+Then open up the cmake gui and configure.
+
+```shell
+cmake --build . --target install --config release
+```

@@ -21,24 +21,6 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
-    externalNativeBuild {
-
-        // Encapsulates your CMake build configurations.
-        cmake {
-
-            // Provides a relative path to your CMake build script.
-            path "../opencv/CMakeLists.txt"
-        }
-    }
-
-    defaultConfig {
-        externalNativeBuild {
-            // For ndk-build, instead use the ndkBuild block.
-            cmake {
-                arguments "-DANDROID_TOOLCHAIN=clang", "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\ariha\\AppData\\Local\\Android\\Sdk\\ndk\\26.0.10792818\\build\\cmake\\android.toolchain.cmake", "-DBUILD_ANDROID_PROJECTS:BOOL=ON", "-DANDROID_MIN_SDK_VERSION=24", "-DBUILD_EXAMPLES:BOOL=OFF", "-DBUILD_TESTS:BOOL=OFF", "-DBUILD_PERF_TESTS:BOOL=OFF", "-DBUILD_opencv_java:BOOL=OFF", "-DBUILD_opencv_python:BOOL=OFF"
-            }
-        }
-    }
 }
 
 dependencies {
@@ -60,13 +42,6 @@ tasks.withType(Test) {
         events "started", "skipped", "passed", "failed"
         showStandardStreams true
     }
-}
-
-tasks.configureEach { task ->
-    if (task.name == 'cargoBuildArm') {
-        task.dependsOn 'externalNativeBuildRelease'
-    }
-
 }
 
 tasks.configureEach { task ->

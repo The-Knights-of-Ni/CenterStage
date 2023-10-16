@@ -1,0 +1,2 @@
+*.hpp linguist-vendored
+*.rs linguist-language=Rust
