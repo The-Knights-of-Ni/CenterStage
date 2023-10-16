@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.Subsystems.Drive;
+package org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
-import org.firstinspires.ftc.teamcode.Subsystems.Localizer;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 
 public class MecanumLocalizer extends Localizer {
     public MecanumLocalizer() {
