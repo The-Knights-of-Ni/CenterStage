@@ -9,8 +9,8 @@ import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -104,7 +104,7 @@ class DriveTest {
 
     @Test
     void testHolonomicController() {
-        HolonomicController controller = new HolonomicController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+        HolonomicPositionController controller = new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
         MotorGeneric<Double> powers = controller.calculate(new Pose(0, 0, 0), new Pose(0, 0, 0));
         System.out.println(powers);
         assertEquals(0, powers.frontLeft, 0.01);

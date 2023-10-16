@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.FeedForward;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfileOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
-import org.firstinspires.ftc.teamcode.Util.Pose;
 
-public class HolonomicController implements Controller {
-    PID xControl;
-    PID yControl;
-    PID thetaControl;
+public class HolonomicVAController implements VAController {
+    FeedForward xControl;
+    FeedForward yControl;
+    FeedForward thetaControl;
 
-    public HolonomicController(PID x, PID y, PID theta) {
+    public HolonomicVAController(FeedForward x, FeedForward y, FeedForward theta) {
         // Three PID controllers for actual robot movement instead of motor movement
 
         this.xControl = x;
@@ -35,12 +34,12 @@ public class HolonomicController implements Controller {
     }
 
     @Override
-    public MotorGeneric<Double> calculate(Pose current, Pose target) {
-        var xPower = xControl.calculate(target.x * Drive.COUNTS_PER_MM, current.x * Drive.COUNTS_PER_MM);
-        var yPower = yControl.calculate(target.y * Drive.COUNTS_PER_MM, current.y * Drive.COUNTS_PER_MM);
-        var thetaPower = thetaControl.calculate(target.heading * Drive.COUNTS_PER_MM, current.heading * Drive.COUNTS_PER_MM);
-        var yRotated = xPower * Math.cos(target.heading) - yPower * Math.sin(target.heading); // Inverted bc api
-        var xRotated = xPower * Math.sin(target.heading) + yPower * Math.cos(target.heading);
+    public MotorGeneric<Double> calculate(MotionProfileOutput target) {
+        var xPower = xControl.calculate(target.x().velocity(), target.x().velocity());
+        var yPower = yControl.calculate(target.y().velocity(), target.y().velocity());
+        var thetaPower = thetaControl.calculate(target.heading().velocity(), target.heading().velocity());
+        var yRotated = xPower * Math.cos(target.heading().position()) - yPower * Math.sin(target.heading().position()); // Inverted bc api
+        var xRotated = xPower * Math.sin(target.heading().position()) + yPower * Math.cos(target.heading().position());
         return reduceDrivePowers(cropMotorPowers(
                         new MotorGeneric<>(
                                 xRotated + yRotated + thetaPower,
@@ -49,10 +48,5 @@ public class HolonomicController implements Controller {
                                 xRotated + yRotated - thetaPower)
                 ),
                 0.5);
-    }
-
-    @Override
-    public void resetHeadingPID() {
-        thetaControl.reset();
     }
 }

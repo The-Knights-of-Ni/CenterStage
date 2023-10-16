@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.Controller;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.PositionController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.VAController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfile;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.StaticTargeter;
@@ -179,7 +180,7 @@ public class Drive extends Subsystem {
         return angle;
     }
 
-    public void motorController(Targeter targeter, Controller controller) {
+    public void motorController(Targeter targeter, PositionController positionController) {
         imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
         try {
             Thread.sleep(250);
@@ -209,10 +210,10 @@ public class Drive extends Subsystem {
             logger.debug("Target", target);
             logger.verbose("Heading", currentPosition.heading);
             if (Math.abs(currentPosition.heading - previousPosition.heading) > 25) {
-                controller.resetHeadingPID();
+                positionController.resetHeadingPID();
             }
             // Feeds target into controller to get motor powers
-            MotorGeneric<Double> motorPowers = controller.calculate(currentPosition, target);
+            MotorGeneric<Double> motorPowers = positionController.calculate(currentPosition, target);
             logger.verbose("Motor Powers", motorPowers.toString());
             // sets the motor powers
             setDrivePowers(motorPowers);
@@ -303,8 +304,8 @@ public class Drive extends Subsystem {
         }
     }
 
-    private HolonomicController getHolonomicController() {
-        return new HolonomicController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+    private HolonomicPositionController getHolonomicController() {
+        return new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
     }
 
 
@@ -335,18 +336,17 @@ public class Drive extends Subsystem {
     }
 
 
-    public void followProfile(MotionProfile profile, Controller positionController) {
+    public void followProfile(MotionProfile profile, VAController vaController, PositionController positionController) {
         var timeoutManager = new TimeoutManager(100_000_000);
         var timer = new ElapsedTime();
         timer.reset();
-        var feedforward = new FeedForward(0.7, 0.7); // TODO: calibrate and make constants ...
         while (!profile.isFinished(timer.seconds()) && !timeoutManager.isExceeded()) {
             updateCurrentPose(0, 0, 0); // TODO: Fix
             var target = profile.calculate(timer.seconds());
             var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
                     target.y().position(),
                     target.heading().position()));
-            // TODO: Feedforward implementation
+            var feedforwardMotorPowers = vaController.calculate(target);
             // TODO: mix both
 //            setDrivePowers(motorPowers);
             // TODO: Implement timeout manager
