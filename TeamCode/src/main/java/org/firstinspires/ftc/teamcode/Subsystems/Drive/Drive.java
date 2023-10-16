@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfi
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.StaticTargeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.Targeter;
+import org.firstinspires.ftc.teamcode.Subsystems.Localizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -69,6 +70,8 @@ public class Drive extends Subsystem {
     public int previousLeftOdometryTicks = 0;
     public int previousBackOdometryTicks = 0;
     public int previousRightOdometryTicks = 0;
+
+    private final Localizer localizer = new MecanumLocalizer();
 
 
     /**
@@ -213,7 +216,7 @@ public class Drive extends Subsystem {
                 positionController.resetHeadingPID();
             }
             // Feeds target into controller to get motor powers
-            MotorGeneric<Double> motorPowers = positionController.calculate(currentPosition, target);
+            MotorGeneric<Double> motorPowers = localizer.localize(positionController.calculate(currentPosition, target));
             logger.verbose("Motor Powers", motorPowers.toString());
             // sets the motor powers
             setDrivePowers(motorPowers);
@@ -346,9 +349,9 @@ public class Drive extends Subsystem {
             var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
                     target.y().position(),
                     target.heading().position()));
-            var feedforwardMotorPowers = vaController.calculate(target);
-            // TODO: mix both
-//            setDrivePowers(motorPowers);
+            var feedforwardMotorPowers = vaController.calculate(currentPosition.heading, target);
+            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers);
+            setDrivePowers(motorPowers);
             // TODO: Implement timeout manager
         }
     }
