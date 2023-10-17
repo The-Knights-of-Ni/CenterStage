@@ -20,6 +20,13 @@ import java.util.regex.Pattern
 apply plugin: 'com.android.application'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+
 android {
     signingConfigs {
         release {
