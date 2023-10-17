@@ -144,7 +144,7 @@ public class OldDrive extends Subsystem {
      * Sets all drive motor powers to zero
      */
     private void stop() {
-        setDrivePowers(0.);
+        setDrivePowers(0.0);
     }
 
     /**
