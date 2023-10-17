@@ -100,6 +100,9 @@ public class Robot {
         return result;
     }
 
+    /**
+     * Runs all init operations
+     */
     public void init() {
         motorInit();
         servoInit();
@@ -147,6 +150,9 @@ public class Robot {
         }
     }
 
+    /**
+     * Gets Motors from hardware ap and sets zero power behavior and direction
+     */
     private void motorInit() {
         frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
         frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
