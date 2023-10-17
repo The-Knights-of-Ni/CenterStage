@@ -21,4 +21,4 @@ anyhow = "1.0"
 #debug = 1
 
 [patch.crates-io]
-opencv = { path = './opencv-rust' }
+#opencv = { path = './opencv-rust' }

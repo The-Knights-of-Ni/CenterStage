@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+/**
+ * ServoEx class from ftcLib
+ */
 public class ServoEx {
 
     private final double maxPosition = 1;

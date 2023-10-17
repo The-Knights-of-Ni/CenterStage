@@ -133,7 +133,7 @@ repositories {
 
 
 cargo {
-    module = "../visionrs"       // Or whatever directory contains your Cargo.toml
-    libname = "visionrs"          // Or whatever matches Cargo.toml's [package] name.
-    targets = ["arm", "arm64"]  // See bellow for a longer list of options
+    module = "../visionrs"
+    libname = "visionrs"
+    targets = ["arm", "arm64"]
 }
