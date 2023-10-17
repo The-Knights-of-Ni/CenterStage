@@ -19,6 +19,13 @@ import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+
 android {
     signingConfigs {
         release {

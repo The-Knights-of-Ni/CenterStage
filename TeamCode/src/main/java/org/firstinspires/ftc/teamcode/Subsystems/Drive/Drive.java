@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.PositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.VAController;
@@ -55,7 +56,6 @@ public class Drive extends Subsystem {
     // Drive-train motors
     public final MotorGeneric<DcMotorEx> motors;
     // Odometry Encoders/Constants
-    private final boolean odometryEnabled;
     private final DcMotorEx odL;
     private final DcMotorEx odB;
     private final DcMotorEx odR;
@@ -73,6 +73,7 @@ public class Drive extends Subsystem {
     public int previousRightOdometryTicks = 0;
 
     private final Localizer localizer = new MecanumLocalizer();
+    public PoseEstimationMethod poseEstimationMethod;
 
 
     /**
@@ -80,12 +81,14 @@ public class Drive extends Subsystem {
      *
      * @param motors      The motors ...
      * @param telemetry   The telemetry
-     * @param elapsedTime The timer for the elapsed time
      */
-    public Drive(MotorGeneric<DcMotorEx> motors, @Nullable DcMotorEx[] odometry, BNO055IMU imu, Telemetry telemetry, ElapsedTime elapsedTime) {
+    public Drive(MotorGeneric<DcMotorEx> motors, @Nullable DcMotorEx[] odometry, PoseEstimationMethod poseEstimationMethod, BNO055IMU imu, Telemetry telemetry) {
         super(telemetry, "drive");
-        this.odometryEnabled = odometry != null;
-        if (odometryEnabled) {
+        this.poseEstimationMethod = poseEstimationMethod;
+        if (poseEstimationMethod == PoseEstimationMethod.ODOMETRY) {
+            if (odometry == null) {
+                throw new IllegalArgumentException("Odometry is null, but pose estimation method is ODOMETRY");
+            }
             this.odL = odometry[0];
             this.odB = odometry[1];
             this.odR = odometry[2];
@@ -161,13 +164,7 @@ public class Drive extends Subsystem {
      * @return A list with the motor powers
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        var r = Math.hypot(leftStickX, leftStickY);
-        var robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        var lfPower = r * Math.cos(robotAngle) + rightStickX;
-        var lrPower = r * Math.sin(robotAngle) + rightStickX;
-        var rfPower = r * Math.sin(robotAngle) - rightStickX;
-        var rrPower = r * Math.cos(robotAngle) - rightStickX;
-        return new MotorGeneric<>(lfPower, rfPower, lrPower, rrPower);
+        return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, 0));
     }
 
 
@@ -181,21 +178,14 @@ public class Drive extends Subsystem {
     }
 
     public void motorController(Targeter targeter, PositionController positionController) {
-        if (!odometryEnabled) {
-            imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
-        }
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-            logger.error("error when sleeping", e);
-        }
-        // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders) TODO: It's probably going to be relative tick counts, so idk why this is a thing here ...
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders)
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // TODO: Check if acquisition time is correct
-        var imuHeadingStart = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
-        var imuXStart = imu.getPosition().x;
-        var imuYStart = imu.getPosition().y;
+        var startingPose = new Pose(0, 0, 0);
+        if (poseEstimationMethod == PoseEstimationMethod.IMU) {
+            startingPose = new Pose(imu.getPosition().toUnit(DistanceUnit.MM).x, imu.getPosition().toUnit(DistanceUnit.MM).y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
+        }
         // Timeout manager for when the robot gets stuck
         TimeoutManager timeoutManager = new TimeoutManager(100_000_000);
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
@@ -205,7 +195,7 @@ public class Drive extends Subsystem {
         MotorGeneric<Integer> currentTickCounts;
         while (!targeter.reachedTarget(currentPosition) && (!timeoutManager.isExceeded())) {
             // Approximates the current position (odometry or dead reckoning) it should be reasonably accurate
-            updateCurrentPose(imuXStart, imuYStart, imuHeadingStart);
+            updateCurrentPose(startingPose);
             // Feeds pose into targeter to get target ...
             var target = targeter.getTarget(currentPosition);
             logger.verbose("Current", currentPosition);
@@ -229,14 +219,12 @@ public class Drive extends Subsystem {
             previousTickCounts = currentTickCounts;
             previousPosition = currentPosition;
         }
-        if (!odometryEnabled) {
-            imu.stopAccelerationIntegration();
-        }
+        imu.stopAccelerationIntegration();
         stop(); // Stops the robot
     }
 
-    private void updateCurrentPose(double imuXStart, double imuYStart, double imuHeadingStart) {
-        if (odometryEnabled) {
+    private void updateCurrentPose(Pose startingPosition) {
+        if (poseEstimationMethod == PoseEstimationMethod.ODOMETRY) {
             // https://gm0.org/en/latest/docs/software/concepts/odometry.html
             var odlTicks = odL.getCurrentPosition();
             var odbTicks = odB.getCurrentPosition();
@@ -267,13 +255,19 @@ public class Drive extends Subsystem {
             previousLeftOdometryTicks = odlTicks;
             previousBackOdometryTicks = odbTicks;
             previousRightOdometryTicks = odrTicks;
-        } else {
+        } else if (poseEstimationMethod == PoseEstimationMethod.IMU) {
             var position = imu.getPosition().toUnit(DistanceUnit.MM);
-            currentPosition.x = position.x - imuXStart;
-            currentPosition.y = position.y - imuYStart; // IMU inverts stuff
-            currentPosition.heading = normalizeAngle(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - imuHeadingStart);
+            currentPosition.x = position.x - startingPosition.x;
+            currentPosition.y = position.y - startingPosition.y; // IMU inverts stuff
+            currentPosition.heading = normalizeAngle(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - startingPosition.heading);
             var velocity = imu.getVelocity().toUnit(DistanceUnit.MM);
             currentPosition.velocity = new Vector(velocity.xVeloc, velocity.yVeloc);
+        } else if (poseEstimationMethod == PoseEstimationMethod.VISUAL) {
+            throw new RuntimeException("Pose estimation method 'VISUAL' not implemented");
+        } else if (poseEstimationMethod == PoseEstimationMethod.MOTOR_ENCODERS) {
+            throw new RuntimeException("Pose estimation method 'MOTOR_ENCODERS' not implemented");
+        } else {
+            throw new RuntimeException("Pose estimation method not implemented");
         }
     }
 
@@ -341,18 +335,23 @@ public class Drive extends Subsystem {
 
 
     public void followProfile(MotionProfile profile, VAController vaController, PositionController positionController) {
+        // TODO: Fix IMU here
         var timeoutManager = new TimeoutManager(100_000_000);
         var timer = new ElapsedTime();
         timer.reset();
         MotorGeneric<Integer> previousTickCounts = new MotorGeneric<>(0, 0, 0, 0);
         MotorGeneric<Integer> currentTickCounts;
+        var startingPose = new Pose(0, 0, 0);
+        if (poseEstimationMethod == PoseEstimationMethod.IMU) {
+            startingPose = new Pose(imu.getPosition().toUnit(DistanceUnit.MM).x, imu.getPosition().toUnit(DistanceUnit.MM).y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
+        }
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, the motor is "stuck"
         while (!profile.isFinished(timer.seconds()) && !timeoutManager.isExceeded()) {
-            updateCurrentPose(0, 0, 0); // TODO: Fix
+            updateCurrentPose(startingPose);
             var target = profile.calculate(timer.seconds());
-            var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x().position(),
-                    target.y().position(),
-                    target.heading().position())); // TODO: deal with angles properly
+            var positionMotorPowers = positionController.calculate(currentPosition, new Pose(target.x.position,
+                    target.y.position,
+                    target.heading.position)); // TODO: deal with angles properly
             var feedforwardMotorPowers = vaController.calculate(currentPosition.heading, target);
             var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers, 1, 4);
             setDrivePowers(motorPowers);

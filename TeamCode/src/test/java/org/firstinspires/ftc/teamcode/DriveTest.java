@@ -9,10 +9,14 @@ import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.Localizer;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimationMethod;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.junit.jupiter.api.Test;
@@ -30,10 +34,9 @@ class DriveTest {
         MockDcMotorEx mockFR = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
         MockDcMotorEx mockRL = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
         MockDcMotorEx mockRR = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
-        ElapsedTime timer = new ElapsedTime();
         MockTelemetry telemetry = new MockTelemetry();
         BNO055IMU mockIMU = Mockito.mock(BNO055IMU.class);
-        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, mockIMU, telemetry, timer);
+        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, PoseEstimationMethod.MOTOR_ENCODERS, mockIMU, telemetry);
     }
 
     @Test
@@ -103,10 +106,10 @@ class DriveTest {
     }
 
     @Test
-    void testHolonomicController() {
+    void testHolonomicMecanumController() {
         HolonomicPositionController controller = new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
-        MotorGeneric<Double> powers = controller.calculate(new Pose(0, 0, 0), new Pose(0, 0, 0));
-        System.out.println(powers);
+        Localizer localizer = new MecanumLocalizer();
+        MotorGeneric<Double> powers = localizer.localize(controller.calculate(new Pose(0, 0, 0), new Pose(0, 0, 0)));
         assertEquals(0, powers.frontLeft, 0.01);
         assertEquals(0, powers.frontRight, 0.01);
         assertEquals(0, powers.rearLeft, 0.01);
@@ -114,8 +117,19 @@ class DriveTest {
     }
 
     @Test
-    void testHolonomicController2() {
-
+    void testHolonomicController() {
+        HolonomicPositionController controller = new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+        var powers = controller.calculate(new Pose(0, 0, 0), new Pose(1000, 0, 0));
+        assertEquals(1, powers.x, 0.3);
     }
 
+    @Test
+    void testMecanumLocalizer() {
+        Localizer localizer = new MecanumLocalizer();
+        var resp = localizer.localize(new ControllerOutput(0, 1, 0, 0));
+        assertEquals(1, resp.frontLeft);
+        assertEquals(1, resp.frontRight);
+        assertEquals(1, resp.rearLeft);
+        assertEquals(1, resp.rearRight);
+    }
 }

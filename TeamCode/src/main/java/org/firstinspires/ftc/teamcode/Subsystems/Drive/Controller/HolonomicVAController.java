@@ -19,9 +19,9 @@ public class HolonomicVAController implements VAController {
 
     @Override
     public ControllerOutput calculate(double heading, MotionProfileOutput target) {
-        var xPower = xControl.calculate(target.x().velocity(), target.x().velocity());
-        var yPower = yControl.calculate(target.y().velocity(), target.y().velocity());
-        var thetaPower = thetaControl.calculate(target.heading().velocity(), target.heading().velocity());
+        var xPower = xControl.calculate(target.x.velocity, target.x.velocity);
+        var yPower = yControl.calculate(target.y.velocity, target.y.velocity);
+        var thetaPower = thetaControl.calculate(target.heading.velocity, target.heading.velocity);
         return new ControllerOutput(xPower, yPower, thetaPower, heading);
     }
 }

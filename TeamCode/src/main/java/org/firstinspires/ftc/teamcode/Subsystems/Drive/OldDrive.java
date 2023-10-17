@@ -87,7 +87,7 @@ public class OldDrive extends Subsystem {
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Test
+        return Math.abs(currentCount) >= Math.abs(targetCount);
     }
 
     /**
@@ -177,7 +177,7 @@ public class OldDrive extends Subsystem {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0 TODO: Profile time for one cycle
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
         // Timeout control (stop loop if motor stalls)
         long currentTime; // current time in nanoseconds
@@ -189,17 +189,15 @@ public class OldDrive extends Subsystem {
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
 
         // Initialize motor data wrappers
-        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold); // TODO: Odometry implementation
+        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold);
         MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold);
         MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
         MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
-        // TODO: Profile init time
-        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) { // TODO: Profile time for one while loop cycle
-//            WebThread.setPercentage("drive", fr.currentCount, fr.targetCount);
+        while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
             // if only this got fixed ... then I could simplify the code even more
-            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why TODO: Check again ...
+            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why
 
             // Run a cycle for each
             fl.cycle(false);
@@ -220,7 +218,7 @@ public class OldDrive extends Subsystem {
             if (debug) {
                 logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
                 logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower()); // TODO: Profile for performance hit
+                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower());
             }
         }
         WebThread.removeAction("drive");
