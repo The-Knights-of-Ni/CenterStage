@@ -1,5 +1,0 @@
-root = true
-
-[*.{cpp,hpp,rs,sh,toml}]
-indent_style = tab
-indent_size = 3
