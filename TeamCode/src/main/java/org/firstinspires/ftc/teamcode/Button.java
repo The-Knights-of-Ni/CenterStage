@@ -16,10 +16,12 @@ public class Button {
                 if (value) {
                     status = ButtonStatus.CLICKING;
                 }
+                break;
             case CLICKING:
                 if (!value) {
                     status = ButtonStatus.CLICKED;
                 }
+                break;
             case CLICKED:
                 if (value) {
                     status = ButtonStatus.CLICKING;
@@ -27,6 +29,7 @@ public class Button {
                     status = ButtonStatus.NOTCLICKED;
                     toggle = !toggle;
                 }
+                break;
         }
         previousStatus = s;
     }
