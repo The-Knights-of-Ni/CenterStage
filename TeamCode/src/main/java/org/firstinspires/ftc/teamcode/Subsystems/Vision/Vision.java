@@ -105,18 +105,18 @@ public class Vision extends Subsystem {
      */
     public MarkerLocation detectMarkerRun() {
         // Return the marker location
-        return switch (NativeVision.process()) {
+        switch (NativeVision.process()) {
             case 0:
-                yield MarkerLocation.LEFT;
+                return MarkerLocation.LEFT;
             case 1:
-                yield MarkerLocation.MIDDLE;
+                return MarkerLocation.MIDDLE;
             case 2:
-                yield MarkerLocation.RIGHT;
+                return MarkerLocation.RIGHT;
             case -1:
                 Log.e("Vision", "Unknown rust error");
-                yield MarkerLocation.UNKNOWN;
+                return MarkerLocation.UNKNOWN;
             default:
-                yield MarkerLocation.UNKNOWN;
-        };
+                return MarkerLocation.UNKNOWN;
+        }
     }
 }
