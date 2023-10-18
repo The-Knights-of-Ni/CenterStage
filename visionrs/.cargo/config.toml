@@ -1,0 +1,5 @@
+[env]
+OPENCV_LINK_LIBS = "opencv_world481"
+# comment these out for local build
+OPENCV_INCLUDE_PATHS = "D:/Documents/Programming/CenterStage/opencv-build/install/sdk/native/jni/include/opencv2,D:/Documents/Programming/CenterStage/opencv-build/install/sdk/native/jni/include"
+OPENCV_LINK_PATHS = "D:/Documents/Programming/CenterStage/opencv-build/lib/armeabi-v7a"
