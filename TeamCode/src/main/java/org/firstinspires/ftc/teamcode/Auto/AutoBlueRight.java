@@ -33,7 +33,7 @@ public class AutoBlueRight extends Auto {
                 controlThread.reachedPosition = true;
                 //moves the robot 112 inches left
                 // and turn the robot 90 degrees left
-                robot.drive.moveVector(new Vector(-112, 0), -90);
+                robot.drive.moveVector(new Vector(-112 * mmPerInch, 0), -90);
                 break;
             case RIGHT:
                 //moves the robot 12 inches right
@@ -50,6 +50,7 @@ public class AutoBlueRight extends Auto {
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
         controlThread.extended.tryLock(100, TimeUnit.SECONDS);
-        robot.drive.moveVector(new Vector(-24, 0));
+        //moves robot 24 units left
+        robot.drive.moveVector(new Vector(-24 * mmPerInch, 0));
     }
 }

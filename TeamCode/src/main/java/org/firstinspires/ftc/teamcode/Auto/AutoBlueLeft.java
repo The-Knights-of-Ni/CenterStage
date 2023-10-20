@@ -19,7 +19,7 @@ public class AutoBlueLeft extends Auto {
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                //turns the robot left 90 degrees after moving the robot 30 in forward
+                //turns the robot left 90 degrees and moving the robot 30 in forward
                 robot.drive.move(new Pose(0, 30 * mmPerInch, -90));
                 //confirms position is reached
                 controlThread.reachedPosition = true;
@@ -31,15 +31,15 @@ public class AutoBlueLeft extends Auto {
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
                 //confirms position is reached
                 controlThread.reachedPosition = true;
-                //turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.move(new Pose(-42, 0, -90));
+                //turn the robot left 90 degrees and moving it 42 inches left
+                robot.drive.move(new Pose(-42 * mmPerInch, 0, -90));
                 break;
             case RIGHT:
-                //turns the robot right 90 degress after moving it 12 inches right
+                //turns the robot right 90 degress and  moving it 12 inches right
                 robot.drive.move(new Pose(12 * mmPerInch, 0, 90));
                 //confirms position is reached
                 controlThread.reachedPosition = true;
-                //turns the robot right 180 degrees after moving the robot 60 inches backward
+                //turns the robot right 180 degrees and moving the robot 60 inches backward
                 robot.drive.move(new Pose(0, -60 * mmPerInch, -180));
                 break;
         }
@@ -47,6 +47,7 @@ public class AutoBlueLeft extends Auto {
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
         controlThread.extended.tryLock(100, TimeUnit.SECONDS);
-        robot.drive.moveVector(new Vector(-24, 0));
+        //moves robot left 24 inches
+        robot.drive.moveVector(new Vector(-24 * mmPerInch, 0));
     }
 }
