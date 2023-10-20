@@ -18,12 +18,12 @@ public class AutoBlueRight extends Auto {
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                //moves the robot 12 inches on the x-axis, 24 on the y-axis,
+                //moves the robot 12 inches on the x-axis, 24 inches forward,
                 // and turns left 90 degrees
                 robot.drive.move(new Pose(12 * mmPerInch, 24 * mmPerInch, -90));
                 //confirms position reached
                 controlThread.reachedPosition = true;
-                //moves the robot on the y-axis 78 inches
+                //moves the robot forward 78 inches inches
                 robot.drive.moveVector(new Vector(0, 78 * mmPerInch));
                 break;
             case MIDDLE:
@@ -41,7 +41,7 @@ public class AutoBlueRight extends Auto {
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0), 90);
                 //confirms position reached
                 controlThread.reachedPosition = true;
-                //moves the robot -100 inches on the y-axis
+                //moves the robot 100 inches backward
                 // and turns the robot left 180 degrees
                 robot.drive.moveVector(new Vector(0, -100 * mmPerInch), -180);
                 break;
