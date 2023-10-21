@@ -79,3 +79,8 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# rust
+**/target/
+**/Cargo.lock
+/opencv-build/*

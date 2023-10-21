@@ -70,21 +70,28 @@ public class Vision extends Subsystem {
         Vector position = null;
         double distance = 100000;
         for (AprilTagDetection tag : tags) {
-            Vector robotPosition = switch (tag.id) {
+            Vector robotPosition;
+            switch (tag.id) {
                 // Blue Alliance Center
-                case 2 ->
-                        new Vector(-36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT); // TODO: Calibrate y (use yaw etc. maybe?)
-                // Red Alliance Center
-                case 5 ->
-                        new Vector(36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT);  // TODO: Calibrate y (use yaw etc. maybe?)
-                // Red pixel stack
-                case 8 ->
-                        new Vector(11.5 + 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72.0 - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
-                // Blue pixel stack
-                case 9 ->
-                        new Vector(-11.5 - 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72.0 - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
-                default -> null;
-            };
+                case 2:
+                    robotPosition = new Vector(-36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT); // TODO: Calibrate y (use yaw etc. maybe?)
+                    // Red Alliance Center
+                    break;
+                case 5:
+                    robotPosition = new Vector(36.6875 + tag.ftcPose.x - CAMERA_FORWARD_DISPLACEMENT, 61 - tag.ftcPose.y + CAMERA_RIGHT_DISPLACEMENT);  // TODO: Calibrate y (use yaw etc. maybe?)
+                    // Red pixel stack
+                    break;
+                case 8:
+                    robotPosition = new Vector(11.5 + 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72.0 - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
+                    // Blue pixel stack
+                    break;
+                case 9:
+                    robotPosition = new Vector(-11.5 - 24 - tag.ftcPose.x + CAMERA_FORWARD_DISPLACEMENT, -72.0 - tag.ftcPose.y - CAMERA_RIGHT_DISPLACEMENT);
+                    break;
+                default:
+                    robotPosition = null;
+                    break;
+            }
             double d = tag.ftcPose.range;
             if (d < distance && robotPosition != null) {
                 position = robotPosition;
