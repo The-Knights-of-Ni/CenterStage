@@ -48,7 +48,7 @@ public class Drive extends Subsystem {
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     public static double COUNTS_CORRECTION_X = 1.37;
     public static double COUNTS_CORRECTION_Y = 1.0;
-    public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
+    public static double COUNTS_PER_DEGREE = 1180.0 / 90; // 1000 ticks per 90 degrees
 
     // Move PID coefficients
     public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate

@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.Util;
 
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-/**
- * ServoEx class from ftcLib
- */
-public class ServoEx {
+public class ServoEx implements HardwareDevice {
 
     private final double maxPosition = 1;
     private final double minPosition = 0;
@@ -109,4 +107,33 @@ public class ServoEx {
         return angleUnit == AngleUnit.DEGREES ? Math.toDegrees(angle) : angle;
     }
 
+    @Override
+    public Manufacturer getManufacturer() {
+        return servo.getManufacturer();
+    }
+
+    @Override
+    public String getDeviceName() {
+        return servo.getDeviceName();
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return servo.getConnectionInfo();
+    }
+
+    @Override
+    public int getVersion() {
+        return servo.getVersion();
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+        servo.resetDeviceConfigurationForOpMode();
+    }
+
+    @Override
+    public void close() {
+
+    }
 }

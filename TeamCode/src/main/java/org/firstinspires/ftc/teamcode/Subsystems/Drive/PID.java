@@ -40,7 +40,7 @@ public class PID {
         previousError = error;
 
         // Cap output at range (-1,1)
-        return MathUtils.clamp(error * Kp + integralSum * Ki + derivative * Kd, -1, 1);
+        return MathUtils.clamp(error * Kp + Math.max(integralSum * Ki, 0.25) + derivative * Kd, -1, 1);
     }
 
     /**
