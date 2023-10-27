@@ -19,6 +19,7 @@ public class Teleop extends LinearOpMode {
     double deltaT;
     double timeCurrent;
     double timePre;
+    double airplaneAngle;
     ElapsedTime timer;
     private Robot robot;
 
@@ -82,10 +83,27 @@ public class Teleop extends LinearOpMode {
                 }
 
                 // Paper Drone
-                if (Robot.gamepad1.dPadUp.isPressed()) {
+                if (Robot.gamepad1.dPadRight.isPressed()) {
                     robot.control.airplaneLaunch();
                 }
 
+                if(Robot.gamepad1.dPadUp.isPressed()) {
+                    robot.airplaneLaunchAngle.setPosition(airplaneAngle);
+                    airplaneAngle += 0.1;
+                }
+
+                if(Robot.gamepad1.dPadDown.isPressed()) {
+                    robot.airplaneLaunchAngle.setPosition(airplaneAngle);
+                    airplaneAngle -= 0.1;
+                }
+
+                if(Robot.gamepad1.bumperRight.isPressed()) {
+                    robot.control.runIntake();
+                }
+
+                if(Robot.gamepad1.bumperLeft.isPressed()) {
+                    robot.control.stopIntake();
+                }
 
                 // Claw
                 if (Robot.gamepad2.aButton.isPressed()) {
@@ -93,6 +111,12 @@ public class Teleop extends LinearOpMode {
                 }
                 if (Robot.gamepad2.bButton.isPressed()) {
                     robot.control.closeClaw();
+                }
+                if(Robot.gamepad2.dPadUp.isPressed()) {
+                    robot.control.extendShoulder();
+                }
+                if(Robot.gamepad2.dPadDown.isPressed()) {
+                    robot.control.retractShoulder();
                 }
 
                 // Crane
@@ -152,8 +176,17 @@ public class Teleop extends LinearOpMode {
                     robot.control.closeClaw();
                 }
 
+                if(Robot.gamepad1.bumperRight.isPressed()) {
+                    robot.control.runIntake();
+                }
+
+                if(Robot.gamepad1.bumperLeft.isPressed()) {
+                    robot.control.stopIntake();
+                }
+
                 // Paper Drone
-                if (Robot.gamepad1.dPadUp.isPressed()) {
+                if (Robot.gamepad1.dPadRight.isPressed()) {
+                    robot.control.setAirplaneAngle();
                     robot.control.airplaneLaunch();
                 }
 

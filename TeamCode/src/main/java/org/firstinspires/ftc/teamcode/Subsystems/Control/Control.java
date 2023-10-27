@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
 
 /**
@@ -70,6 +68,14 @@ public class Control extends Subsystem {
     public void setClawSync(ClawState clawState) {
         clawOpenClose.setPosition(clawState.clawPosition);
         clawShoulder.setPosition(clawState.shoulderPosition);
+    }
+
+    public void runIntake() {
+        intakeMotor.setPower(0.8);
+    }
+
+    public void stopIntake() {
+        intakeMotor.setPower(0);
     }
 
     public void openClaw() {
