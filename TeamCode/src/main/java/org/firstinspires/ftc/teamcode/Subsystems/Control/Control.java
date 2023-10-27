@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
 
 /**
@@ -11,14 +14,26 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
  */
 public class Control extends Subsystem {
 
-    public static SlidePosition RETRACTED_SLIDE = new SlidePosition(0);
-    public static SlidePosition SCORE_LOW_SLIDE = new SlidePosition(0);
+    public static SlidePosition RETRACTED_SLIDE = SlidePosition.DOWN;
+    public static SlidePosition SCORE_LOW_SLIDE = SlidePosition.UP;
 
+    private DcMotorEx slideMotor;
+    private DcMotorEx intakeMotor;
     private Servo airplaneLauncher;
+    private Servo airplaneLaunchAngle;
+    private Servo clawOpenClose;
+    private Servo clawShoulder;
 
-    public Control(Telemetry telemetry, Servo airplaneLauncher) {
+
+
+    public Control(Telemetry telemetry, Servo airplaneLauncher, Servo airplaneLaunchAngle, Servo clawOpenClose, Servo clawShoulder, DcMotorEx slideMotor, DcMotorEx intakeMotor) {
         super(telemetry, "control");
         this.airplaneLauncher = airplaneLauncher;
+        this.airplaneLaunchAngle = airplaneLaunchAngle;
+        this.clawOpenClose = clawOpenClose;
+        this.clawShoulder = clawShoulder;
+        this.slideMotor = slideMotor;
+        this.intakeMotor = intakeMotor;
     }
 
     public void initDevicesAuto() {
@@ -31,46 +46,69 @@ public class Control extends Subsystem {
         //launch plane
         airplaneLauncher.setPosition(1.0);
     }
+    public void setAirplaneAngle() {
+        airplaneLaunchAngle.setPosition(1.0);
+    }
 
     public void moveLinearSlide(SlidePosition pos) {
-        //Move linear slide up and down
+        slideMotor.setTargetPosition(pos.pos);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
-        //Move linear slide up and down
+        slideMotor.setTargetPosition(pos.pos);
     }
 
     public void setLinearSlideMotorPower(double power) {
+        slideMotor.setPower(power);
     }
 
     public void setClaw(ClawState clawState) {
+        clawOpenClose.setPosition(clawState.clawPosition);
+        clawShoulder.setPosition(clawState.shoulderPosition);
     }
 
     public void setClawSync(ClawState clawState) {
+        clawOpenClose.setPosition(clawState.clawPosition);
+        clawShoulder.setPosition(clawState.shoulderPosition);
     }
 
     public void openClaw() {
+        clawOpenClose.setPosition(1);
     }
 
     public void closeClaw() {
+        clawOpenClose.setPosition(0);
+    }
+
+    public void extendShoulder() {
+        clawShoulder.setPosition(1);
+    }
+
+    public void retractShoulder() {
+        clawShoulder.setPosition(0);
     }
 
     public void openClawSync() {
+        clawOpenClose.setPosition(1);
     }
 
     public void closeClawSync() {
+        clawOpenClose.setPosition(0);
     }
 
     public void moveCrane(CraneState craneState) {
+        // TBD
     }
 
     public enum ClawState { //TODO: Calibrate claw constants
-        OPEN(0),
-        CLOSE(0);
-        private final double position;
+        SCORE(1,1),
+        RETRACT(0,0);
+        private final double clawPosition;
+        private final double shoulderPosition;
 
-        ClawState(double position) {
-            this.position = position;
+        ClawState(double clawPosition, double shoulderPosition) {
+            this.clawPosition = clawPosition;
+            this.shoulderPosition = shoulderPosition;
         }
     }
 
@@ -84,10 +122,12 @@ public class Control extends Subsystem {
         }
     }
 
-    public static class SlidePosition { //TODO: Calibrate Slide Constants
-        public double pos;
+    public enum SlidePosition { //TODO: Calibrate Slide Constants
+        UP(1),
+        DOWN(0);
+        public int pos;
 
-        SlidePosition(double pos) {
+        SlidePosition(int pos) {
             this.pos = pos;
         }
     }

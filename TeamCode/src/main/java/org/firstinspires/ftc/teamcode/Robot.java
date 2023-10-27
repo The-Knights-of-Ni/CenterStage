@@ -40,14 +40,19 @@ public class Robot {
     public DcMotorEx frontRightDriveMotor;
     public DcMotorEx rearRightDriveMotor;
     public DcMotorEx rearLeftDriveMotor;
+    public DcMotorEx slideMotor;
+    public DcMotorEx intakeMotor;
     //Servos
+    public Servo airplaneLauncher;
+    public Servo airplaneLaunchAngle;
+    public Servo clawOpenClose;
+    public Servo clawShoulder;
+
+
     // Odometry
     public DcMotorEx leftEncoder;
     public DcMotorEx backEncoder;
     public DcMotorEx rightEncoder;
-
-    // Control motors
-    public Servo airplaneLauncher;
 
     public BNO055IMU imu;
     // Subsystems
@@ -161,6 +166,8 @@ public class Robot {
         frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
         rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
         rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
+        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
+        intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
 
 
         frontLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -170,12 +177,15 @@ public class Robot {
         frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
-        airplaneLauncher = hardwareMap.servo.get("airplane");
-        airplaneLauncher.setDirection(Servo.Direction.FORWARD);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void servoInit() {
+        airplaneLauncher = hardwareMap.servo.get("airplane");
+        airplaneLauncher.setDirection(Servo.Direction.FORWARD);
+        airplaneLaunchAngle = hardwareMap.servo.get("launchAngle");
+        airplaneLaunchAngle.setDirection(Servo.Direction.FORWARD);
     }
 
     public void subsystemInit() {
@@ -188,7 +198,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry, airplaneLauncher);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotor, intakeMotor);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
