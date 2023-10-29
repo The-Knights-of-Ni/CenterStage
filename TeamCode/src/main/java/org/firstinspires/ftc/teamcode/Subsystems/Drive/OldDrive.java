@@ -158,7 +158,7 @@ public class OldDrive extends Subsystem {
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
         var r = Math.hypot(leftStickX, leftStickY);
         var robotAngle = Math.atan2(leftStickY, leftStickX) - Math.PI / 4;
-        var lfPower = 1.5*(r * Math.cos(robotAngle) + rightStickX);
+        var lfPower = r * Math.cos(robotAngle) + rightStickX;
         var lrPower = r * Math.sin(robotAngle) + rightStickX;
         var rfPower = r * Math.sin(robotAngle) - rightStickX;
         var rrPower = r * Math.cos(robotAngle) - rightStickX;

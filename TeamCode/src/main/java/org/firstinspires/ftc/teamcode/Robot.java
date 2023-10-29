@@ -169,10 +169,8 @@ public class Robot {
         slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
         intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
 
-
-        frontLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearRightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        rearRightDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         frontLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
