@@ -40,7 +40,15 @@ public class Robot {
     public DcMotorEx frontRightDriveMotor;
     public DcMotorEx rearRightDriveMotor;
     public DcMotorEx rearLeftDriveMotor;
+    public DcMotorEx slideMotor;
+    public DcMotorEx intakeMotor;
     //Servos
+    public Servo airplaneLauncher;
+    public Servo airplaneLaunchAngle;
+    public Servo clawOpenClose;
+    public Servo clawShoulder;
+
+
     // Odometry
     public DcMotorEx leftEncoder;
     public DcMotorEx backEncoder;
@@ -158,18 +166,29 @@ public class Robot {
         frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
         rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
         rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
+        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
+        intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
 
-
-        frontLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        rearRightDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         frontLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void servoInit() {
+        airplaneLauncher = hardwareMap.servo.get("plane");
+        airplaneLauncher.setDirection(Servo.Direction.REVERSE);
+        airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
+        airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
+        clawOpenClose = hardwareMap.servo.get("claw");
+        clawOpenClose.setDirection(Servo.Direction.FORWARD);
+        clawShoulder = hardwareMap.servo.get("clawPivot");
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
     public void subsystemInit() {
@@ -182,7 +201,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotor, intakeMotor);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
