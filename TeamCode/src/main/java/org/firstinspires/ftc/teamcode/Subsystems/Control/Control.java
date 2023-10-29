@@ -38,6 +38,7 @@ public class Control extends Subsystem {
     }
 
     public void initDevicesTeleop() {
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
     public void airplaneLaunch() throws InterruptedException {
@@ -79,7 +80,7 @@ public class Control extends Subsystem {
     }
 
     public void openClaw() {
-        clawOpenClose.setPosition(1);
+        clawOpenClose.setPosition(1.0);
     }
 
     public void closeClaw() {
@@ -87,7 +88,7 @@ public class Control extends Subsystem {
     }
 
     public void extendShoulder() {
-        clawShoulder.setPosition(1);
+        clawShoulder.setPosition(0.6);
     }
 
     public void retractShoulder() {

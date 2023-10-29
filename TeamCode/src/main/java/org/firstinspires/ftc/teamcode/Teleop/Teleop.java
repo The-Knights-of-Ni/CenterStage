@@ -70,9 +70,9 @@ public class Teleop extends LinearOpMode {
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
                 if (Robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, Robot.gamepad1.leftStickY * sensitivityHighPower, Robot.gamepad1.rightStickX * sensitivityHighPower);
+                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX, Robot.gamepad1.leftStickY, Robot.gamepad1.rightStickX);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityLowPower, Robot.gamepad1.leftStickY * sensitivityLowPower, Robot.gamepad1.rightStickX * sensitivityLowPower);
+                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX, Robot.gamepad1.leftStickY, Robot.gamepad1.rightStickX);
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
@@ -87,14 +87,18 @@ public class Teleop extends LinearOpMode {
                     robot.control.airplaneLaunch();
                 }
 
+                if(Robot.gamepad1.dPadLeft.isPressed()) {
+                    robot.airplaneLauncher.setPosition(0.1);
+                }
+
                 if(Robot.gamepad1.dPadUp.isPressed()) {
-                    robot.airplaneLaunchAngle.setPosition(airplaneAngle);
                     airplaneAngle += 0.1;
+                    robot.airplaneLaunchAngle.setPosition(-0.25);
                 }
 
                 if(Robot.gamepad1.dPadDown.isPressed()) {
-                    robot.airplaneLaunchAngle.setPosition(airplaneAngle);
                     airplaneAngle -= 0.1;
+                    robot.airplaneLaunchAngle.setPosition(0.25);
                 }
 
                 if(Robot.gamepad1.bumperRight.isPressed()) {
@@ -129,15 +133,11 @@ public class Teleop extends LinearOpMode {
 
                 // Linear Slide
                 if (Robot.gamepad2.triggerLeft > 0.15 || Robot.gamepad2.triggerRight > 0.15) {
-                    if (Robot.gamepad2.triggerRight > Robot.gamepad2.triggerLeft) {
-                        robot.control.setLinearSlideMotorPower(Robot.gamepad2.triggerRight);
-                    } else if (Robot.gamepad2.triggerLeft > Robot.gamepad2.triggerRight) {
-                        robot.control.setLinearSlideMotorPower(-Robot.gamepad2.triggerLeft);
-                    }
+                    robot.control.setLinearSlideMotorPower(Robot.gamepad2.triggerRight - Robot.gamepad2.triggerLeft);
                 }
 
                 // April Tag Correction
-                if (Robot.gamepad2.dPadLeft.isPressed()) {
+                /*if (Robot.gamepad2.dPadLeft.isPressed()) {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 1 || tagDetection.id == 4).findFirst().ifPresent(
                             aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
@@ -149,7 +149,7 @@ public class Teleop extends LinearOpMode {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 3 || tagDetection.id == 6).findFirst().ifPresent(
                             aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
-                }
+                }*/
 
                 // Switch to one gamepad
                 if ((Robot.gamepad1.bButton.isPressed() && Robot.gamepad1.xButton.isPressed()) || (Robot.gamepad2.bButton.isPressed() && Robot.gamepad2.xButton.isPressed())) {

@@ -172,6 +172,7 @@ public class Robot {
 
         frontLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rearRightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -182,10 +183,14 @@ public class Robot {
     }
 
     private void servoInit() {
-        airplaneLauncher = hardwareMap.servo.get("airplane");
-        airplaneLauncher.setDirection(Servo.Direction.FORWARD);
-        airplaneLaunchAngle = hardwareMap.servo.get("launchAngle");
-        airplaneLaunchAngle.setDirection(Servo.Direction.FORWARD);
+        airplaneLauncher = hardwareMap.servo.get("plane");
+        airplaneLauncher.setDirection(Servo.Direction.REVERSE);
+        airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
+        airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
+        clawOpenClose = hardwareMap.servo.get("claw");
+        clawOpenClose.setDirection(Servo.Direction.FORWARD);
+        clawShoulder = hardwareMap.servo.get("clawPivot");
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
     public void subsystemInit() {
