@@ -88,11 +88,11 @@ public class Control extends Subsystem {
     }
 
     public void extendShoulder() {
-        clawShoulder.setPosition(0.6);
+        clawShoulder.setPosition(0.66); // Do not change constant, trial and error somehow worked
     }
 
     public void retractShoulder() {
-        clawShoulder.setPosition(0);
+        clawShoulder.setPosition(0.615);
     }
 
     public void openClawSync() {
