@@ -7,10 +7,8 @@ import org.firstinspires.ftc.teamcode.GamepadWrapper;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.CraneState;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.HashMap;
 
@@ -83,9 +81,6 @@ public class Teleop extends LinearOpMode {
                 }
 
                 // Paper Drone
-                if (robot.gamepad1.dPadRight.isPressed()) {
-                    robot.control.airplaneLaunch();
-                }
 
                 if(robot.gamepad1.dPadLeft.isPressed()) {
                     robot.airplaneLauncher.setPosition(0.1);
@@ -119,8 +114,11 @@ public class Teleop extends LinearOpMode {
                 if(robot.gamepad2.dPadUp.isPressed()) {
                     robot.control.extendShoulder();
                 }
-                if(robot.gamepad2.dPadDown.isPressed()) {
+                if(robot.gamepad2.dPadRight.isPressed()) {
                     robot.control.retractShoulder();
+                }
+                if(robot.gamepad2.dPadDown.isPressed()) {
+                    robot.control.pickupPosShoulder();
                 }
 
                 // Crane
@@ -132,8 +130,12 @@ public class Teleop extends LinearOpMode {
                 }
 
                 // Linear Slide
-                if (robot.gamepad2.triggerLeft > 0.15 || Robot.gamepad2.triggerRight > 0.15) {
-                    robot.control.setLinearSlideMotorPower(Robot.gamepad2.triggerRight - Robot.gamepad2.triggerLeft);
+                if (robot.gamepad2.triggerLeft >= 0.15) {
+                    robot.control.setLinearSlideMotorPower(-robot.gamepad2.triggerLeft);
+                } else if (robot.gamepad2.triggerRight >= 0.15) {
+                    robot.control.setLinearSlideMotorPower(robot.gamepad2.triggerRight);
+                } else {
+                    robot.control.setLinearSlideMotorPower(0);
                 }
 
                 // April Tag Correction
