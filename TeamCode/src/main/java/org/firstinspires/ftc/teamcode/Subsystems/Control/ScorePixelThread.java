@@ -10,7 +10,7 @@ public class ScorePixelThread extends Thread {
     @Override
     public void run() {
         control.closeClaw();
-        control.retractShoulder();
+        control.pickupPosShoulder();
         control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
         control.extendShoulder();
         control.openClawSync();
