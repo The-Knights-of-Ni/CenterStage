@@ -72,7 +72,7 @@ public class Control extends Subsystem {
     }
 
     public void runIntake() {
-        intakeMotor.setPower(0.8);
+        intakeMotor.setPower(1);
     }
 
     public void stopIntake() {
