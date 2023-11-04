@@ -19,6 +19,8 @@ public class AutoBlueLeftPark extends Auto {
         //robot.vision.stop();
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(-52, 0));
+        robot.control.closeClaw();
+        robot.drive.moveVector(new Vector(0, 4 * mmPerInch));
+        robot.drive.moveVector(new Vector(-52 * mmPerInch, 0));
     }
 }

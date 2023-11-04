@@ -35,6 +35,7 @@ public class Control extends Subsystem {
     }
 
     public void initDevicesAuto() {
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
     public void initDevicesTeleop() {
