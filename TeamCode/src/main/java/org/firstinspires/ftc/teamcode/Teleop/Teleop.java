@@ -82,15 +82,15 @@ public class Teleop extends LinearOpMode {
 
                 // Paper Drone
 
-                if(robot.gamepad1.dPadLeft.isPressed()) {
+                if(robot.gamepad2.dPadLeft.isPressed()) {
                     robot.airplaneLauncher.setPosition(1);
                 }
 
-                if(robot.gamepad1.dPadUp.isPressed()) {
+                if(robot.gamepad2.bumperRight.isPressed()) {
                     robot.control.setAirplaneAngle();
                 }
 
-                if(robot.gamepad1.dPadDown.isPressed()) {
+                if(robot.gamepad2.bumperLeft.isPressed()) {
                     robot.airplaneLaunchAngle.setPosition(0);
                 }
 
