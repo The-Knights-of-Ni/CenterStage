@@ -159,7 +159,7 @@ public class Robot {
     }
 
     /**
-     * Gets Motors from hardware ap and sets zero power behavior and direction
+     * Gets Motors from hardware ap
      */
     private void motorInit() {
         frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
@@ -168,27 +168,13 @@ public class Robot {
         rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
         slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
         intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
-
-        frontLeftDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
-        rearRightDriveMotor.setDirection(DcMotorEx.Direction.REVERSE);
-
-        frontLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void servoInit() {
         airplaneLauncher = hardwareMap.servo.get("plane");
-        airplaneLauncher.setDirection(Servo.Direction.REVERSE);
         airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
-        airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
         clawOpenClose = hardwareMap.servo.get("claw");
-        clawOpenClose.setDirection(Servo.Direction.FORWARD);
         clawShoulder = hardwareMap.servo.get("clawPivot");
-        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
     public void subsystemInit() {

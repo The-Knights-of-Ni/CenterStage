@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -34,11 +35,15 @@ public class Control extends Subsystem {
         this.intakeMotor = intakeMotor;
     }
 
-    public void initDevicesAuto() {
+    public void initDevices() {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
-    }
 
-    public void initDevicesTeleop() {
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        airplaneLauncher.setDirection(Servo.Direction.REVERSE);
+        airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
+        clawOpenClose.setDirection(Servo.Direction.FORWARD);
         clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 

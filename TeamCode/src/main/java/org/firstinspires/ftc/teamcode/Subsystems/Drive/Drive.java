@@ -103,6 +103,17 @@ public class Drive extends Subsystem {
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Init motor directions
+        // Motor directions are guaranteed to be forward if not specified
+        this.motors.frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        this.motors.rearRight.setDirection(DcMotorEx.Direction.REVERSE);
+
+        // Set zero power behavior
+        this.motors.frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
     /**
