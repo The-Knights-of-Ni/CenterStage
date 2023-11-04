@@ -69,8 +69,15 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             markerLocation = MarkerLocation.NOT_FOUND;
             return input;
         }
-        Scalar lowHSV = new Scalar(70.0, 100.0, 100.0);
-        Scalar highHSV = new Scalar(85.0, 255.0, 235.0);
+
+        // Blue alliance
+        Scalar lowHSV = new Scalar(138.0, 100.0, 100.0);
+        Scalar highHSV = new Scalar(174.0, 255.0, 235.0);
+        // Or red
+        if (allianceColor == AllianceColor.RED) {
+            lowHSV = new Scalar(233.0, 100.0, 100.0);
+            highHSV = new Scalar(255.0, 255.0, 235.0);
+        }
         Mat thresh = new Mat();
 
         Core.inRange(crop, lowHSV, highHSV, thresh);
