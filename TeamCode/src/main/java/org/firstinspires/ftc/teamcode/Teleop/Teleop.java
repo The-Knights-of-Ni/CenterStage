@@ -67,7 +67,7 @@ public class Teleop extends LinearOpMode {
             timePre = timeCurrent;
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
-                if (robot.gamepad1.yButton.toggle) {
+                if (!robot.gamepad1.yButton.toggle) {
                     motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * robot.gamepad1.leftStickX, sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
                 } else {
                     motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
