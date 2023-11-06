@@ -56,7 +56,7 @@ public class Teleop extends LinearOpMode {
         timePre = timeCurrent;
 
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
-        final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
+        final double sensitivityLowPower = 0.5; // multiply inputs with this on non-high power mode
         boolean twoGamepads = true;
 
         while (opModeIsActive()) {
@@ -68,9 +68,9 @@ public class Teleop extends LinearOpMode {
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
                 if (robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX, robot.gamepad1.leftStickY, robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * robot.gamepad1.leftStickX, sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX, robot.gamepad1.leftStickY, robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
