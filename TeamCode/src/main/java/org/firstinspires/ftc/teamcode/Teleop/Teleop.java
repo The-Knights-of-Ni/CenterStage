@@ -190,7 +190,7 @@ public class Teleop extends LinearOpMode {
                     robot.control.airplaneLaunch();
                 }
 
-                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.xButton.isPressed())) {
+                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.yButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.yButton.isPressed())) {
                     twoGamepads = true;
                 }
             }
