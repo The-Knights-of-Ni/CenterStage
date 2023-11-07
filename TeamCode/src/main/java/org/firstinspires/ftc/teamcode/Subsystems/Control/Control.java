@@ -55,6 +55,10 @@ public class Control extends Subsystem {
         airplaneLaunchAngle.setPosition(0.870);
     }
 
+    public void resetAirplaneAngle() {
+        airplaneLaunchAngle.setPosition(0);
+    }
+
     public void moveLinearSlide(SlidePosition pos) {
         slideMotor.setTargetPosition(pos.pos);
     }
