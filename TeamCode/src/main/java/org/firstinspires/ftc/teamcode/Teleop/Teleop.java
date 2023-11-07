@@ -58,6 +58,7 @@ public class Teleop extends LinearOpMode {
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
         final double sensitivityLowPower = 0.5; // multiply inputs with this on non-high power mode
         boolean twoGamepads = true;
+        double slidePowerVel = 0.0;
 
         while (opModeIsActive()) {
             robot.updateGamepads();
@@ -131,10 +132,9 @@ public class Teleop extends LinearOpMode {
 
                 // Linear Slide
                 // TODO: Implement auto correcting of claw shoulder
-                if (robot.gamepad2.triggerLeft >= 0.15) {
-                    robot.control.setLinearSlideMotorPower(-robot.gamepad2.triggerLeft);
-                } else if (robot.gamepad2.triggerRight >= 0.15) {
-                    robot.control.setLinearSlideMotorPower(robot.gamepad2.triggerRight);
+                slidePowerVel = robot.gamepad2.triggerRight - robot.gamepad2.triggerLeft;
+                if (slidePowerVel >= 0.15) {
+                    robot.control.setLinearSlideMotorPower(slidePowerVel);
                 } else {
                     robot.control.setLinearSlideMotorPower(0);
                 }
