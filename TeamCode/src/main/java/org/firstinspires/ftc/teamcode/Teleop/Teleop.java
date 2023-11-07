@@ -76,6 +76,7 @@ public class Teleop extends LinearOpMode {
                 robot.drive.setDrivePowers(motorPowers);
 
                 // Close claw and score ...
+                // TODO: Fix this
                 if (robot.gamepad1.aButton.isPressed()) {
                     new ScorePixelThread(robot.control).start();
                 }
@@ -120,6 +121,7 @@ public class Teleop extends LinearOpMode {
                 }
 
                 // Crane
+                // TODO: Make it work
                 if (robot.gamepad2.xButton.isPressed()) {
                     robot.control.moveCrane(CraneState.DOWN);
                 }
@@ -128,6 +130,7 @@ public class Teleop extends LinearOpMode {
                 }
 
                 // Linear Slide
+                // TODO: Implement auto correcting of claw shoulder
                 if (robot.gamepad2.triggerLeft >= 0.15) {
                     robot.control.setLinearSlideMotorPower(-robot.gamepad2.triggerLeft);
                 } else if (robot.gamepad2.triggerRight >= 0.15) {
