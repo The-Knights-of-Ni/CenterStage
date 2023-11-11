@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 
@@ -9,85 +13,123 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
  */
 public class Control extends Subsystem {
 
-    public static SlidePosition RETRACTED_SLIDE = new SlidePosition(0);
-    public static SlidePosition SCORE_LOW_SLIDE = new SlidePosition(0);
+    public static SlidePosition RETRACTED_SLIDE = SlidePosition.DOWN;
+    public static SlidePosition SCORE_LOW_SLIDE = SlidePosition.UP;
 
-    public Control(Telemetry telemetry) {
+    private DcMotorEx slideMotor;
+    private DcMotorEx intakeMotor;
+    private Servo airplaneLauncher;
+    private Servo airplaneLaunchAngle;
+    private Servo clawOpenClose;
+    private Servo clawShoulder;
+
+
+
+    public Control(Telemetry telemetry, Servo airplaneLauncher, Servo airplaneLaunchAngle, Servo clawOpenClose, Servo clawShoulder, DcMotorEx slideMotor, DcMotorEx intakeMotor) {
         super(telemetry, "control");
+        this.airplaneLauncher = airplaneLauncher;
+        this.airplaneLaunchAngle = airplaneLaunchAngle;
+        this.clawOpenClose = clawOpenClose;
+        this.clawShoulder = clawShoulder;
+        this.slideMotor = slideMotor;
+        this.intakeMotor = intakeMotor;
     }
 
-    public void initDevicesAuto() {
+    public void initDevices() {
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
 
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        airplaneLauncher.setDirection(Servo.Direction.REVERSE);
+        airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
+        clawOpenClose.setDirection(Servo.Direction.FORWARD);
+        clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
-    public void initDevicesTeleop() {
-
-    }
-
-    public void airplaneLaunch(PlaneLaunchRange range) {
+    public void airplaneLaunch() throws InterruptedException {
         //launch plane
+        airplaneLauncher.setPosition(1.0);
+    }
+    public void setAirplaneAngle() {
+        airplaneLaunchAngle.setPosition(0.870);
+    }
+
+    public void resetAirplaneAngle() {
+        airplaneLaunchAngle.setPosition(0);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
-        //Move linear slide up and down
+        slideMotor.setTargetPosition(pos.pos);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
-        //Move linear slide up and down
+        slideMotor.setTargetPosition(pos.pos);
     }
 
     public void setLinearSlideMotorPower(double power) {
-
+        slideMotor.setPower(power);
     }
 
     public void setClaw(ClawState clawState) {
-
+        clawOpenClose.setPosition(clawState.clawPosition);
+        clawShoulder.setPosition(clawState.shoulderPosition);
     }
 
     public void setClawSync(ClawState clawState) {
+        clawOpenClose.setPosition(clawState.clawPosition);
+        clawShoulder.setPosition(clawState.shoulderPosition);
+    }
 
+    public void runIntake() {
+        intakeMotor.setPower(1);
+    }
+
+    public void stopIntake() {
+        intakeMotor.setPower(0);
     }
 
     public void openClaw() {
-
+        clawOpenClose.setPosition(1.0);
     }
 
     public void closeClaw() {
+        clawOpenClose.setPosition(0);
+    }
 
+    public void extendShoulder() {
+        clawShoulder.setPosition(0.66); // Do not change constant, trial and error somehow worked
+    }
+
+    public void pickupPosShoulder() {
+        clawShoulder.setPosition(0.613);
+    }
+
+    public void retractShoulder() {
+        clawShoulder.setPosition(0.6);
     }
 
     public void openClawSync() {
-
+        clawOpenClose.setPosition(1);
     }
 
     public void closeClawSync() {
-
+        clawOpenClose.setPosition(0);
     }
 
     public void moveCrane(CraneState craneState) {
-
+        // TBD
     }
 
     public enum ClawState { //TODO: Calibrate claw constants
-        OPEN(0),
-        CLOSE(0);
-        private final double position;
+        SCORE(1,1),
+        RETRACT(0,0);
+        private final double clawPosition;
+        private final double shoulderPosition;
 
-        ClawState(double position) {
-            this.position = position;
-        }
-    }
-
-    public enum PlaneLaunchRange { //TODO: Calibrate Motor Powers
-        LONG(0),
-        MEDIUM(0),
-        SHORT(0),
-        OFF(0);
-
-        private final double motorPower;
-
-        PlaneLaunchRange(double motorPower) {
-            this.motorPower = motorPower;
+        ClawState(double clawPosition, double shoulderPosition) {
+            this.clawPosition = clawPosition;
+            this.shoulderPosition = shoulderPosition;
         }
     }
 
@@ -101,10 +143,12 @@ public class Control extends Subsystem {
         }
     }
 
-    public static class SlidePosition { //TODO: Calibrate Slide Constants
-        public double pos;
+    public enum SlidePosition { //TODO: Calibrate Slide Constants
+        UP(1),
+        DOWN(0);
+        public int pos;
 
-        SlidePosition(double pos) {
+        SlidePosition(int pos) {
             this.pos = pos;
         }
     }

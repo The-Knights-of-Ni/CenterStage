@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -7,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.concurrent.TimeUnit;
 
+@Autonomous(name = "Auto Blue Right", group = "Auto")
 public class AutoBlueRight extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
@@ -33,7 +36,7 @@ public class AutoBlueRight extends Auto {
                 controlThread.reachedPosition = true;
                 //moves the robot 112 inches left
                 // and turn the robot 90 degrees left
-                robot.drive.moveVector(new Vector(-112 * mmPerInch, 0), -90);
+                robot.drive.moveVector(new Vector(-112, 0), -90);
                 break;
             case RIGHT:
                 //moves the robot 12 inches right
@@ -50,7 +53,6 @@ public class AutoBlueRight extends Auto {
         adjustPosition(markerPosition);
         controlThread.reachedPosition = true;
         controlThread.extended.tryLock(100, TimeUnit.SECONDS);
-        //moves robot 24 units left
-        robot.drive.moveVector(new Vector(-24 * mmPerInch, 0));
+        robot.drive.moveVector(new Vector(-24, 0));
     }
 }

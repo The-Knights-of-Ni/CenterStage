@@ -39,10 +39,10 @@ public abstract class Auto extends LinearOpMode {
         Log.i("main", "*** Opmode control passed to teamcode ***");
         timer = new ElapsedTime();
         HashMap<String, Boolean> flags = new HashMap<>();
-        flags.put("vision", true);
+        flags.put("vision", false);
         flags.put("web", false);
         this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
-        robot.control.initDevicesAuto();
+        robot.control.initDevices();
         controlThread = new ArmMovementThread(robot.control);
         telemetry.addData("Waiting for start", "");
         telemetry.update();

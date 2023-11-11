@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.GamepadWrapper;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.CraneState;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.PlaneLaunchRange;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.HashMap;
 
@@ -20,6 +17,7 @@ public class Teleop extends LinearOpMode {
     double deltaT;
     double timeCurrent;
     double timePre;
+    double airplaneAngle;
     ElapsedTime timer;
     private Robot robot;
 
@@ -27,7 +25,7 @@ public class Teleop extends LinearOpMode {
         // Initialize DC motor objects
         timer = new ElapsedTime();
         HashMap<String, Boolean> flags = new HashMap<>();
-        flags.put("web", true);
+        flags.put("web", false);
         flags.put("vision", false);
         this.robot = new Robot(hardwareMap, telemetry, timer, AllianceColor.BLUE, gamepad1, gamepad2, flags);
         timeCurrent = timer.nanoseconds();
@@ -50,7 +48,7 @@ public class Teleop extends LinearOpMode {
         initOpMode();
 
         ElapsedTime timer = new ElapsedTime();
-        robot.control.initDevicesTeleop();
+        robot.control.initDevices();
         waitForStart();
 
         telemetry.clearAll();
@@ -58,70 +56,91 @@ public class Teleop extends LinearOpMode {
         timePre = timeCurrent;
 
         final double sensitivityHighPower = 1.0; // multiply inputs with this on high power mode
-        final double sensitivityLowPower = 0.7; // multiply inputs with this on non-high power mode
-        var twoGamepads = true;
+        final double sensitivityLowPower = 0.5; // multiply inputs with this on non-high power mode
+        boolean twoGamepads = true;
+        double slidePowerVel = 0.0;
 
         while (opModeIsActive()) {
-            Robot.updateGamepads();
+            robot.updateGamepads();
 
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
-                if (Robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, Robot.gamepad1.leftStickY * sensitivityHighPower, Robot.gamepad1.rightStickX * sensitivityHighPower);
+                if (!robot.gamepad1.yButton.toggle) {
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * robot.gamepad1.leftStickX, sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityLowPower, Robot.gamepad1.leftStickY * sensitivityLowPower, Robot.gamepad1.rightStickX * sensitivityLowPower);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
 
                 // Close claw and score ...
-                if (Robot.gamepad1.aButton.isPressed()) {
+                // TODO: Fix this
+                if (robot.gamepad1.aButton.isPressed()) {
                     new ScorePixelThread(robot.control).start();
                 }
 
                 // Paper Drone
-                if (Robot.gamepad1.dPadUp.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-                } else if (Robot.gamepad1.dPadRight.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
-                } else if (Robot.gamepad1.dPadLeft.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
-                }
-                if (Robot.gamepad1.dPadDown.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+
+                if(robot.gamepad2.dPadLeft.isPressed()) {
+                    robot.control.airplaneLaunch();
                 }
 
+                if(robot.gamepad2.bumperRight.isPressed()) {
+                    robot.control.setAirplaneAngle();
+                }
+
+                if(robot.gamepad2.bumperLeft.isPressed()) {
+                    robot.control.resetAirplaneAngle();
+                }
+
+                if(robot.gamepad1.bumperRight.isPressed()) {
+                    robot.control.runIntake();
+                }
+
+                if(robot.gamepad1.bumperLeft.isPressed()) {
+                    robot.control.stopIntake();
+                }
 
                 // Claw
-                if (Robot.gamepad2.aButton.isPressed()) {
+                if (robot.gamepad2.aButton.isPressed()) {
                     robot.control.openClaw();
                 }
-                if (Robot.gamepad2.bButton.isPressed()) {
+                if (robot.gamepad2.bButton.isPressed()) {
                     robot.control.closeClaw();
+                }
+                if(robot.gamepad2.dPadUp.isPressed()) {
+                    robot.control.extendShoulder();
+                }
+                if(robot.gamepad2.dPadRight.isPressed()) {
+                    robot.control.retractShoulder();
+                }
+                if(robot.gamepad2.dPadDown.isPressed()) {
+                    robot.control.pickupPosShoulder();
                 }
 
                 // Crane
-                if (Robot.gamepad2.xButton.isPressed()) {
+                // TODO: Make it work
+                if (robot.gamepad2.xButton.isPressed()) {
                     robot.control.moveCrane(CraneState.DOWN);
                 }
-                if (Robot.gamepad2.yButton.isPressed()) {
+                if (robot.gamepad2.yButton.isPressed()) {
                     robot.control.moveCrane(CraneState.UP);
                 }
 
                 // Linear Slide
-                if (Robot.gamepad2.triggerLeft > 0.15 || Robot.gamepad2.triggerRight > 0.15) {
-                    if (Robot.gamepad2.triggerRight > Robot.gamepad2.triggerLeft) {
-                        robot.control.setLinearSlideMotorPower(Robot.gamepad2.triggerRight);
-                    } else if (Robot.gamepad2.triggerLeft > Robot.gamepad2.triggerRight) {
-                        robot.control.setLinearSlideMotorPower(-Robot.gamepad2.triggerLeft);
-                    }
+                // TODO: Implement auto correcting of claw shoulder
+                slidePowerVel = robot.gamepad2.triggerRight - robot.gamepad2.triggerLeft;
+                if (slidePowerVel >= 0.15) {
+                    robot.control.setLinearSlideMotorPower(slidePowerVel);
+                } else {
+                    robot.control.setLinearSlideMotorPower(0);
                 }
 
                 // April Tag Correction
-                if (Robot.gamepad2.dPadLeft.isPressed()) {
+                /*if (Robot.gamepad2.dPadLeft.isPressed()) {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 1 || tagDetection.id == 4).findFirst().ifPresent(
                             aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
@@ -133,46 +152,48 @@ public class Teleop extends LinearOpMode {
                     robot.vision.aprilTagDetectionThread.currentDetections.stream().filter(tagDetection -> tagDetection.id == 3 || tagDetection.id == 6).findFirst().ifPresent(
                             aprilTagDetection -> robot.drive.moveVector(new Vector(aprilTagDetection.ftcPose.x * Drive.mmPerInch, 0))
                     );
-                }
+                }*/
 
                 // Switch to one gamepad
-                if ((Robot.gamepad1.bButton.isPressed() && Robot.gamepad1.xButton.isPressed()) || (Robot.gamepad2.bButton.isPressed() && Robot.gamepad2.xButton.isPressed())) {
+                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.xButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.xButton.isPressed())) {
                     twoGamepads = false;
                 }
 
             } else {
                 // Must use gamepad 1 for one gamepad TODO: Find elegant fix
                 MotorGeneric<Double> motorPowers;
-                double triggerHit = GamepadWrapper.joystickDeadzoneCorrection(Math.max(Robot.gamepad1.triggerLeft, Robot.gamepad1.triggerRight));
-                if (Robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityHighPower, Robot.gamepad1.leftStickY * sensitivityHighPower, triggerHit * sensitivityHighPower);
+                double triggerHit = GamepadWrapper.joystickDeadzoneCorrection(Math.max(robot.gamepad1.triggerLeft, robot.gamepad1.triggerRight));
+                if (robot.gamepad1.yButton.toggle) {
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityHighPower, robot.gamepad1.leftStickY * sensitivityHighPower, triggerHit * sensitivityHighPower);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(Robot.gamepad1.leftStickX * sensitivityLowPower, Robot.gamepad1.leftStickY * sensitivityLowPower, triggerHit * sensitivityLowPower);
+                    motorPowers = robot.drive.calcMotorPowers(robot.gamepad1.leftStickX * sensitivityLowPower, robot.gamepad1.leftStickY * sensitivityLowPower, triggerHit * sensitivityLowPower);
                 }
                 robot.drive.setDrivePowers(motorPowers);
 
-                robot.control.setLinearSlideMotorPower(Robot.gamepad1.rightStickY);
+                robot.control.setLinearSlideMotorPower(robot.gamepad1.rightStickY);
 
-                if (Robot.gamepad1.aButton.isPressed()) {
+                if (robot.gamepad1.aButton.isPressed()) {
                     robot.control.openClaw();
                 }
-                if (Robot.gamepad1.bButton.isPressed()) {
+                if (robot.gamepad1.bButton.isPressed()) {
                     robot.control.closeClaw();
                 }
 
-                // Paper Drone
-                if (Robot.gamepad1.dPadUp.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.MEDIUM);
-                } else if (Robot.gamepad1.dPadRight.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.SHORT);
-                } else if (Robot.gamepad1.dPadLeft.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.LONG);
-                }
-                if (Robot.gamepad1.dPadDown.isPressed()) {
-                    robot.control.airplaneLaunch(PlaneLaunchRange.OFF);
+                if(robot.gamepad1.bumperRight.isPressed()) {
+                    robot.control.runIntake();
                 }
 
-                if ((Robot.gamepad1.bButton.isPressed() && Robot.gamepad1.xButton.isPressed()) || (Robot.gamepad2.bButton.isPressed() && Robot.gamepad2.xButton.isPressed())) {
+                if(robot.gamepad1.bumperLeft.isPressed()) {
+                    robot.control.stopIntake();
+                }
+
+                // Paper Drone
+                if (robot.gamepad1.dPadRight.isPressed()) {
+                    robot.control.setAirplaneAngle();
+                    robot.control.airplaneLaunch();
+                }
+
+                if ((robot.gamepad1.bButton.isPressed() && robot.gamepad1.yButton.isPressed()) || (robot.gamepad2.bButton.isPressed() && robot.gamepad2.yButton.isPressed())) {
                     twoGamepads = true;
                 }
             }

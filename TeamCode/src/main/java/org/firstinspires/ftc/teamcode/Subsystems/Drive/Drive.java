@@ -48,7 +48,7 @@ public class Drive extends Subsystem {
             (TICKS_PER_MOTOR_REV_20 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     public static double COUNTS_CORRECTION_X = 1.37;
     public static double COUNTS_CORRECTION_Y = 1.0;
-    public static double COUNTS_PER_DEGREE = 1180 / 90; // 1000 ticks per 90 degrees
+    public static double COUNTS_PER_DEGREE = 1180.0 / 90; // 1000 ticks per 90 degrees
 
     // Move PID coefficients
     public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
@@ -103,6 +103,17 @@ public class Drive extends Subsystem {
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Init motor directions
+        // Motor directions are guaranteed to be forward if not specified
+        this.motors.frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        this.motors.rearRight.setDirection(DcMotorEx.Direction.REVERSE);
+
+        // Set zero power behavior
+        this.motors.frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motors.rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
     /**

@@ -40,7 +40,15 @@ public class Robot {
     public DcMotorEx frontRightDriveMotor;
     public DcMotorEx rearRightDriveMotor;
     public DcMotorEx rearLeftDriveMotor;
+    public DcMotorEx slideMotor;
+    public DcMotorEx intakeMotor;
     //Servos
+    public Servo airplaneLauncher;
+    public Servo airplaneLaunchAngle;
+    public Servo clawOpenClose;
+    public Servo clawShoulder;
+
+
     // Odometry
     public DcMotorEx leftEncoder;
     public DcMotorEx backEncoder;
@@ -151,25 +159,22 @@ public class Robot {
     }
 
     /**
-     * Gets Motors from hardware ap and sets zero power behavior and direction
+     * Gets Motors from hardware ap
      */
     private void motorInit() {
         frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
         frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
         rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
         rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
-
-
-        frontLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearLeftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        frontLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        frontRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rearLeftDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rearRightDriveMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
+        intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
     }
 
     private void servoInit() {
+        airplaneLauncher = hardwareMap.servo.get("plane");
+        airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
+        clawOpenClose = hardwareMap.servo.get("claw");
+        clawShoulder = hardwareMap.servo.get("clawPivot");
     }
 
     public void subsystemInit() {
@@ -182,7 +187,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotor, intakeMotor);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
