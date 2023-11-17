@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-import java.util.ArrayList;
-
 public class MotorGeneric<T> {
     public T frontLeft;
     public T frontRight;
