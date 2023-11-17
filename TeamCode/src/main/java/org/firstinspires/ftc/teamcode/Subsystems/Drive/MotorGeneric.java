@@ -15,23 +15,6 @@ public class MotorGeneric<T> {
         this.rearRight = rearRight;
     }
 
-    public MotorGeneric(T[] motors) {
-        this(motors[0], motors[1], motors[2], motors[3]);
-    }
-
-    public MotorGeneric(ArrayList<T> motors) {
-        this(motors.get(0), motors.get(1), motors.get(2), motors.get(3));
-    }
-
-    public ArrayList<T> toList() {
-        ArrayList<T> arrayList = new ArrayList<>(4);
-        arrayList.add(frontLeft);
-        arrayList.add(frontRight);
-        arrayList.add(rearLeft);
-        arrayList.add(rearRight);
-        return arrayList;
-    }
-
     @Override
     public String toString() {
         return "MotorGeneric{" +
