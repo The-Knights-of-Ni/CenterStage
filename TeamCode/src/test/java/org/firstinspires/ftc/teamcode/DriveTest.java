@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
@@ -96,7 +95,7 @@ class DriveTest {
     void testPIDTurn() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             Drive drive = init();
-            drive.moveVector(new Vector(0, 0), 90);
+            drive.move(new Pose(0, 0, 90));
             assertEquals(-1170, drive.motors.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             // TODO: Once fr gets fixed we can uncomment this test :)
             // assertEquals(1170, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
