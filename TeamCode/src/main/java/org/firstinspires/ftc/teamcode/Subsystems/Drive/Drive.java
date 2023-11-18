@@ -63,9 +63,6 @@ public class Drive extends Subsystem {
     public double ODOMETRY_FOWARD_DISPLACEMENT = -50.8; // How far back the back odometry wheel is
 
     public double ODOMETRY_COUNTS_PER_MM = 3; // TODO: Calibrate
-
-    public boolean debug = false;
-
     public BNO055IMU imu;
     public static Pose currentPosition = new Pose(0, 0, 0);
     public int previousLeftOdometryTicks = 0;

@@ -33,10 +33,6 @@ public class Robot {
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     // DC Motors
-    public DcMotorEx frontLeftDriveMotor;
-    public DcMotorEx frontRightDriveMotor;
-    public DcMotorEx rearRightDriveMotor;
-    public DcMotorEx rearLeftDriveMotor;
     public DcMotorEx slideMotor;
     public DcMotorEx intakeMotor;
     //Servos
@@ -159,10 +155,6 @@ public class Robot {
      * Gets Motors from hardware ap
      */
     private void motorInit() {
-        frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
-        frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
-        rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
-        rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
         slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
         intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
     }
@@ -176,6 +168,10 @@ public class Robot {
 
     public void subsystemInit() {
         logger.debug("Drive subsystem init started");
+        var frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
+        var frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
+        var rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
+        var rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
         if (odometryEnabled) {
             drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
