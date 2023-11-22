@@ -14,6 +14,11 @@ public class Visual implements PoseEstimationMethod {
     }
 
     @Override
+    public void stop() {
+
+    }
+
+    @Override
     public Pose getPose() {
         return null;
     }

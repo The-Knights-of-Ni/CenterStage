@@ -10,5 +10,5 @@ This repository contains FTC Team 5206's repository for the CENTERSTAGE (2023-20
 
 Create branches for individual components in the code. Do not commit directly to master. Do not commit branch merges on your own. Contact @albonec or @moogloof for any urgent merge requests.
 # Docs
-* [A GitHub Pages doc is there](https://the-knights-of-ni.github.io/5206-docs/)
-* There is javadoc for most things.
+* [High-level Docs](https://the-knights-of-ni.github.io/5206-docs/)
+* There is javadoc for most things (cross-compiled to sphinx [here](https://the-knights-of-ni.github.io/5206-docs/javadoc.html)).

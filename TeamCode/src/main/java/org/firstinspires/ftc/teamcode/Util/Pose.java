@@ -20,8 +20,12 @@ public class Pose {
         return new Vector(x, y);
     }
 
-    public boolean fuzzyCompare(Pose other) { // TODO: Make more configurable (e.g. modifiable thresholds)
-        return Math.abs(x - other.x) < 60 && Math.abs(y - other.y) < 60 && Math.abs(heading - other.heading) < 5;
+    public boolean fuzzyCompare(Pose other, int distanceThreshold, int angleThreshold) {
+        return Math.abs(x - other.x) < distanceThreshold && Math.abs(y - other.y) < distanceThreshold && Math.abs(heading - other.heading) < 5;
+    }
+
+    public boolean fuzzyCompare(Pose other) {
+        return fuzzyCompare(other, 60, 5);
     }
 
     @Override

@@ -152,7 +152,7 @@ public class Robot {
     }
 
     /**
-     * Gets Motors from hardware ap
+     * Gets Motors from hardware map
      */
     private void motorInit() {
         slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
@@ -210,8 +210,9 @@ public class Robot {
     public void telemetryBroadcast(String caption, String value) {
         telemetry.addData(caption, value);
         telemetry.update();
-        if (webEnabled)
+        if (webEnabled) {
             WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
+        }
         Log.i(caption, value);
     }
 }

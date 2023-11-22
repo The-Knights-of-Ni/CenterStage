@@ -17,6 +17,10 @@ public class MotorEncoders implements PoseEstimationMethod {
     }
 
     @Override
+    public void stop() {
+
+    }
+    @Override
     public Pose getPose() {
         return null;
     }

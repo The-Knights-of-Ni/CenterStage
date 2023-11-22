@@ -24,7 +24,7 @@ public class PurePursuit implements Targeter {
             target = circle.segmentIntersections(lineSegment) // Gets the intersections
                     .stream() // Converts to stream (for comparing)
                     .max(Comparator.comparingDouble(v -> v.distance(lineSegment.end))) // Finds the one closest to the end of the line.
-                    .orElse(target); // If there isn't one, keep target asis.
+                    .orElse(target); // If there isn't one, keep target as-is.
         }
         return new Pose(target, targetWaypoint.heading);
     }

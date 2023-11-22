@@ -25,7 +25,6 @@ public class IntegralScan {
     double fa;
     double fm;
     double fb;
-    double i;
     ToDoubleFunction<Double> f;
 
     public IntegralScan(double a, double b, double eps, ToDoubleFunction<Double> f) {
