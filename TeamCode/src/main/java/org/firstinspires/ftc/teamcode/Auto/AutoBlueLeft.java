@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerLocation;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -15,7 +15,7 @@ public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        MarkerLocation markerPosition = robot.vision.detectMarkerRun();
         robot.vision.stop();
         waitForStart();
         controlThread.start();
