@@ -35,7 +35,7 @@ class DriveTest {
         MockDcMotorEx mockRR = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
         MockTelemetry telemetry = new MockTelemetry();
         BNO055IMU mockIMU = Mockito.mock(BNO055IMU.class);
-        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, PoseEstimationMethodChoice.MOTOR_ENCODERS, mockIMU, telemetry);
+        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, PoseEstimationMethodChoice.NONE, mockIMU, telemetry);
     }
 
     @Test

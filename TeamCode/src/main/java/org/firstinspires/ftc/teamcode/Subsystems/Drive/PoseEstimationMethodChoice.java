@@ -4,5 +4,6 @@ public enum PoseEstimationMethodChoice {
     ODOMETRY,
     IMU,
     VISUAL,
-    MOTOR_ENCODERS
+    MOTOR_ENCODERS,
+    NONE
 }

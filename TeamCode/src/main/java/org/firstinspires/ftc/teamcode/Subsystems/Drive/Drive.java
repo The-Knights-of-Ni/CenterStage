@@ -78,6 +78,8 @@ public class Drive extends Subsystem {
                 throw new IllegalArgumentException("Odometry is null, but pose estimation method is ODOMETRY");
             }
             this.poseEstimator = new Odometry(odometry[0], odometry[1], odometry[2]);
+        } else if (poseEstimationMethodChoice == PoseEstimationMethodChoice.NONE) {
+            this.poseEstimator = null;
         } else {
             throw new IllegalArgumentException("Pose estimation method not implemented");
         }
