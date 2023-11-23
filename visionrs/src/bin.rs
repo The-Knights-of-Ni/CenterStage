@@ -9,9 +9,7 @@ fn main() -> anyhow::Result<()> {
     // This line is really slow ... it's why the window opening takes so long
     let mut camera = videoio::VideoCapture::new(0, videoio::CAP_ANY)?; // 0 is the default camera
     let opened = videoio::VideoCapture::is_opened(&camera)?;
-    if !opened {
-        panic!("Unable to open default camera!");
-    }
+    assert!(opened, "Unable to open default camera!");
     println!("Press the A key to toggle the pipeline. Press Q to exit. Press E to run pipeline.");
     let mut perform_pipeline = true;
     loop {
@@ -19,6 +17,7 @@ fn main() -> anyhow::Result<()> {
         camera.read(&mut frame)?;
         if frame.size()?.width > 0 {
             let mat = if perform_pipeline {
+                #[allow(clippy::cast_possible_truncation)]
                 get_edges_pipeline(&frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32, camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32)?
             } else {
                 frame

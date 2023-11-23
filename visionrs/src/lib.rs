@@ -8,6 +8,7 @@ use opencv::prelude::*;
 use opencv::{imgproc, videoio};
 use std::io::ErrorKind;
 
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum MarkerLocation {
     Left,
     Middle,
@@ -64,8 +65,8 @@ fn get_marker_location_pipeline(
     )?;
     edges.release()?;
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
-    let mut bound_rect: Vec<Rect> = Vec::new(); // TODO: Maybe use Vector instead of Vec
-
+    let mut bound_rect: Vec<Rect> = Vec::new();
+    let mut contour_areas: Vec<f64> = Vec::new();
     for i in 0..contours.len() {
         let mut v: Vector<Point2f> = Vector::new();
         imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
@@ -74,34 +75,41 @@ fn get_marker_location_pipeline(
         println!("Area: {}", area);
         if area > 0.0 { // Zero area = noise
             bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
+            contour_areas.push(area);
         }
     }
 
     let left_x = (0.375 * camera_width as f64) as i32;
     let right_x = (0.625 * camera_width as f64) as i32;
 
-    let mut left = false;
-    let mut middle = false;
-    let mut right = false;
+    let mut left = 0;
+    let mut middle = 0;
+    let mut right = 0;
 
-    for i in 0..bound_rect.len() {
-        let midpoint = bound_rect[i].x + bound_rect[i].width / 2;
-        if midpoint < left_x {
-            left = true;
-        }
-        if left_x <= midpoint && midpoint <= right_x {
-            middle = true;
-        }
-        if right_x < midpoint {
-            right = true;
+    for (count, rect) in bound_rect.iter().enumerate() { // TODO: Find biggest contour (area wise)
+        let midpoint = rect.x + rect.width / 2;
+        let area = contour_areas.get(count).ok_or(Error::from(std::io::Error::new(
+            ErrorKind::InvalidInput,
+            "Unable to get contour area!",
+        )))?; // TODO: fix error
+        match midpoint {
+            0..=left_x => {
+                left += area;
+            }
+            left_x..=right_x => {
+                middle += area;
+            }
+            _ => {
+                right += area;
+            }
         }
     }
 
-    if left {
+    if left > middle && left > right {
         Ok(MarkerLocation::Left)
-    } else if middle {
+    } else if middle > left && middle > right {
         Ok(MarkerLocation::Middle)
-    } else if right {
+    } else if right > left && right > middle {
         Ok(MarkerLocation::Right)
     } else {
         Ok(MarkerLocation::Unknown)
@@ -147,7 +155,7 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
 ) -> jbyte {
     let marker_location_result = get_marker_location();
     // TODO: Throw java exception on error instead of returning -1
-    return if let Ok(marker_location) = marker_location_result {
+    if let Ok(marker_location) = marker_location_result {
         jbyte::from(marker_location_to_int(marker_location))
     } else {
         jbyte::from(-1)
