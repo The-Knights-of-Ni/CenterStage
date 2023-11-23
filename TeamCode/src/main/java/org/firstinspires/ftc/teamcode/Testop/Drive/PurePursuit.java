@@ -5,7 +5,6 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;

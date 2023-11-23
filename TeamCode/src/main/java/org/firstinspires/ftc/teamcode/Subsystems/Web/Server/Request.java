@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Request {
     private static final Pattern HEADER_PATTERN = Pattern.compile(": ?");
+    private static final Pattern LINE_SPLIT = Pattern.compile("\\r?\\n");
     public String method;
     public String url;
     public String version;
@@ -18,7 +18,7 @@ public class Request {
 
 
     public Request(String text) throws WebError {
-        List<String> lines = new ArrayList<>(Arrays.asList(text.split("\\r?\\n")));
+        List<String> lines = new ArrayList<>(Arrays.asList(LINE_SPLIT.split(text)));
         String topLine = lines.get(0);
         lines.remove(0);
         HashMap<String, String> h = new HashMap<>();
@@ -43,7 +43,7 @@ public class Request {
         this.url = split[1];
         this.version = split[2];
         this.headers = h;
-        this.data = body.toString();
+        this.data = body;
     }
 
     public Request(String method, String url, String version, HashMap<String, String> headers, String data) {

@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.Testop;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.Pose;
 
 @Autonomous(name = "IMU Test", group = "Concept")
 public class IMUDirectionalTest extends Auto {

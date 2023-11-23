@@ -1,12 +1,12 @@
-use std::io::ErrorKind;
 use anyhow::{Error, Result};
 use jni;
 use jni::objects::JClass;
-use jni::JNIEnv;
 use jni::sys::jbyte;
+use jni::JNIEnv;
+use opencv::core::{Mat, Point, Point2f, Rect, Scalar, Vector};
 use opencv::prelude::*;
-use opencv::core::{Mat, Scalar, Rect, Point, Vector, Point2f};
 use opencv::{imgproc, videoio};
+use std::io::ErrorKind;
 
 pub enum MarkerLocation {
     Left,
@@ -31,7 +31,10 @@ pub fn get_edges_pipeline(input: &Mat, camera_width: i32, camera_height: i32) ->
     let crop: Mat = get_crop(&mask, camera_width, camera_height)?;
     mask.release()?;
     if crop.empty() {
-        return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to crop image!")));
+        return Err(Error::from(std::io::Error::new(
+            ErrorKind::InvalidInput,
+            "Unable to crop image!",
+        )));
     }
     let low_hsv = Scalar::new(70.0, 100.0, 100.0, 0.0);
     let high_hsv = Scalar::new(85.0, 255.0, 235.0, 0.0);
@@ -45,10 +48,20 @@ pub fn get_edges_pipeline(input: &Mat, camera_width: i32, camera_height: i32) ->
     return Ok(edges);
 }
 
-fn get_marker_location_pipeline(input: Mat, camera_width: i32, camera_height: i32) -> Result<MarkerLocation> {
+fn get_marker_location_pipeline(
+    input: Mat,
+    camera_width: i32,
+    camera_height: i32,
+) -> Result<MarkerLocation> {
     let mut edges = get_edges_pipeline(&input, camera_width, camera_height)?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
-    imgproc::find_contours(&edges, &mut contours, imgproc::RETR_TREE, imgproc::CHAIN_APPROX_SIMPLE, Point::new(0, 0))?;
+    imgproc::find_contours(
+        &edges,
+        &mut contours,
+        imgproc::RETR_TREE,
+        imgproc::CHAIN_APPROX_SIMPLE,
+        Point::new(0, 0),
+    )?;
     edges.release()?;
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new(); // TODO: Maybe use Vector instead of Vec
@@ -58,7 +71,7 @@ fn get_marker_location_pipeline(input: Mat, camera_width: i32, camera_height: i3
         imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
         contours_poly.push(v);
         bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
-        // let _area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
+        let _area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
         // TODO: Maybe implement contour area check (above code causes a runtime error)
     }
 
@@ -97,11 +110,18 @@ pub fn get_marker_location() -> Result<MarkerLocation> {
     let mut camera = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     let opened = videoio::VideoCapture::is_opened(&camera)?;
     if !opened {
-        return Err(Error::from(std::io::Error::new(ErrorKind::InvalidInput, "Unable to open default camera!")));
+        return Err(Error::from(std::io::Error::new(
+            ErrorKind::InvalidInput,
+            "Unable to open default camera!",
+        )));
     }
     let mut frame = Mat::default();
     camera.read(&mut frame)?;
-    get_marker_location_pipeline(frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32, camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32)
+    get_marker_location_pipeline(
+        frame,
+        camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32,
+        camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32,
+    )
 }
 
 pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
@@ -109,7 +129,7 @@ pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
         MarkerLocation::Unknown => 3,
         MarkerLocation::Left => 0,
         MarkerLocation::Middle => 1,
-        MarkerLocation::Right => 2
+        MarkerLocation::Right => 2,
     }
 }
 
@@ -126,8 +146,10 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // TODO: Throw java exception on error instead of panicking
     let marker_location_result = get_marker_location();
     if marker_location_result.is_ok() {
-        return jbyte::from(marker_location_to_int(marker_location_result.unwrap())) // TODO: Fix unwrap
+        return jbyte::from(marker_location_to_int(marker_location_result.unwrap()));
+    // TODO: Fix unwrap
     } else {
         return jbyte::from(-1);
     }
 }
+

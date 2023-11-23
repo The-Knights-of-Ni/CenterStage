@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.FeedForward;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfileOutput;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 
 public class HolonomicVAController implements VAController {
     FeedForward xControl;

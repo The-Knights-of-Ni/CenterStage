@@ -84,3 +84,9 @@ lint/tmp/
 **/target/
 **/Cargo.lock
 /opencv-build/*
+
+
+# ide
+**/.project
+**/.classpath
+**/.idea/*

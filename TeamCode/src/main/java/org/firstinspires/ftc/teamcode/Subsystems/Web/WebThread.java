@@ -99,7 +99,7 @@ public class WebThread extends Thread {
     private Response handleRequest(Request req) throws WebError {
         if (Objects.equals(req.url, "/")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(new View.MainResponse(logs, actions, Drive.currentPosition));
+                return returnObject(new View.MainResponse(logs, actions, Drive.currentPose));
             } else {
                 invalidMethod(req.method);
             }
@@ -117,7 +117,7 @@ public class WebThread extends Thread {
             }
         } else if (Objects.equals(req.url, "/position")) {
             if (Objects.equals(req.method, "GET")) {
-                return returnObject(Drive.currentPosition);
+                return returnObject(Drive.currentPose);
             } else {
                 invalidMethod(req.method);
             }

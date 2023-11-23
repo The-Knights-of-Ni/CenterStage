@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
@@ -16,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimationMethod;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimationMethodChoice;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class DriveTest {
         MockDcMotorEx mockRR = new MockDcMotorEx(DcMotor.RunMode.RUN_USING_ENCODER);
         MockTelemetry telemetry = new MockTelemetry();
         BNO055IMU mockIMU = Mockito.mock(BNO055IMU.class);
-        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, PoseEstimationMethod.MOTOR_ENCODERS, mockIMU, telemetry);
+        return new Drive(new MotorGeneric<>(mockFL, mockFR, mockRL, mockRR), null, PoseEstimationMethodChoice.NONE, mockIMU, telemetry);
     }
 
     @Test
@@ -58,8 +57,7 @@ class DriveTest {
             Drive drive = init();
             drive.moveVector(new Vector(0, 1000));
             assertEquals(1782, drive.motors.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-            // TODO: Once fr gets fixed we can uncomment this test :)
-            // assertEquals(1782, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(1782, drive.motors.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(1782, drive.motors.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(1782, drive.motors.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }
@@ -71,8 +69,7 @@ class DriveTest {
             Drive drive = init();
             drive.moveVector(new Vector(1000, 0));
             assertEquals(2442, drive.motors.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-            // TODO: Once fr gets fixed we can uncomment this test :)
-            // assertEquals(-2442, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
+            assertEquals(-2442, drive.motors.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
             assertEquals(-2442, drive.motors.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(2442, drive.motors.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }
@@ -85,8 +82,7 @@ class DriveTest {
             Drive drive = init();
             drive.moveVector(new Vector(1000, 1000));
             assertEquals(4224, drive.motors.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-            // TODO: Once fr gets fixed we can uncomment this test :)
-            // assertEquals(-659, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
+            assertEquals(-659, drive.motors.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN * 2);
             assertEquals(-659, drive.motors.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(4224, drive.motors.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }
@@ -96,10 +92,9 @@ class DriveTest {
     void testPIDTurn() {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             Drive drive = init();
-            drive.moveVector(new Vector(0, 0), 90);
+            drive.move(new Pose(0, 0, 90));
             assertEquals(-1170, drive.motors.frontLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
-            // TODO: Once fr gets fixed we can uncomment this test :)
-            // assertEquals(1170, drive.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
+            assertEquals(1170, drive.motors.frontRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(-1170, drive.motors.rearLeft.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
             assertEquals(1170, drive.motors.rearRight.getCurrentPosition(), PID_TICK_COUNT_MARGIN);
         }

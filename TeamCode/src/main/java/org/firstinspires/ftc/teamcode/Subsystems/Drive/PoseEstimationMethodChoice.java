@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-public enum PoseEstimationMethod {
+public enum PoseEstimationMethodChoice {
     ODOMETRY,
     IMU,
     VISUAL,
-    MOTOR_ENCODERS
+    MOTOR_ENCODERS,
+    NONE
 }
