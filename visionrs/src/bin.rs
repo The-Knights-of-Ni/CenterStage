@@ -32,6 +32,7 @@ fn main() -> anyhow::Result<()> {
             } else if key == 113 { // "q" key
                 break;
             } else if key == 101 { // "e" key
+                // Breaks bc it accesses the camera
                 println!("{}", marker_location_to_int(get_marker_location()?));
             }
         }

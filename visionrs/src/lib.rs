@@ -70,9 +70,11 @@ fn get_marker_location_pipeline(
         let mut v: Vector<Point2f> = Vector::new();
         imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
         contours_poly.push(v);
-        bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
-        let _area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
-        // TODO: Maybe implement contour area check (above code causes a runtime error)
+        let area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
+        println!("Area: {}", area);
+        if area > 0.0 { // Zero area = noise
+            bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
+        }
     }
 
     let left_x = (0.375 * camera_width as f64) as i32;
@@ -143,13 +145,12 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
     // still needs to have an argument slot
     _class: JClass<'local>,
 ) -> jbyte {
-    // TODO: Throw java exception on error instead of panicking
     let marker_location_result = get_marker_location();
-    if marker_location_result.is_ok() {
-        return jbyte::from(marker_location_to_int(marker_location_result.unwrap()));
-    // TODO: Fix unwrap
+    // TODO: Throw java exception on error instead of returning -1
+    return if let Ok(marker_location) = marker_location_result {
+        jbyte::from(marker_location_to_int(marker_location))
     } else {
-        return jbyte::from(-1);
+        jbyte::from(-1)
     }
 }
 

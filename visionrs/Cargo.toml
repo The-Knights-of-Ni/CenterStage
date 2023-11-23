@@ -12,7 +12,7 @@ path = "src/bin.rs"
 
 [dependencies]
 jni = "0.21"
-opencv = { version = "0.85" }
+opencv = { version = "0.86" }
 anyhow = "1.0"
 
 [profile.release]
