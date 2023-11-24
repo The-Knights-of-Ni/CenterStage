@@ -1,7 +1,7 @@
 use opencv::{highgui, videoio};
 use opencv::core::Mat;
 use opencv::prelude::*;
-use visionrs::{get_edges_pipeline, get_marker_location, marker_location_to_int};
+use visionrs::{get_edges_pipeline, get_marker_location, marker_location_to_byte};
 
 fn main() -> anyhow::Result<()> {
     let window = "Video capture/edge detection";
@@ -32,7 +32,7 @@ fn main() -> anyhow::Result<()> {
                 break;
             } else if key == 101 { // "e" key
                 // Breaks bc it accesses the camera
-                println!("{}", marker_location_to_int(get_marker_location()?));
+                println!("{}", marker_location_to_byte(get_marker_location()?));
             }
         }
         if highgui::get_window_property(window, 0)? == -1f64 { // This means the window was closed

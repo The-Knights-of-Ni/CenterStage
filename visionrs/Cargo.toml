@@ -11,14 +11,16 @@ name = "test"
 path = "src/bin.rs"
 
 [dependencies]
+rayon = "1.8"
 jni = "0.21"
-opencv = { version = "0.86" }
+opencv = { version = "0.86", default-features = false, features = [
+    "highgui",
+    "imgproc",
+    "videoio"
+] }
 anyhow = "1.0"
 
 [profile.release]
 #strip = true
 # Profiling configuration
 #debug = 1
-
-[patch.crates-io]
-#opencv = { path = './opencv-rust' }

@@ -82,26 +82,22 @@ fn get_marker_location_pipeline(
     let left_x = (0.375 * camera_width as f64) as i32;
     let right_x = (0.625 * camera_width as f64) as i32;
 
-    let mut left = 0;
-    let mut middle = 0;
-    let mut right = 0;
+    let mut left = 0.0;
+    let mut middle = 0.0;
+    let mut right = 0.0;
 
     for (count, rect) in bound_rect.iter().enumerate() { // TODO: Find biggest contour (area wise)
         let midpoint = rect.x + rect.width / 2;
         let area = contour_areas.get(count).ok_or(Error::from(std::io::Error::new(
             ErrorKind::InvalidInput,
             "Unable to get contour area!",
-        )))?; // TODO: fix error
-        match midpoint {
-            0..=left_x => {
-                left += area;
-            }
-            left_x..=right_x => {
-                middle += area;
-            }
-            _ => {
-                right += area;
-            }
+        )))?; // TODO: fix error (shouldn't be io)
+        if midpoint < left_x {
+            left += area;
+        } else if midpoint < right_x {
+            middle += area;
+        } else {
+            right += area;
         }
     }
 
@@ -134,7 +130,7 @@ pub fn get_marker_location() -> Result<MarkerLocation> {
     )
 }
 
-pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
+pub fn marker_location_to_byte(marker_location: MarkerLocation) -> i8 {
     match marker_location {
         MarkerLocation::Unknown => 3,
         MarkerLocation::Left => 0,
@@ -143,22 +139,52 @@ pub fn marker_location_to_int(marker_location: MarkerLocation) -> i8 {
     }
 }
 
+fn throw_no_class_def_error(env: &mut JNIEnv, message: &str) -> jbyte {
+    let class_name = "java/lang/NoClassDefFoundError";
+    let ex_class: JClass;
+
+    match env.find_class(class_name) {
+        Ok(class) => ex_class = class,
+        Err(_) => return throw_no_class_def_error(env, class_name),
+    }
+
+    match env.throw_new(ex_class, message) {
+        Ok(_) => -1,
+        Err(e) => panic!("Exception occurred {:?}", e),
+    }
+}
+
+
+pub fn throw_exception(env: &mut JNIEnv, message: &str) -> jbyte {
+    let class_name = "java/lang/Exception";
+    let ex_class_r = env.find_class(class_name);
+    let ex_class = match ex_class_r {
+        Ok(class) => class,
+        Err(_) => return throw_no_class_def_error(env, class_name),
+    };
+    match env.throw_new(ex_class, message) {
+        Ok(_) => -1,
+        Err(e) => panic!("Exception occurred {:?}", e),
+    }
+}
+
 #[no_mangle]
 pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local>(
     // Notice that this `env` argument is mutable. Any `JNIEnv` API that may
     // allocate new object references will take a mutable reference to the
     // environment.
-    mut _env: JNIEnv<'local>,
+    mut env: JNIEnv<'local>,
     // this is the class that owns our static method. Not going to be used, but
     // still needs to have an argument slot
     _class: JClass<'local>,
 ) -> jbyte {
     let marker_location_result = get_marker_location();
-    // TODO: Throw java exception on error instead of returning -1
-    if let Ok(marker_location) = marker_location_result {
-        jbyte::from(marker_location_to_int(marker_location))
-    } else {
-        jbyte::from(-1)
+    match marker_location_result {
+        Ok(marker_location) => marker_location_to_byte(marker_location),
+        Err(e) => {
+            let s = format!("Error: {:?}", e);
+            throw_exception(&mut env, &s)
+        }
     }
 }
 
