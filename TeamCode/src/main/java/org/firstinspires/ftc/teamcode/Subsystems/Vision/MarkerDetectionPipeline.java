@@ -89,6 +89,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        hierarchy.release();
 
         edges.release();
 
@@ -96,10 +97,12 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Rect[] boundRect = new Rect[contours.size()];
 
         for (int i = 0; i < contours.size(); i++) {
+            // IMPORTANT: MatOfPoint2f will prob leak memory, may want to fix
             contoursPoly[i] = new MatOfPoint2f();
             Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
             boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
+            contours.get(i).release();
         }
 
         double left_x = 0.375 * CAMERA_WIDTH;
