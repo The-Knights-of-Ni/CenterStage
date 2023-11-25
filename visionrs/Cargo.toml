@@ -9,16 +9,20 @@ crate-type = ["cdylib", "rlib"]
 [[bin]]
 name = "test"
 path = "src/bin.rs"
+required-features = ["highgui"]
 
 [dependencies]
 jni = "0.21"
-opencv = { version = "0.85" }
+opencv = { version = "0.86", default-features = false, features = [
+    "imgproc",
+    "videoio"
+] }
 anyhow = "1.0"
+
+[features]
+highgui = ["opencv/highgui"]
 
 [profile.release]
 #strip = true
 # Profiling configuration
 #debug = 1
-
-[patch.crates-io]
-#opencv = { path = './opencv-rust' }

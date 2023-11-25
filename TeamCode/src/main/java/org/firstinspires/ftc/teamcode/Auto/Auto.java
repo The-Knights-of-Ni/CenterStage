@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerLocation;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
@@ -48,7 +48,7 @@ public abstract class Auto extends LinearOpMode {
         telemetry.update();
     }
 
-    public void adjustPosition(MarkerDetectionPipeline.MarkerLocation location) {
+    public void adjustPosition(MarkerLocation location) {
         switch (location) {
             case LEFT:
                 robot.drive.moveVector(new Vector(-9 * mmPerInch, 0));

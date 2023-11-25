@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Vision;
 
+import android.util.Log;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -7,16 +8,12 @@ import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.knightsofni.visionrs.NativeVision;
 
 import java.util.List;
 
 /**
  * The Vision Subsystem
- *
- * @see <a href="https://github.com/OpenFTC/EasyOpenCV">EasyOpenCV</a>
  */
 public class Vision extends Subsystem {
     public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
@@ -36,9 +33,6 @@ public class Vision extends Subsystem {
 
     public AprilTagDetectionThread aprilTagDetectionThread;
 
-    private OpenCvCamera camera;
-
-    private MarkerDetectionPipeline pipeline;
 
     /**
      * Class instantiation
@@ -100,43 +94,7 @@ public class Vision extends Subsystem {
         return position;
     }
 
-    private void initDetectionPipeline() {
-        // Get the camera ID
-        int cameraMonitorViewId =
-                hardwareMap
-                        .appContext
-                        .getResources()
-                        .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        // Obtain camera instance from ID
-        camera =
-                OpenCvCameraFactory.getInstance()
-                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-
-        // Create a detection pipeline for detecting the position
-        pipeline = new MarkerDetectionPipeline(allianceColor, CAMERA_HEIGHT, CAMERA_WIDTH);
-        camera.setPipeline(pipeline);
-
-        // Create listeners for the camera
-        camera.openCameraDeviceAsync(
-                new OpenCvCamera.AsyncCameraOpenListener() {
-                    @Override
-                    public void onOpened() { // Listener for when the camera first starts
-                        logger.info("Streaming");
-                        camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-                    }
-
-                    @Override
-                    public void onError(int errorCode) { // Listener to log if the camera stops abruptly
-                        logger.error("Error Streaming, aborting with error code " + errorCode);
-                    }
-                });
-    }
-
     public void stop() {
-        // Stop streaming
-        camera.stopStreaming();
-        camera.closeCameraDevice();
     }
 
     /**
@@ -145,8 +103,20 @@ public class Vision extends Subsystem {
      *
      * @return Where the marker is
      */
-    public MarkerDetectionPipeline.MarkerLocation detectMarkerRun() {
+    public MarkerLocation detectMarkerRun() {
         // Return the marker location
-        return pipeline.getMarkerLocation();
+        switch (NativeVision.process()) {
+            case 0:
+                return MarkerLocation.LEFT;
+            case 1:
+                return MarkerLocation.MIDDLE;
+            case 2:
+                return MarkerLocation.RIGHT;
+            case -1:
+                Log.e("Vision", "Unknown rust error");
+                return MarkerLocation.UNKNOWN;
+            default:
+                return MarkerLocation.UNKNOWN;
+        }
     }
 }

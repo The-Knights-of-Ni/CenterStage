@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import android.os.Build;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.OldDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
@@ -16,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.BasicAccelerationIntegrator;
 import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Robot {
@@ -66,7 +70,16 @@ public class Robot {
         this.telemetry = telemetry;
         this.logger = new MasterLogger(telemetry, "Robot");
         logger.info("started");
-        logger.verbose("android version: " + Build.VERSION.RELEASE);
+        logger.verbose("OS_NAME: " + System.getProperty("os.name"));
+        logger.verbose("ANDROID_VERSION: " + Build.VERSION.RELEASE);
+        logger.verbose("ANDROID_API_LEVEL: " + Build.VERSION.SDK_INT);
+        logger.verbose("SUPPORTED_ABIS: " + Arrays.toString(Build.SUPPORTED_ABIS));
+        logger.verbose("SUPPORTED_32_BIT_ABIS: " + Arrays.toString(Build.SUPPORTED_32_BIT_ABIS));
+        logger.verbose("SUPPORTED_64_BIT_ABIS: " + Arrays.toString(Build.SUPPORTED_64_BIT_ABIS));
+        logger.verbose("OS_ARCH: " + System.getProperty("os.arch"));
+        logger.verbose("JAVA_VERSION: " + System.getProperty("java.version"));
+
+
         this.hardwareMap = hardwareMap;
         double batteryVoltage = getBatteryVoltage();
         if (batteryVoltage < 11) {

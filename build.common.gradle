@@ -18,6 +18,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 java {
     toolchain {
@@ -130,3 +131,10 @@ android {
 repositories {
 }
 
+
+cargo {
+    module = "../visionrs"
+    libname = "visionrs"
+    extraCargoBuildArguments = ["-vv"]
+    targets = ["arm", "arm64"]
+}
