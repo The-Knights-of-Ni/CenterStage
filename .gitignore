@@ -90,3 +90,4 @@ lint/tmp/
 **/.project
 **/.classpath
 **/.idea/*
+**/.settings/*
