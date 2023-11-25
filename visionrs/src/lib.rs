@@ -72,13 +72,12 @@ fn get_marker_location_pipeline(
         imgproc::approx_poly_dp(&contours.get(i)?, &mut v, 3.0, true)?;
         contours_poly.push(v);
         let area = imgproc::contour_area(&contours_poly.get(i)?, false)?;
-        println!("Area: {}", area);
-        if area > 0.0 { // Zero area = noise
+        if area > 0.0 {
+            // Zero area = noise
             bound_rect.push(imgproc::bounding_rect(&contours_poly.get(i)?)?);
             contour_areas.push(area);
         }
     }
-
     let left_x = (0.375 * camera_width as f64) as i32;
     let right_x = (0.625 * camera_width as f64) as i32;
 
@@ -86,12 +85,14 @@ fn get_marker_location_pipeline(
     let mut middle = 0.0;
     let mut right = 0.0;
 
-    for (count, rect) in bound_rect.iter().enumerate() { // TODO: Find biggest contour (area wise)
+    for (count, rect) in bound_rect.iter().enumerate() {
         let midpoint = rect.x + rect.width / 2;
-        let area = contour_areas.get(count).ok_or(Error::from(std::io::Error::new(
-            ErrorKind::InvalidInput,
-            "Unable to get contour area!",
-        )))?; // TODO: fix error (shouldn't be io)
+        let area = contour_areas
+            .get(count)
+            .ok_or(Error::from(std::io::Error::new(
+                ErrorKind::InvalidInput,
+                "Unable to get contour area!",
+            )))?; // TODO: fix error (shouldn't be io)
         if midpoint < left_x {
             left += area;
         } else if midpoint < right_x {
@@ -100,7 +101,6 @@ fn get_marker_location_pipeline(
             right += area;
         }
     }
-
     if left > middle && left > right {
         Ok(MarkerLocation::Left)
     } else if middle > left && middle > right {
@@ -145,15 +145,14 @@ fn throw_no_class_def_error(env: &mut JNIEnv, message: &str) -> jbyte {
 
     match env.find_class(class_name) {
         Ok(class) => ex_class = class,
-        Err(_) => return throw_no_class_def_error(env, class_name),
+        Err(_) => return -1,
     }
 
     match env.throw_new(ex_class, message) {
         Ok(_) => -1,
-        Err(e) => panic!("Exception occurred {:?}", e),
+        Err(e) => panic!("Exception occurred {:?}", e), // Can't throw anything else
     }
 }
-
 
 pub fn throw_exception(env: &mut JNIEnv, message: &str) -> jbyte {
     let class_name = "java/lang/Exception";
@@ -187,4 +186,3 @@ pub extern "system" fn Java_org_knightsofni_visionrs_NativeVision_process<'local
         }
     }
 }
-
