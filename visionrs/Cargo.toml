@@ -9,16 +9,18 @@ crate-type = ["cdylib", "rlib"]
 [[bin]]
 name = "test"
 path = "src/bin.rs"
+required-features = ["highgui"]
 
 [dependencies]
-rayon = "1.8"
 jni = "0.21"
 opencv = { version = "0.86", default-features = false, features = [
-    "highgui",
     "imgproc",
     "videoio"
 ] }
 anyhow = "1.0"
+
+[features]
+highgui = ["opencv/highgui"]
 
 [profile.release]
 #strip = true
