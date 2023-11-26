@@ -1,7 +1,7 @@
 use opencv::{highgui, videoio};
 use opencv::core::Mat;
 use opencv::prelude::*;
-use visionrs::{get_edges_pipeline, get_marker_location, marker_location_to_byte};
+use visionrs::{get_edges_pipeline, get_marker_location_pipeline, marker_location_to_byte};
 
 fn main() -> anyhow::Result<()> {
     let window = "Video capture/edge detection";
@@ -20,7 +20,7 @@ fn main() -> anyhow::Result<()> {
                 #[allow(clippy::cast_possible_truncation)]
                 get_edges_pipeline(&frame, camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32, camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32)?
             } else {
-                frame
+                frame.clone()
             }.clone();
             highgui::imshow(window, &mat)?;
         }
@@ -31,11 +31,13 @@ fn main() -> anyhow::Result<()> {
             } else if key == 113 { // "q" key
                 break;
             } else if key == 101 { // "e" key
-                // Breaks bc it accesses the camera
-                println!("{}", marker_location_to_byte(get_marker_location()?));
+                println!("{}", marker_location_to_byte(get_marker_location_pipeline(frame,
+                                                                                    camera.get(videoio::CAP_PROP_FRAME_WIDTH)? as i32,
+                                                                                    camera.get(videoio::CAP_PROP_FRAME_HEIGHT)? as i32)?));
             }
         }
         if highgui::get_window_property(window, 0)? == -1f64 { // This means the window was closed
+            highgui::destroy_window(window)?;
             break;
         }
     }

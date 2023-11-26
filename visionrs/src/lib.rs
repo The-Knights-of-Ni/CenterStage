@@ -30,7 +30,6 @@ pub fn get_edges_pipeline(input: &Mat, camera_width: i32, camera_height: i32) ->
     imgproc::cvt_color(input, &mut mask, imgproc::COLOR_RGB2HSV, 0)?;
 
     let crop: Mat = get_crop(&mask, camera_width, camera_height)?;
-    mask.release()?;
     if crop.empty() {
         return Err(Error::from(std::io::Error::new(
             ErrorKind::InvalidInput,
@@ -45,16 +44,15 @@ pub fn get_edges_pipeline(input: &Mat, camera_width: i32, camera_height: i32) ->
 
     let mut edges = Mat::default();
     imgproc::canny(&thresh, &mut edges, 100.0, 300.0, 3, false)?;
-    thresh.release()?;
     return Ok(edges);
 }
 
-fn get_marker_location_pipeline(
+pub fn get_marker_location_pipeline(
     input: Mat,
     camera_width: i32,
     camera_height: i32,
 ) -> Result<MarkerLocation> {
-    let mut edges = get_edges_pipeline(&input, camera_width, camera_height)?;
+    let edges = get_edges_pipeline(&input, camera_width, camera_height)?;
     let mut contours: Vector<Vector<Point>> = Vector::new();
     imgproc::find_contours(
         &edges,
@@ -63,7 +61,6 @@ fn get_marker_location_pipeline(
         imgproc::CHAIN_APPROX_SIMPLE,
         Point::new(0, 0),
     )?;
-    edges.release()?;
     let mut contours_poly: Vector<Vector<Point2f>> = Vector::new();
     let mut bound_rect: Vec<Rect> = Vec::new();
     let mut contour_areas: Vec<f64> = Vec::new();
