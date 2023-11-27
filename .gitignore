@@ -91,3 +91,7 @@ lint/tmp/
 **/.classpath
 **/.idea/*
 **/.settings/*
+
+# opencv
+
+**/opencv-build/*
