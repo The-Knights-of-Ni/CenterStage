@@ -151,9 +151,9 @@ public class Robot {
         parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
         parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Sorry non-US people
 
-        telemetryBroadcast("Status", " IMU initializing...");
+        logger.info("IMU initializing...");
         imu.initialize(parameters);
-        telemetryBroadcast("Status", " IMU calibrating...");
+        logger.info("IMU calibrating...");
         // make sure the imu gyro is calibrated before continuing.
         while (!imu.isGyroCalibrated()) {
             try {
@@ -217,15 +217,7 @@ public class Robot {
         } else {
             logger.warning("Web subsystem init skipped");
         }
-        telemetryBroadcast("Status", "all subsystems initialized");
-    }
-
-    public void telemetryBroadcast(String caption, String value) {
-        telemetry.addData(caption, value);
-        telemetry.update();
-        if (webEnabled) {
-            WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
-        }
-        Log.i(caption, value);
+        logger.info("all subsystems initialized");
+        telemetry.addData("init", "All Subsystems Initialized");
     }
 }
