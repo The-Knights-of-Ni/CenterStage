@@ -41,7 +41,7 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/
+.idea/*
 
 # For Mac users
 .DS_Store
@@ -91,3 +91,6 @@ lint/tmp/
 **/.classpath
 **/.idea/*
 **/.settings
+**/.helix/*
+**/.vs/*
+**/.vsc/*
