@@ -110,6 +110,7 @@ public class Robot {
         motorInit();
         servoInit();
         odometryInit();
+        imuInit();
         logger.info("motor init finished");
         logger.info("imu init finished");
         subsystemInit();

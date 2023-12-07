@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
@@ -18,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfi
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.IMU;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.Odometry;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.PoseEstimationMethod;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.StaticTargeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.Targeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
@@ -276,7 +274,7 @@ public class Drive extends Subsystem {
     }
 
     public void purePursuit(Path path) {
-        motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
+//        motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
     }
 
 
