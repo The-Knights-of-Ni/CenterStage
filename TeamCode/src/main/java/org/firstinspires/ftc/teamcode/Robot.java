@@ -33,8 +33,10 @@ public class Robot {
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     // DC Motors
-    public DcMotorEx slideMotor;
+    public DcMotorEx slideMotorRight;
     public DcMotorEx intakeMotor;
+    public DcMotorEx slideMotorLeft;
+
     //Servos
     public Servo airplaneLauncher;
     public Servo airplaneLaunchAngle;
@@ -109,7 +111,6 @@ public class Robot {
         servoInit();
         odometryInit();
         logger.info("motor init finished");
-        imuInit();
         logger.info("imu init finished");
         subsystemInit();
     }
@@ -155,8 +156,9 @@ public class Robot {
      * Gets Motors from hardware map
      */
     private void motorInit() {
-        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
+        slideMotorRight = (DcMotorEx) hardwareMap.dcMotor.get("slideright");
         intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
+        slideMotorLeft = (DcMotorEx) hardwareMap.dcMotor.get("slideleft");
     }
 
     private void servoInit() {
@@ -180,7 +182,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotor, intakeMotor);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotorRight, intakeMotor, slideMotorLeft);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {

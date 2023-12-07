@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -76,6 +77,9 @@ public class OldDrive extends Subsystem {
         this.frontRight = motors.frontRight;
         this.rearLeft = motors.rearLeft;
         this.rearRight = motors.rearRight;
+
+        motors.frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motors.rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
