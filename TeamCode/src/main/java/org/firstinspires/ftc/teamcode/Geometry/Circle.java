@@ -14,7 +14,7 @@ public class Circle {
         this.radius = radius;
     }
 
-    public List<Vector> segmentIntersections(Line seg) {
+    public Vector[] segmentIntersections(Line seg) {
         List<Vector> intersections = new ArrayList<>();
 
         Vector p1 = new Vector(seg.start.getX() - this.center.getX(), seg.start.getY() - this.center.getY());
@@ -29,7 +29,7 @@ public class Circle {
         double discriminant = this.radius * this.radius * d * d - D * D;
 
         if (discriminant < 0) {
-            return intersections;
+            return new Vector[0];
         }
 
         double signed = (dy >= 0 ? 1 : -1) * dx * Math.sqrt(discriminant);
@@ -42,13 +42,13 @@ public class Circle {
 
         boolean valid_intersection_1 = Math.min(p1.getX(), p2.getX()) < x1 && x1 < Math.max(p1.getX(), p2.getX()) || Math.min(p1.getY(), p2.getY()) < y1 && y1 < Math.max(p1.getY(), p2.getY());
         boolean valid_intersection_2 = Math.min(p1.getX(), p2.getX()) < x2 && x2 < Math.max(p1.getX(), p2.getX()) || Math.min(p1.getY(), p2.getY()) < y2 && y2 < Math.max(p1.getY(), p2.getY());
-
+        Vector[] interesections = new Vector[2];
         if (valid_intersection_1) {
-            intersections.add(new Vector(x1 + this.center.getX(), y1 + this.center.getY()));
+            intersections[0] = new Vector(x1 + this.center.getX(), y1 + this.center.getY());
         }
 
         if (valid_intersection_2) {
-            intersections.add(new Vector(x2 + this.center.getX(), y2 + this.center.getY()));
+            intersections[1] = new Vector(x2 + this.center.getX(), y2 + this.center.getY());
         }
 
         return intersections;
