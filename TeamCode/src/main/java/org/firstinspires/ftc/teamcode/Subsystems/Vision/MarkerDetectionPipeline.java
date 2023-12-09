@@ -102,8 +102,10 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             // IMPORTANT: MatOfPoint2f will prob leak memory, may want to fix
             contoursPoly[i] = new MatOfPoint2f();
             Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
-            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
-//            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
+            let area = Imgproc.contourArea(contoursPoly[i], false); // TODO Maybe implement contour area check for next tourney
+            if area > 0.0 {
+                boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+            }
             contours.get(i).release();
         }
 
