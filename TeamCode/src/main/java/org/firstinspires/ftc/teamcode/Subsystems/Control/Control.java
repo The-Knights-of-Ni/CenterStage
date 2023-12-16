@@ -18,6 +18,7 @@ public class Control extends Subsystem {
 
     private DcMotorEx slideMotor;
     private DcMotorEx intakeMotor;
+    private DcMotorEx craneMotor;
     private Servo airplaneLauncher;
     private Servo airplaneLaunchAngle;
     private Servo clawOpenClose;
@@ -25,7 +26,7 @@ public class Control extends Subsystem {
 
 
 
-    public Control(Telemetry telemetry, Servo airplaneLauncher, Servo airplaneLaunchAngle, Servo clawOpenClose, Servo clawShoulder, DcMotorEx slideMotor, DcMotorEx intakeMotor) {
+    public Control(Telemetry telemetry, Servo airplaneLauncher, Servo airplaneLaunchAngle, Servo clawOpenClose, Servo clawShoulder, DcMotorEx slideMotor, DcMotorEx intakeMotor, DcMotorEx craneMotor) {
         super(telemetry, "control");
         this.airplaneLauncher = airplaneLauncher;
         this.airplaneLaunchAngle = airplaneLaunchAngle;
@@ -33,6 +34,7 @@ public class Control extends Subsystem {
         this.clawShoulder = clawShoulder;
         this.slideMotor = slideMotor;
         this.intakeMotor = intakeMotor;
+        this.craneMotor = craneMotor;
     }
 
     public void initDevices() {
@@ -70,6 +72,9 @@ public class Control extends Subsystem {
     public void setLinearSlideMotorPower(double power) {
         slideMotor.setPower(power);
     }
+    public void setCraneMotorPower(double power) {
+        craneMotor.setPower(power);
+    }
 
     public void setClaw(ClawState clawState) {
         clawOpenClose.setPosition(clawState.clawPosition);
@@ -102,7 +107,7 @@ public class Control extends Subsystem {
     }
 
     public void pickupPosShoulder() {
-        clawShoulder.setPosition(0.613);
+        clawShoulder.setPosition(0.612);
     }
 
     public void retractShoulder() {

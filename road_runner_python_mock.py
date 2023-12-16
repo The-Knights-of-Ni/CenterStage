@@ -34,7 +34,7 @@ def accel_traj_get_accel(traj, t):
             return a
 
         t -= dt
-    return a
+    return phases[-1][0]
 
 
 @vectorize_tail

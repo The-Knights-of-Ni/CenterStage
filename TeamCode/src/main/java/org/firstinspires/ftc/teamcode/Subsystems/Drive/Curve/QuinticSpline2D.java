@@ -21,6 +21,10 @@ public class QuinticSpline2D {
         return result;
     }
 
+    public double length() {
+        return 1.0;
+    }
+
     @Override
     public String toString() {
         return "QuinticSpline2D{" +

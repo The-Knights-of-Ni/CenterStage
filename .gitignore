@@ -41,7 +41,7 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/
+.idea/*
 
 # For Mac users
 .DS_Store
@@ -84,3 +84,13 @@ lint/tmp/
 **/target/
 **/Cargo.lock
 /opencv-build/*
+
+
+# ide
+**/.project
+**/.classpath
+**/.idea/*
+**/.settings
+**/.helix/*
+**/.vs/*
+**/.vsc/*

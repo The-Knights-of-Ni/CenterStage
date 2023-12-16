@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import android.os.Build;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.OldDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
@@ -36,12 +33,10 @@ public class Robot {
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     // DC Motors
-    public DcMotorEx frontLeftDriveMotor;
-    public DcMotorEx frontRightDriveMotor;
-    public DcMotorEx rearRightDriveMotor;
-    public DcMotorEx rearLeftDriveMotor;
-    public DcMotorEx slideMotor;
+    public DcMotorEx slideMotorRight;
     public DcMotorEx intakeMotor;
+    public DcMotorEx slideMotorLeft;
+
     //Servos
     public Servo airplaneLauncher;
     public Servo airplaneLaunchAngle;
@@ -115,8 +110,8 @@ public class Robot {
         motorInit();
         servoInit();
         odometryInit();
-        logger.info("motor init finished");
         imuInit();
+        logger.info("motor init finished");
         logger.info("imu init finished");
         subsystemInit();
     }
@@ -159,15 +154,12 @@ public class Robot {
     }
 
     /**
-     * Gets Motors from hardware ap
+     * Gets Motors from hardware map
      */
     private void motorInit() {
-        frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
-        frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
-        rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
-        rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
-        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("slide");
+        slideMotorRight = (DcMotorEx) hardwareMap.dcMotor.get("slideright");
         intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
+        slideMotorLeft = (DcMotorEx) hardwareMap.dcMotor.get("slideleft");
     }
 
     private void servoInit() {
@@ -179,6 +171,10 @@ public class Robot {
 
     public void subsystemInit() {
         logger.debug("Drive subsystem init started");
+        var frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
+        var frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
+        var rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
+        var rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
         if (odometryEnabled) {
             drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
@@ -187,7 +183,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotor, intakeMotor);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotorRight, intakeMotor, slideMotorLeft);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {
@@ -217,8 +213,9 @@ public class Robot {
     public void telemetryBroadcast(String caption, String value) {
         telemetry.addData(caption, value);
         telemetry.update();
-        if (webEnabled)
+        if (webEnabled) {
             WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
+        }
         Log.i(caption, value);
     }
 }

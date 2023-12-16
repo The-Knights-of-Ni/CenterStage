@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
 import java.util.HashMap;
 
+import static java.lang.Math.abs;
+
 @TeleOp(name = "TeleOp")
 public class Teleop extends LinearOpMode {
     double deltaT;
@@ -59,6 +61,7 @@ public class Teleop extends LinearOpMode {
         final double sensitivityLowPower = 0.5; // multiply inputs with this on non-high power mode
         boolean twoGamepads = true;
         double slidePowerVel = 0.0;
+        double cranePowerVel = 0.0;
 
         while (opModeIsActive()) {
             robot.updateGamepads();
@@ -121,19 +124,10 @@ public class Teleop extends LinearOpMode {
                     robot.control.pickupPosShoulder();
                 }
 
-                // Crane
-                // TODO: Make it work
-                if (robot.gamepad2.xButton.isPressed()) {
-                    robot.control.moveCrane(CraneState.DOWN);
-                }
-                if (robot.gamepad2.yButton.isPressed()) {
-                    robot.control.moveCrane(CraneState.UP);
-                }
-
                 // Linear Slide
                 // TODO: Implement auto correcting of claw shoulder
-                slidePowerVel = robot.gamepad2.triggerRight - robot.gamepad2.triggerLeft;
-                if (slidePowerVel >= 0.15) {
+                slidePowerVel = robot.gamepad2.triggerLeft - robot.gamepad2.triggerRight;
+                if (abs(slidePowerVel) >= 0.15) {
                     robot.control.setLinearSlideMotorPower(slidePowerVel);
                 } else {
                     robot.control.setLinearSlideMotorPower(0);
