@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Subsystems.Vision.ScoringAlgorithm;
 
 public class Backdrop {
     //makes sure the number of rows does not cause problems
-    public Pixel [][] shortRows = new Pixel[5][6];
-    public Pixel [][] longRows = new Pixel[4][7];
+    public int shortlength = 6;
+    public int longlength = 7;
+    public int rowamount = 5;
+    public Pixel [][] shortRows = new Pixel[rowamount][shortlength];
+    public Pixel [][] longRows = new Pixel[rowamount][longlength];
 }
