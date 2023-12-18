@@ -4,5 +4,7 @@ public enum PixelColor {
     WHITE,
     PINK,
     YELLOW,
-    GREEN
+    GREEN,
+
+    Empty
 }

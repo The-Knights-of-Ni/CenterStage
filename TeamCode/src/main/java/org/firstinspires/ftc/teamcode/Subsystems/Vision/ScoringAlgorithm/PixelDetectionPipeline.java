@@ -39,27 +39,27 @@ public class PixelDetectionPipeline extends OpenCvPipeline {
         Mat crop = new Mat(mask, rectCrop);
         mask.release();
 
+
         if (crop.empty()) {
             return input;
         }
-
+        int countshort = 1;
+        int countlong = 1;
         for(int i = 1; i <= backdrop.rowamount*2 ; i++)
         {
-            Pixel foundpixel = new Pixel();
-            int countshort = 1;
-            int countlong = 1;
+            Pixel foundPixel = new Pixel();;
             //logic to be determined
-            foundpixel.color  = PixelColor.WHITE;
+            foundPixel.color  = new Scalar(0,0,100);
             if (i%2 == 0)
             {
                 for(int j=1; j <= backdrop.longlength; j++)
-                    backdrop.longRows[countlong][j] = foundpixel;
+                    backdrop.longRows[countlong][j] = foundPixel;
                 countlong++;
             }
             else
             {
                 for(int j=1; j<= backdrop.shortlength; j++)
-                    backdrop.shortRows[countshort][j] = foundpixel;
+                    backdrop.shortRows[countshort][j] = foundPixel;
                 countshort++;
             }
         }
