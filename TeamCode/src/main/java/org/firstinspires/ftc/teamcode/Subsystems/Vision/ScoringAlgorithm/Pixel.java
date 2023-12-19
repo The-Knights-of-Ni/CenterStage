@@ -4,8 +4,11 @@ import org.opencv.core.*;
 
 public class Pixel {
     public PixelColor color;
-    //can be in a Mosaic
-    public Boolean canMosaic = false;
+    //0 for non
+    //1 for possible to start
+    //2 for already a pixel to start with there
+    //3 for can complete mosaic
+    public int mosaicPotential = 0;
 
     public Boolean available = false;
 
