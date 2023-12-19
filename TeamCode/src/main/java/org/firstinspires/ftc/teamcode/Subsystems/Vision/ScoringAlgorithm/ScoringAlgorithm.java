@@ -7,7 +7,7 @@ public class ScoringAlgorithm {
     }
 
     public int[] getOptimalPosition() {
-
+        return new int[]{0, 0}; // TODO: implement
     }
 
 }
