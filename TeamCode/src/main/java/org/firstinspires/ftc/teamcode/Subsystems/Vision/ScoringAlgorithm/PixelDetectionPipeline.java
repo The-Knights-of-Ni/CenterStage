@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 
-public class PixelDetectionPipeline extends OpenCvPipeline {
+public class PixelDetectionPipeline extends OpenCvPipeline{
 
     public Backdrop backdrop;
     private final int CAMERA_HEIGHT;
@@ -52,15 +52,21 @@ public class PixelDetectionPipeline extends OpenCvPipeline {
             foundPixel.color  = new Scalar(0,0,100);
             if (i%2 == 0)
             {
-                for(int j=1; j <= backdrop.longlength; j++)
+                for(int j=1; j <= backdrop.longlength; j++) {
+                    foundPixel.y = i;
+                    foundPixel.x = j;
                     backdrop.longRows[countlong][j] = foundPixel;
-                countlong++;
+                    countlong++;
+                }
             }
             else
             {
-                for(int j=1; j<= backdrop.shortlength; j++)
+                for(int j=1; j<= backdrop.shortlength; j++) {
+                    foundPixel.y = i;
+                    foundPixel.x = j;
                     backdrop.shortRows[countshort][j] = foundPixel;
-                countshort++;
+                    countshort++;
+                }
             }
         }
 

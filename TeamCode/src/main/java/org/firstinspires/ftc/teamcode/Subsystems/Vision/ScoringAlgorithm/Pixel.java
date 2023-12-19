@@ -6,4 +6,8 @@ public class Pixel {
     public Scalar color;
     //can be in a Mosaic
     public Boolean canMosaic = true;
+
+    public int x;
+
+    public int y;
 }
