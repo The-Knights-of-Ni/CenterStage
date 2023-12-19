@@ -43,30 +43,31 @@ public class PixelDetectionPipeline extends OpenCvPipeline{
         if (crop.empty()) {
             return input;
         }
-        int countshort = 1;
-        int countlong = 1;
+        int countshort = 0;
+        int countlong = 0;
         for(int i = 1; i <= backdrop.rowamount*2 ; i++)
         {
             Pixel foundPixel = new Pixel();;
             //logic to be determined
-            foundPixel.color  = new Scalar(0,0,100);
+            foundPixel.color  = PixelColor.Empty;
             if (i%2 == 0)
             {
-                for(int j=1; j <= backdrop.longlength; j++) {
+                for(int j=0; j <= backdrop.longlength-1; j++) {
                     foundPixel.y = i;
                     foundPixel.x = j;
                     backdrop.longRows[countlong][j] = foundPixel;
-                    countlong++;
+
                 }
+                countlong++;
             }
             else
             {
-                for(int j=1; j<= backdrop.shortlength; j++) {
+                for(int j=0; j<= backdrop.shortlength-1; j++) {
                     foundPixel.y = i;
                     foundPixel.x = j;
                     backdrop.shortRows[countshort][j] = foundPixel;
-                    countshort++;
                 }
+                countshort++;
             }
         }
 

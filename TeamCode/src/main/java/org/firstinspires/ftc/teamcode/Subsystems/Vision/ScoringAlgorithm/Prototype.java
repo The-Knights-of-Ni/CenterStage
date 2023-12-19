@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Vision.AprilTagDetectionThread;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.ScoringAlgorithm.PixelDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.PixelColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -100,7 +101,36 @@ public class Prototype extends Subsystem {
         return pipeline.backdrop;
     }
 
-    public Pixel PixelAlgorithm(){
+    public Pixel PixelAlgorithm(Backdrop backdrop){
+        int countshort = 0;
+        int countlong = 0;
+        for(int i = 1; i <= backdrop.rowamount*2 ; i++)
+        {
+            if (i%2 == 0)
+            {
+                for(int j=0; j <= backdrop.longlength-1; j++) {
+                    if(j==0 && backdrop.shortRows[countshort-1][j].color != PixelColor.Empty)
+                        backdrop.longRows[countlong][j].available = true;
+                    else if(j==backdrop.longlength-1 && backdrop.shortRows[countshort-1][j-1].color != PixelColor.Empty)
+                        backdrop.longRows[countlong][j].available = true;
+                    else if(backdrop.shortRows[countshort-1][j].color != PixelColor.Empty
+                            && backdrop.shortRows[countshort-1][j-1].color != PixelColor.Empty)
+                        backdrop.longRows[countlong][j].available = true;
+                }
+                countlong++;
+            }
+            else
+            {
+                for(int j=0; j<= backdrop.shortlength-1; j++) {
+                    if(countshort==0 && backdrop.shortRows[countshort][j].color != PixelColor.Empty)
+                        backdrop.shortRows[countshort][j].available = true;
+                    else if (backdrop.longRows[countlong-1][j].color != PixelColor.Empty
+                    && backdrop.longRows[countlong-1][j+1].color != PixelColor.Empty)
+                        backdrop.shortRows[countshort][j].available = true;
+                }
+                countshort++;
+            }
+        }
         Pixel bestPixel = new Pixel();
         return bestPixel;
     }
