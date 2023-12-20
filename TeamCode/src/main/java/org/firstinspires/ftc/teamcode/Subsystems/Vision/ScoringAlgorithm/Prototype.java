@@ -102,6 +102,59 @@ public class Prototype extends Subsystem {
         return pipeline.backdrop;
     }
 
+    //given pixel is the one the robot is holding
+    //Case1 is for the left most position for the long rows
+    public int scoreFinder_Case1(Pixel givenpixel, Pixel bottom, Pixel right)
+    {
+        if(right.partofMosaic)
+        {
+            if (givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else
+                return 0;
+        }
+        else if(bottom.partofMosaic && !right.partofMosaic)
+        {
+            if (givenpixel.color != PixelColor.WHITE)
+                return 2;
+            else
+                return -2;
+        }
+        //both pixels are not the same color, no mosaics involved
+        else if(bottom.color != right.color && bottom.color != PixelColor.WHITE && right.color != PixelColor.WHITE)
+        {
+            if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottom.color && givenpixel.color != right.color)
+                return 3;
+
+            else
+                return -3;
+        }
+        //both pixels are the same color, no mosaics involved
+        else if(bottom.color == right.color && bottom.color != PixelColor.WHITE)
+        {
+            if(givenpixel.color == bottom.color)
+                return 3;
+            else
+                return -3;
+        }
+        //if right is white or both are white, no mosiacs involved
+        else if(right.color == PixelColor.WHITE) {
+            if (givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else
+                return 0;
+        }
+        //if bottom is white and right is something else, no mosaics invovled
+        else if(bottom.color == PixelColor.WHITE && right.color != PixelColor.WHITE) {
+            if (givenpixel.color != PixelColor.WHITE)
+                return 2;
+            else
+                return -2;
+        }
+        //failsafe
+        else
+            return 0;
+    }
     public Pixel PixelAlgorithm(Backdrop backdrop, Pixel givenPixel){
         int countshort = 0;
         int countlong = 0;
@@ -136,6 +189,36 @@ public class Prototype extends Subsystem {
                 countshort++;
             }
         }
+
+        countshort = 0;
+        countlong = 0;
+        for(int i = 1; i <= backdrop.rowamount*2 ; i++)
+        {
+            if (i%2 == 0)
+            {
+                for(int j=0; j <= backdrop.longlength-1; j++) {
+                    if (backdrop.longRows[i][j].available = true)
+                    {
+                        if(j==0)
+                        {
+
+                        }
+                    }
+                }
+                countlong++;
+            }
+            else
+            {
+                for(int j=0; j<= backdrop.shortlength-1; j++) {
+                    if (backdrop.shortRows[i][j].available = true) {
+
+                    }
+                }
+                countshort++;
+            }
+        }
+
+
 
         Pixel bestPixel = new Pixel();
         return bestPixel;
