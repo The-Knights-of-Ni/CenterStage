@@ -139,8 +139,19 @@ public class mosaicScoreFinder {
     }
 
     //leftmost or rightmost pixels of short Rows
-    public int scoreFinder_Case4(Pixel givenpixel, Pixel topleft, Pixel topright, Pixel side, Pixel bottomright, Pixel bottomleft)
+    public int scoreFinder_Case4(Pixel givenpixel, Pixel side, Pixel bottomright, Pixel bottomleft)
     {
-        return 0;
+        //if all are part of a mosiac
+        if(side.partofMosaic&&bottomright.partofMosaic&& bottomright.partofMosaic)
+        {
+            if(givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else
+                return 0;
+        }
+
+        //failsafe
+        else
+            return 0;
     }
 }
