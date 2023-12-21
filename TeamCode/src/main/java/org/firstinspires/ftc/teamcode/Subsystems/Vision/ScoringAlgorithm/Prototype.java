@@ -113,6 +113,40 @@ public class Prototype extends Subsystem {
             if (i%2 == 0)
             {
                 for(int j=0; j <= backdrop.longlength-1; j++) {
+                    if(j==0)
+                    {
+                        backdrop.longRows[countlong][j].partofMosaic =
+                                m_inMosaicFinder.inMosaic_Case1(backdrop.longRows[countlong][0],
+                                        backdrop.shortRows[countshort][0], backdrop.longRows[countlong][1],
+                                        backdrop.shortRows[countshort-1][0]);
+                    }
+                    else if(j==backdrop.longlength-1)
+                    {
+                       backdrop.longRows[countlong][j].partofMosaic =
+                               m_inMosaicFinder.inMosaic_Case1(backdrop.longRows[countlong][backdrop.longlength-1],
+                                       backdrop.shortRows[countshort][backdrop.shortlength-1],
+                                       backdrop.longRows[countlong][backdrop.longlength-2],
+                                       backdrop.shortRows[countshort-1][backdrop.shortlength-1]);
+                    }
+                    backdrop.longRows[countlong][j].partofMosaic = true;
+                    }
+                countlong++;
+            }
+            else
+            {
+                for(int j=0; j<= backdrop.shortlength-1; j++) {
+                    backdrop.shortRows[countshort][j].partofMosaic = true;
+                    }
+                countshort++;
+            }
+        }
+        countshort = 0;
+        countlong = 0;
+        for(int i = 1; i <= backdrop.rowamount*2 ; i++)
+        {
+            if (i%2 == 0)
+            {
+                for(int j=0; j <= backdrop.longlength-1; j++) {
                     if(backdrop.longRows[countlong][j].color == PixelColor.Empty) {
                         if (j == 0 && backdrop.shortRows[countshort - 1][j].color != PixelColor.Empty)
                             backdrop.longRows[countlong][j].available = true;
