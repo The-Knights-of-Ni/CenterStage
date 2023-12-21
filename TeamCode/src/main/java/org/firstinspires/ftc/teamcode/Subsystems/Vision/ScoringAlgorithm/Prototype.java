@@ -40,6 +40,7 @@ public class Prototype extends Subsystem {
 
     private OpenCvCamera camera;
 
+    private inMosaicFinder m_inMosaicFinder;
     private mosaicScoreFinder m_mosaicScoreFinder;
 
     private PixelDetectionPipeline pipeline;

@@ -53,7 +53,7 @@ public class mosaicScoreFinder {
         }
         //failsafe
         else
-            return 0;
+            return -1000;
     }
 
     //for the left most and right most pixel of the bottom row
@@ -84,7 +84,7 @@ public class mosaicScoreFinder {
         }
         //failsafe
         else
-            return 0;
+            return -1000;
     }
 
     //for a pixel in the middle of the bottom row
@@ -135,7 +135,7 @@ public class mosaicScoreFinder {
         }
         //failsafe
         else
-            return 0;
+            return -1000;
     }
 
     //leftmost or rightmost pixels of short Rows (not bottom)
@@ -427,6 +427,17 @@ public class mosaicScoreFinder {
         }
         //failsafe
         else
+            return -1000;
+    }
+    //if pixel is surrounded by all
+    public int scoreFinder_Case5(Pixel givenpixel, Pixel topleft, Pixel top, Pixel topright,
+                                 Pixel bottomright, Pixel bottom, Pixel bottomleft) {
+        if(false)
+        {
             return 0;
+        }
+        //failsafe
+        else
+            return -1000;
     }
 }
