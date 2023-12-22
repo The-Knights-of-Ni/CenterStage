@@ -5,18 +5,14 @@ import org.opencv.core.*;
 
 public class Pixel {
     public PixelColor color;
-    //0 for non
-    //1 for possible to start
-    //2 for already a pixel to start with there
-    //3 for can complete mosaic
-    //negates for things that can mess up mosiac sets
-    public int mosaicPotential = 0;
 
-    public Boolean partofMosaic = false;
+    public enum MosaicPotential {
+        NONE,
+        POSSIBLE_TO_START,
+        ALREADY_A_PIXEL_TO_START,
+        CAN_COMPLETE_MOSAIC,
+        IN_MOSAIC
+    }
 
-    public Boolean available = false;
-
-    public int x;
-
-    public int y;
+    public MosaicPotential mosaicPotential = MosaicPotential.NONE;
 }
