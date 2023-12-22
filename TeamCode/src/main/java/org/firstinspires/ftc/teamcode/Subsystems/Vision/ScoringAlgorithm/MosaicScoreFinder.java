@@ -367,6 +367,7 @@ public class MosaicScoreFinder {
             return -1000;
     }
 
+    //TODO finish Case 5
     //if pixel is surrounded by 4
     public int scoreFinder_Case5(Pixel givenpixel, Pixel left, Pixel bottomleft, Pixel bottomright, Pixel right) {
         //all are part of mosaics

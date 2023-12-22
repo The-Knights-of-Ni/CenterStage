@@ -112,6 +112,13 @@ public class InMosaicFinder {
         else return false;
     }
 
-
-
+    //TODO finish Case 5
+    public boolean inMosaic_Case5(Pixel thepixel, Pixel topleft, Pixel topright, Pixel right, Pixel bottomright, Pixel bottomleft, Pixel left)
+    {
+        if(!topleft.partofMosaic && !topright.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topleft.color != PixelColor.WHITE && topleft.color != PixelColor.Empty && topright.color != PixelColor.WHITE &&
+                topright.color != PixelColor.Empty && thepixel.color == topleft.color && topleft.color == topright.color)
+            return true;
+        else return false;
+    }
 }
