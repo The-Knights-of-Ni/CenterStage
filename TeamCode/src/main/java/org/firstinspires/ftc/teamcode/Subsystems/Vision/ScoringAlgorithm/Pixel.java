@@ -11,7 +11,7 @@ public class Pixel {
         POSSIBLE_TO_START,
         ALREADY_A_PIXEL_TO_START,
         CAN_COMPLETE_MOSAIC,
-        IN_MOSAIC
+        PLACED
     }
 
     public MosaicPotential mosaicPotential = MosaicPotential.NONE;
