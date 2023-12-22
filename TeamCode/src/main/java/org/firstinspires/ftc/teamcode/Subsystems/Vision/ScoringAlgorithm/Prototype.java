@@ -122,10 +122,23 @@ public class Prototype extends Subsystem {
                     backdrop.longRows[countlong][j].partofMosaic = true;
                     }
                 countlong++;
+
             }
             else
             {
                 for(int j=0; j<= backdrop.shortlength-1; j++) {
+                    if(countshort==0 && j == 0)
+                    {
+                        backdrop.shortRows[countshort][j].partofMosaic = m_inMosaicFinder.inMosaic_Case2(
+                                backdrop.shortRows[countshort][0], backdrop.longRows[countlong][0],
+                                backdrop.longRows[countlong][1], backdrop.shortRows[countshort][1]);
+                    }
+                    else if (countshort == 0 && j == backdrop.shortlength-1)
+                    {
+                        backdrop.shortRows[countshort][j].partofMosaic = m_inMosaicFinder.inMosaic_Case2(
+                                backdrop.shortRows[countshort][j], backdrop.longRows[countlong][backdrop.longlength-1],
+                                backdrop.longRows[countlong][backdrop.longlength-2], backdrop.shortRows[countshort][j-1]);
+                    }
                     backdrop.shortRows[countshort][j].partofMosaic = true;
                     }
                 countshort++;

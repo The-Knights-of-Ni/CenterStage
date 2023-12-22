@@ -367,12 +367,104 @@ public class MosaicScoreFinder {
             return -1000;
     }
 
-    //if pixel is surrounded by all
-    public int scoreFinder_Case5(Pixel givenpixel, Pixel topleft, Pixel top, Pixel topright,
-                                 Pixel bottomright, Pixel bottom, Pixel bottomleft) {
-        if (false) {
-            return 0;
+    //if pixel is surrounded by 4
+    public int scoreFinder_Case5(Pixel givenpixel, Pixel left, Pixel bottomleft, Pixel bottomright, Pixel right) {
+        //all are part of mosaics
+        if(left.partofMosaic && bottomleft.partofMosaic && bottomright.partofMosaic && right.partofMosaic)
+        {
+            if(givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else return 0;
         }
+        //all are white or empty
+        else if ((left.color == PixelColor.Empty|| left.color == PixelColor.WHITE) &&
+                (right.color == PixelColor.Empty || right.color == PixelColor.WHITE) &&
+                bottomleft.color == PixelColor.WHITE && bottomright.color == PixelColor.WHITE){
+            if(givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else
+                return 0;
+        }
+        //all are colored
+        else if ((left.color != PixelColor.Empty && left.color != PixelColor.WHITE) &&
+                (right.color != PixelColor.Empty && right.color != PixelColor.WHITE) &&
+                bottomleft.color != PixelColor.WHITE && bottomright.color != PixelColor.WHITE) {
+            if (left.color != bottomleft.color) {
+                if (givenpixel.color != PixelColor.WHITE && givenpixel.color != left.color && givenpixel.color != bottomleft.color)
+                    return 3;
+                else {
+                    if (bottomleft.color != bottomright.color) {
+                        if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != bottomright.color)
+                            return 3;
+                        else {
+                            if (bottomright.color != right.color) {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                                    return 3;
+                                else return -3;
+                            } else {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color == right.color)
+                                    return 3;
+                                else return -3;
+                            }
+                        }
+
+                    } else {
+                        if (givenpixel.color != PixelColor.WHITE && givenpixel.color == bottomleft.color)
+                            return 3;
+                        else {
+                            if (bottomright.color != right.color) {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                                    return 3;
+                                else return -3;
+                            } else {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color == right.color)
+                                    return 3;
+                                else return -3;
+                            }
+                        }
+                    }
+
+                }
+            } else {
+                if (givenpixel.color == left.color && givenpixel.color == bottomleft.color)
+                    return 3;
+                else{
+                    if (bottomleft.color != bottomright.color) {
+                        if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != bottomright.color)
+                            return 3;
+                        else {
+                            if (bottomright.color != right.color) {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                                    return 3;
+                                else return -3;
+                            } else {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color == right.color)
+                                    return 3;
+                                else return -3;
+                            }
+                        }
+
+                    } else {
+                        if (givenpixel.color != PixelColor.WHITE && givenpixel.color == bottomleft.color)
+                            return 3;
+                        else {
+                            if (bottomright.color != right.color) {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                                    return 3;
+                                else return -3;
+                            } else {
+                                if (givenpixel.color != PixelColor.WHITE && givenpixel.color == right.color)
+                                    return 3;
+                                else return -3;
+                            }
+                        }
+                    }
+
+                    }
+
+                }
+            }
+
         //failsafe
         else
             return -1000;

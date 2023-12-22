@@ -22,8 +22,28 @@ public class InMosaicFinder {
                 && side.color != PixelColor.WHITE && bottom.color != side.color && bottom.color != thepixel.color && thepixel.color != side.color)
             return true;
         else
-            return true;
+            return false;
+    }
 
+    //left or rightmost pixel of the bottom row
+    public boolean inMosaic_Case2(Pixel thepixel, Pixel topside, Pixel corner, Pixel sideside){
+        if(!topside.partofMosaic && !corner.partofMosaic && thepixel.color != PixelColor.Empty && thepixel.color != PixelColor.WHITE &&
+        topside.color != PixelColor.Empty && topside.color != PixelColor.WHITE && corner.color != PixelColor.Empty &&
+        corner.color != PixelColor.WHITE && thepixel.color == topside.color && topside.color == corner.color)
+            return true;
+        else if(!topside.partofMosaic && !corner.partofMosaic && thepixel.color != PixelColor.Empty && thepixel.color != PixelColor.WHITE &&
+                topside.color != PixelColor.Empty && topside.color != PixelColor.WHITE && corner.color != PixelColor.Empty &&
+                corner.color != PixelColor.WHITE && thepixel.color != topside.color && topside.color != corner.color && thepixel.color != corner.color)
+            return true;
+        else if(!sideside.partofMosaic && !corner.partofMosaic && thepixel.color != PixelColor.Empty && thepixel.color != PixelColor.WHITE &&
+                sideside.color != PixelColor.Empty && sideside.color != PixelColor.WHITE && corner.color != PixelColor.Empty &&
+                corner.color != PixelColor.WHITE && thepixel.color == sideside.color && sideside.color == corner.color)
+            return true;
+        else if(!sideside.partofMosaic && !corner.partofMosaic && thepixel.color != PixelColor.Empty && thepixel.color != PixelColor.WHITE &&
+                sideside.color != PixelColor.Empty && sideside.color != PixelColor.WHITE && corner.color != PixelColor.Empty &&
+                corner.color != PixelColor.WHITE && thepixel.color != sideside.color && sideside.color != corner.color && thepixel.color != corner.color)
+            return true;
+        else return false;
     }
 
 
