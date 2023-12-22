@@ -120,7 +120,11 @@ public class Prototype extends Subsystem {
                                        backdrop.shortRows[countshort-1][backdrop.shortlength-1]);
                     }
                     else {
-                        backdrop.longRows[countlong][j].partofMosaic = true;
+                        backdrop.longRows[countlong][j].partofMosaic = m_inMosaicFinder.inMosaic_Case5(
+                                backdrop.longRows[countlong][j], backdrop.shortRows[countshort][j-1],
+                                backdrop.shortRows[countshort][j], backdrop.longRows[countlong][j+1],
+                                backdrop.shortRows[countshort-1][j], backdrop.shortRows[countshort-1][j-1],
+                                backdrop.longRows[countlong][j-1]);
                     }
                     }
                 countlong++;
@@ -163,7 +167,11 @@ public class Prototype extends Subsystem {
                                 backdrop.longRows[countlong-1][backdrop.longlength-2], backdrop.longRows[countlong-1][backdrop.longlength-1]);
                     }
                     else {
-                        backdrop.shortRows[countshort][j].partofMosaic = true;
+                        backdrop.shortRows[countshort][j].partofMosaic = m_inMosaicFinder.inMosaic_Case5(
+                                backdrop.shortRows[countshort][j], backdrop.longRows[countlong][j],
+                                backdrop.longRows[countlong][j+1], backdrop.shortRows[countshort][j+1],
+                                backdrop.longRows[countlong-1][j+1], backdrop.longRows[countlong-1][j],
+                                backdrop.shortRows[countshort][j-1]);
                     }
                     }
                 countshort++;
