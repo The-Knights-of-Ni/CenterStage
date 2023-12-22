@@ -4,21 +4,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.AprilTagDetectionThread;
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.ScoringAlgorithm.PixelDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.PixelColor;
-import org.firstinspires.ftc.teamcode.Util.Vector;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.firstinspires.ftc.teamcode.Subsystems.Vision.Vision;
 import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-import java.util.ArrayList;
 
 public class Prototype extends Subsystem {
 
@@ -40,8 +31,8 @@ public class Prototype extends Subsystem {
 
     private OpenCvCamera camera;
 
-    private inMosaicFinder m_inMosaicFinder;
-    private mosaicScoreFinder m_mosaicScoreFinder;
+    private InMosaicFinder m_inMosaicFinder;
+    private MosaicScoreFinder m_mosaicScoreFinder;
 
     private PixelDetectionPipeline pipeline;
 

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Vision.ScoringAlgorithm;
 
 import org.firstinspires.ftc.teamcode.Util.PixelColor;
 
-public class inMosaicFinder {
+public class InMosaicFinder {
     //leftmost and rightmost pixel of long row
     public boolean inMosaic_Case1(Pixel thepixel, Pixel top, Pixel side, Pixel bottom) {
         if (!top.partofMosaic && !side.partofMosaic && thepixel.color != PixelColor.Empty && thepixel.color != PixelColor.WHITE

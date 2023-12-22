@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Vision.ScoringAlgorithm;
+
 import org.firstinspires.ftc.teamcode.Util.PixelColor;
 import org.opencv.core.*;
 
