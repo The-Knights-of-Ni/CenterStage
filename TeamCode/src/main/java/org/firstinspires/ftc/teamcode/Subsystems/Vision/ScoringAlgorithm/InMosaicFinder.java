@@ -45,6 +45,73 @@ public class InMosaicFinder {
             return true;
         else return false;
     }
+    //pixel in the middle of the bottom row
+    public boolean inMosaic_Case3(Pixel thepixel, Pixel left, Pixel topleft, Pixel topright, Pixel right)
+    {
+        if(!left.partofMosaic && !topleft.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+        && left.color != PixelColor.WHITE && left.color != PixelColor.Empty && topleft.color != PixelColor.WHITE &&
+        topleft.color != PixelColor.Empty && thepixel.color == topleft.color && topleft.color == left.color)
+            return true;
+        else if(!left.partofMosaic && !topleft.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && left.color != PixelColor.WHITE && left.color != PixelColor.Empty && topleft.color != PixelColor.WHITE &&
+                topleft.color != PixelColor.Empty && thepixel.color != topleft.color && topleft.color != left.color && thepixel.color != left.color)
+            return true;
+        else if(!topright.partofMosaic && !topleft.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topright.color != PixelColor.WHITE && topright.color != PixelColor.Empty && topleft.color != PixelColor.WHITE &&
+                topleft.color != PixelColor.Empty && thepixel.color == topleft.color && topleft.color == topright.color)
+            return true;
+        else if(!topright.partofMosaic && !topleft.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topright.color != PixelColor.WHITE && topright.color != PixelColor.Empty && topleft.color != PixelColor.WHITE &&
+                topleft.color != PixelColor.Empty && thepixel.color != topleft.color && topleft.color != topright.color && thepixel.color != topright.color)
+            return true;
+        else if(!topright.partofMosaic && !right.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topright.color != PixelColor.WHITE && topright.color != PixelColor.Empty && right.color != PixelColor.WHITE &&
+                right.color != PixelColor.Empty && thepixel.color == right.color && right.color == topright.color)
+            return true;
+        else if(!topright.partofMosaic && !right.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topright.color != PixelColor.WHITE && topright.color != PixelColor.Empty && right.color != PixelColor.WHITE &&
+                right.color != PixelColor.Empty && thepixel.color != right.color && right.color != topright.color && thepixel.color != topright.color)
+            return true;
+        else return false;
+    }
+    //leftmost and rightmost pixels of short rows (not bottom)
+    public boolean inMosaic_Case4(Pixel thepixel, Pixel topside, Pixel topcorner, Pixel sideside, Pixel bottomcorner, Pixel bottomside)
+    {
+        if(!topside.partofMosaic && !topcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topside.color != PixelColor.WHITE && topside.color != PixelColor.Empty && topcorner.color != PixelColor.WHITE &&
+                topcorner.color != PixelColor.Empty && thepixel.color == topside.color && topside.color == topcorner.color)
+            return true;
+        if(!topside.partofMosaic && !topcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && topside.color != PixelColor.WHITE && topside.color != PixelColor.Empty && topcorner.color != PixelColor.WHITE &&
+                topcorner.color != PixelColor.Empty && thepixel.color != topside.color && topside.color != topcorner.color && thepixel.color != topcorner.color)
+            return true;
+        if(!sideside.partofMosaic && !topcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && sideside.color != PixelColor.WHITE && sideside.color != PixelColor.Empty && topcorner.color != PixelColor.WHITE &&
+                topcorner.color != PixelColor.Empty && thepixel.color == sideside.color && sideside.color == topcorner.color)
+            return true;
+        if(!sideside.partofMosaic && !topcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && sideside.color != PixelColor.WHITE && sideside.color != PixelColor.Empty && topcorner.color != PixelColor.WHITE &&
+                topcorner.color != PixelColor.Empty && thepixel.color != sideside.color && sideside.color != topcorner.color && thepixel.color != topcorner.color)
+            return true;
+        if(!sideside.partofMosaic && !bottomcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && sideside.color != PixelColor.WHITE && sideside.color != PixelColor.Empty && bottomcorner.color != PixelColor.WHITE &&
+                bottomcorner.color != PixelColor.Empty && thepixel.color == sideside.color && sideside.color == bottomcorner.color)
+            return true;
+        if(!sideside.partofMosaic && !bottomcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && sideside.color != PixelColor.WHITE && sideside.color != PixelColor.Empty && bottomcorner.color != PixelColor.WHITE &&
+                bottomcorner.color != PixelColor.Empty && thepixel.color != sideside.color && sideside.color != bottomcorner.color && thepixel.color != bottomcorner.color)
+            return true;
+        if(!bottomside.partofMosaic && !bottomcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && bottomside.color != PixelColor.WHITE && bottomside.color != PixelColor.Empty && bottomcorner.color != PixelColor.WHITE &&
+                bottomcorner.color != PixelColor.Empty && thepixel.color == bottomside.color && bottomside.color == bottomcorner.color)
+            return true;
+        if(!bottomside.partofMosaic && !bottomcorner.partofMosaic && thepixel.color != PixelColor.WHITE && thepixel.color != PixelColor.Empty
+                && bottomside.color != PixelColor.WHITE && bottomside.color != PixelColor.Empty && bottomcorner.color != PixelColor.WHITE &&
+                bottomcorner.color != PixelColor.Empty && thepixel.color != bottomside.color && bottomside.color != bottomcorner.color && thepixel.color != bottomcorner.color)
+            return true;
+        else return false;
+    }
+
 
 
 }
