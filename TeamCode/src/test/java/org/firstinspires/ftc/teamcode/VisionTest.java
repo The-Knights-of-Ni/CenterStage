@@ -14,7 +14,7 @@ public class VisionTest {
         PixelDetectionPipeline pixelDetectionPipeline = new PixelDetectionPipeline(1920, 720);
 
         // Reading the Image from the file
-        String file = "D:/Documents/Programming/CenterStage/test_resources/test.webp";
+        String file = "D:/Documents/Programming/CenterStage/test_resources/test_high_color.jpg";
         Mat image = Imgcodecs.imread(file);
         assert !image.empty();
         Mat output = pixelDetectionPipeline.processFrame(image);
