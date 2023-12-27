@@ -1,5 +1,6 @@
 FROM rust:1 AS build
 
+# install basic opencv and rust dependencies
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
