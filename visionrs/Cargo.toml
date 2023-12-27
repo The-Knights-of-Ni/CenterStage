@@ -13,7 +13,7 @@ required-features = ["highgui"]
 
 [dependencies]
 jni = "0.21"
-opencv = { version = "0.86", default-features = false, features = [
+opencv = { version = "0.88", default-features = false, features = [
     "imgproc",
     "videoio"
 ] }
