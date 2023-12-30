@@ -1,5 +1,6 @@
 [env]
-# OPENCV_LINK_LIBS = "opencv_460"
+OPENCV_LINK_LIBS = "+"
+OPENCV_LINK_PATHS = "/usr/lib/x86_64-linux-gnu"
 OPENCV_INCLUDE_PATHS = "/usr/include/opencv4"
 # comment these out for local build
 #OPENCV_INCLUDE_PATHS = "C:/tools/opencv/build/include/opencv2"
