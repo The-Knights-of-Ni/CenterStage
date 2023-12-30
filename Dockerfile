@@ -10,8 +10,6 @@ ARG ANDROID_NDK_HOME="/opt/android/ndk/21.1.6352462"
 WORKDIR /usr/src/CenterStage
 COPY . .
 
-RUN /opt/gradle/gradle-8.4/bin/gradle
-
 RUN /opt/gradle/gradle-8.4/bin/gradle assembleDebug
 
 # To host the build for downloading
