@@ -218,11 +218,26 @@ public class Prototype extends Subsystem {
             if (i%2 == 0)
             {
                 for(int j=0; j <= backdrop.longlength-1; j++) {
-                    if (backdrop.longRows[i][j].available = true)
+                    if (backdrop.longRows[countlong][j].available = true)
                     {
                         if(j==0)
                         {
-
+                            backdrop.longRows[countlong][j].mosaicPotential = m_mosaicScoreFinder.scoreFinderCase1(
+                                    backdrop.longRows[countlong][j], backdrop.shortRows[countshort-1][0],
+                                    backdrop.longRows[countlong][j+1]);
+                        }
+                        else if(j==backdrop.longlength-1)
+                        {
+                            backdrop.longRows[countlong][j].mosaicPotential = m_mosaicScoreFinder.scoreFinderCase1(
+                                    backdrop.longRows[countlong][j], backdrop.shortRows[countshort-1][backdrop.shortlength-1],
+                                    backdrop.longRows[countlong][j-1]);
+                        }
+                        else
+                        {
+                            backdrop.longRows[countlong][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case5(
+                                    backdrop.longRows[countlong][j], backdrop.longRows[countlong][j-1],
+                                    backdrop.shortRows[countshort-1][j-1], backdrop.shortRows[countshort-1][j],
+                                    backdrop.longRows[countlong][j+1]);
                         }
                     }
                 }
@@ -231,8 +246,42 @@ public class Prototype extends Subsystem {
             else
             {
                 for(int j=0; j<= backdrop.shortlength-1; j++) {
-                    if (backdrop.shortRows[i][j].available = true) {
-
+                    if (backdrop.shortRows[countshort][j].available = true) {
+                        if(countshort==0 && j == 0)
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case2(
+                                    backdrop.shortRows[countshort][j], backdrop.shortRows[countshort][j+1]);
+                        }
+                        else if(countshort == 0 && j==backdrop.shortlength-1)
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case2(
+                                    backdrop.shortRows[countshort][j], backdrop.shortRows[countshort][j-1]);
+                        }
+                        else if(countshort == 0)
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case3(
+                                    backdrop.shortRows[countshort][j], backdrop.shortRows[countshort][j-1],
+                                    backdrop.shortRows[countshort][j+1]);
+                        }
+                        else if(j==0)
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case4(
+                                    backdrop.shortRows[countshort][j], backdrop.shortRows[countshort][j+1],
+                                    backdrop.longRows[countlong-1][1], backdrop.longRows[countlong-1][0]);
+                        }
+                        else if(j==backdrop.shortlength-1)
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case4(
+                                    backdrop.shortRows[countshort][j], backdrop.shortRows[countshort][j-1],
+                                    backdrop.longRows[countlong-1][backdrop.longlength-2], backdrop.longRows[countlong-1][backdrop.longlength-1]
+                            );
+                        }
+                        else
+                        {
+                            backdrop.shortRows[countshort][j].mosaicPotential = m_mosaicScoreFinder.scoreFinder_Case5(backdrop.shortRows[countshort][j],
+                                    backdrop.shortRows[countshort][j-1], backdrop.longRows[countlong-1][j], backdrop.longRows[countlong-1][j+1],
+                                    backdrop.shortRows[countshort][j+1]);
+                        }
                     }
                 }
                 countshort++;

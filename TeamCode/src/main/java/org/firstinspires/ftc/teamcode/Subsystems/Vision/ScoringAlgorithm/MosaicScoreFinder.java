@@ -124,6 +124,7 @@ public class MosaicScoreFinder {
     }
 
     //leftmost or rightmost pixels of short Rows (not bottom)
+    //bottomright is in the middle
     public int scoreFinder_Case4(Pixel givenpixel, Pixel side, Pixel bottomright, Pixel bottomleft) {
         //if all are part of a mosaic
         if (side.partofMosaic && bottomright.partofMosaic && bottomleft.partofMosaic) {

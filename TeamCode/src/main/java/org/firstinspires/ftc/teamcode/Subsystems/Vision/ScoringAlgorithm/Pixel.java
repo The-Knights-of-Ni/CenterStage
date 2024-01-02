@@ -9,8 +9,10 @@ public class Pixel {
     //1 for possible to start
     //2 for already a pixel to start with there
     //3 for can complete mosaic
-    //negates for things that can mess up mosiac sets
+    //negates for things that can mess up mosaic sets
     public int mosaicPotential = 0;
+
+    public int heightPotential = 0;
 
     public Boolean partofMosaic = false;
 
