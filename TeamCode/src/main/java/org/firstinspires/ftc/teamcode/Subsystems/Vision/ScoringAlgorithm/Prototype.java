@@ -97,6 +97,39 @@ public class Prototype extends Subsystem {
     }
 
     public Pixel PixelAlgorithm(Backdrop backdrop, Pixel givenPixel){
+        for(int j = 0; j <= backdrop.shortlength - 1; j++)
+        {
+            if(backdrop.shortRows[1][j].color != PixelColor.Empty)
+            {
+                break;
+            }
+            if(j==backdrop.shortlength-1) {
+                for (int p = 0; p <= backdrop.shortlength - 1; p++)
+                    backdrop.shortRows[1][j].heightPotential = 1;
+            }
+        }
+        for(int j = 0; j <= backdrop.longlength - 1; j++)
+        {
+            if(backdrop.longRows[2][j].color != PixelColor.Empty)
+            {
+                break;
+            }
+            if(j==backdrop.longlength-1) {
+                for (int p = 0; p <= backdrop.longlength - 1; p++)
+                    backdrop.longRows[2][j].heightPotential = 1;
+            }
+        }
+        for(int j = 0; j <= backdrop.shortlength - 1; j++)
+        {
+            if(backdrop.shortRows[4][j].color != PixelColor.Empty)
+            {
+                break;
+            }
+            if(j==backdrop.shortlength-1) {
+                for (int p = 0; p <= backdrop.shortlength - 1; p++)
+                    backdrop.shortRows[4][j].heightPotential = 1;
+            }
+        }
         int countshort = 0;
         int countlong = 0;
         for(int i = 1; i <= backdrop.rowamount*2 ; i++)
@@ -287,10 +320,44 @@ public class Prototype extends Subsystem {
                 countshort++;
             }
         }
-
-
-
         Pixel bestPixel = new Pixel();
+
+        //finds best Pixel
+        countshort=0;
+        countlong=0;
+        for(int i = 0; i <= backdrop.rowamount*2; i++)
+        {
+            if (i%2 == 0)
+            {
+                for(int j = 0; j <= backdrop.shortlength-1; j++)
+                {
+                    if(backdrop.shortRows[countshort][j].available)
+                    {
+                        if(countshort == 0 && j == 0)
+                            bestPixel = backdrop.shortRows[countshort][j];
+                        else if((backdrop.shortRows[countshort][j].mosaicPotential*2) +
+                                (backdrop.shortRows[countshort][j].heightPotential*5) >
+                                (bestPixel.mosaicPotential*2) + bestPixel.heightPotential*5)
+                            bestPixel = backdrop.shortRows[countshort][j];
+                    }
+                }
+                countshort++;
+            }
+            else
+            {
+                for(int j = 0; j <= backdrop.longlength-1; j++)
+                {
+                    if(backdrop.longRows[countlong][j].available)
+                    {
+                        if((backdrop.longRows[countlong][j].mosaicPotential*2) +
+                                (backdrop.longRows[countlong][j].heightPotential*5) >
+                                (bestPixel.mosaicPotential*2) + bestPixel.heightPotential*5)
+                            bestPixel = backdrop.shortRows[countshort][j];
+                    }
+                }
+                countlong++;
+            }
+        }
         return bestPixel;
     }
 }

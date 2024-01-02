@@ -12,6 +12,7 @@ public class Pixel {
     //negates for things that can mess up mosaic sets
     public int mosaicPotential = 0;
 
+    //1 or 0
     public int heightPotential = 0;
 
     public Boolean partofMosaic = false;
