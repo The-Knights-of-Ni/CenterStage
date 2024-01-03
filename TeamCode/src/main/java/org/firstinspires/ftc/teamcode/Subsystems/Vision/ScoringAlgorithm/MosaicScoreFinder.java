@@ -378,6 +378,121 @@ public class MosaicScoreFinder {
                 return 1;
             else return 0;
         }
+        //left is not part of a mosaic
+        else if(!left.partofMosaic && bottomleft.partofMosaic && bottomright.partofMosaic && right.partofMosaic)
+        {
+            if(left.color == PixelColor.WHITE || left.color == PixelColor.Empty)
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 1;
+                else
+                    return 0;
+            }
+            else if(left.color == givenpixel.color)
+                return 2;
+            else
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 2;
+                else
+                    return -2;
+            }
+        }
+        //right is not part of mosaic
+        else if(left.partofMosaic && bottomleft.partofMosaic && bottomright.partofMosaic && !right.partofMosaic)
+        {
+            if(right.color == PixelColor.WHITE || right.color == PixelColor.Empty)
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 1;
+                else
+                    return 0;
+            }
+            else if(right.color == givenpixel.color)
+                return 2;
+            else
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 2;
+                else
+                    return -2;
+            }
+        }
+        //bottom left is not part of mosaic
+        else if(left.partofMosaic && !bottomleft.partofMosaic && bottomright.partofMosaic && right.partofMosaic)
+        {
+           if(givenpixel.color != PixelColor.WHITE)
+               return 1;
+           else
+               return 0;
+        }
+        //bottom right is not part of mosaic
+        else if(left.partofMosaic && bottomleft.partofMosaic && !bottomright.partofMosaic && right.partofMosaic)
+        {
+            if(givenpixel.color != PixelColor.WHITE)
+                return 1;
+            else
+                return 0;
+        }
+        //left and bottomleft are not part of mosaic
+        else if(!left.partofMosaic && !bottomleft.partofMosaic && bottomright.partofMosaic && right.partofMosaic) {
+            //left is empty or white
+            if (left.color == PixelColor.WHITE || left.color == PixelColor.Empty) {
+                if (givenpixel.color != PixelColor.WHITE)
+                    return 1;
+                else
+                    return 0;
+                //bottom left is white
+            } else if (bottomleft.color == PixelColor.WHITE) {
+                if (givenpixel.color != PixelColor.WHITE)
+                    return 2;
+                else
+                    return -2;
+            } else {
+                if (left.color == bottomleft.color)
+                {
+                   if(givenpixel.color == bottomleft.color)
+                       return 3;
+                   else
+                       return -3;
+                }
+                else {
+                    if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != bottomright.color)
+                        return 3;
+                    else return -3;
+                }
+            }
+        }
+        //bottomleft and bottomright are not part of mosaic
+        else if(left.partofMosaic && !bottomleft.partofMosaic && !bottomright.partofMosaic && right.partofMosaic) {
+                if(bottomleft.color == PixelColor.WHITE && bottomright.color == PixelColor.WHITE)
+                {
+                    if(givenpixel.color != PixelColor.WHITE)
+                        return 1;
+                    else return 0;
+                }
+                else if(bottomleft.color != PixelColor.WHITE && bottomright.color != PixelColor.WHITE)
+                {
+                    if(bottomleft.color == bottomright.color) {
+                        if (givenpixel.color == bottomleft.color)
+                            return 3;
+                        else
+                            return -3;
+                    }
+                    else
+                    {
+                        if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != bottomright.color)
+                            return 3;
+                        else return -3;
+                    }
+                }
+                else {
+                    if (givenpixel.color != PixelColor.WHITE)
+                        return 1;
+                    else
+                        return 0;
+                }
+        }
         //all are white or empty
         else if ((left.color == PixelColor.Empty|| left.color == PixelColor.WHITE) &&
                 (right.color == PixelColor.Empty || right.color == PixelColor.WHITE) &&
