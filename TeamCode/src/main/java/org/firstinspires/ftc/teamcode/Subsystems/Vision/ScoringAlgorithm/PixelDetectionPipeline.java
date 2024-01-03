@@ -47,7 +47,7 @@ public class PixelDetectionPipeline extends OpenCvPipeline {
             foundPixel.color = PixelColor.Empty;
             if (i % 2 == 0) {
                 for (int j = 0; j <= backdrop.longlength - 1; j++) {
-                    foundPixel.y = i;
+                    foundPixel.y = countlong*2+1;
                     foundPixel.x = j;
                     backdrop.longRows[countlong][j] = foundPixel;
 
@@ -55,7 +55,7 @@ public class PixelDetectionPipeline extends OpenCvPipeline {
                 countlong++;
             } else {
                 for (int j = 0; j <= backdrop.shortlength - 1; j++) {
-                    foundPixel.y = i;
+                    foundPixel.y = countshort*2;
                     foundPixel.x = j;
                     backdrop.shortRows[countshort][j] = foundPixel;
                 }

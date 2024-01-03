@@ -200,7 +200,6 @@ public class TeleopVision extends LinearOpMode {
                     Backdrop backdrop = prototype.getBackdrop();
                     Pixel chosenpixel = new Pixel();
                     chosenpixel = prototype.PixelAlgorithm(backdrop, givenpixel);
-
                 }
             }
 
