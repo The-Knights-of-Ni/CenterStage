@@ -38,8 +38,7 @@ public class Prototype extends Subsystem {
 
     public Prototype(
             Telemetry telemetry,
-            HardwareMap hardwareMap,
-            AllianceColor allianceColor) {
+            HardwareMap hardwareMap) {
         super(telemetry, "vision");
         this.hardwareMap = hardwareMap;
         // Telemetry
