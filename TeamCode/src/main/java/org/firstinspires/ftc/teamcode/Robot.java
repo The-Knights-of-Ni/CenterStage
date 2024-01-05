@@ -145,10 +145,14 @@ public class Robot {
         telemetryBroadcast("Status", " IMU calibrating...");
         // make sure the imu gyro is calibrated before continuing.
         while (!imu.isGyroCalibrated()) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Thread.onSpinWait();
+            } else {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

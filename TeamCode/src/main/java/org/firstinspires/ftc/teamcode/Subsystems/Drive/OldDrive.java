@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
+import android.os.Build;
 import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -181,6 +182,17 @@ public class OldDrive extends Subsystem {
         // Refresh motors
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (Math.abs(frontLeft.getCurrentPosition()) > 10 || Math.abs(frontRight.getCurrentPosition()) > 10 || Math.abs(rearLeft.getCurrentPosition()) > 10 || Math.abs(rearRight.getCurrentPosition()) > 10) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Thread.onSpinWait();
+            } else {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
         // Timeout control (stop loop if motor stalls)
