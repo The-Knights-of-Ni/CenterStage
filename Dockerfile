@@ -1,6 +1,6 @@
 FROM android-dev AS build
 
-# enviorment
+# Enviorment
 ARG GRADLE_HOME="/opt/gradle/gradle-8.4"
 RUN export GRADLE_HOME="/opt/gradle/gradle-8.4"
 RUN export PATH=${GRADLE_HOME}/bin:${PATH}
@@ -16,10 +16,9 @@ RUN /opt/gradle/gradle-8.4/bin/gradle assembleDebug
 FROM python:3.12-alpine
 
 WORKDIR /usr/src/server
-# Make sure dir mactches the --release flag
-# COPY --from=build /usr/src/CenterStage /usr/src/server/
+COPY --from=build /usr/src/CenterStage /usr/src/server/src/
 COPY --from=build /usr/src/CenterStage/TeamCode/build/ /usr/src/server/apk-build/
-# COPY --from=build /usr/src/CenterStage/visionrs/target/ /usr/src/server/visionrs-build/
+COPY --from=build /usr/src/CenterStage/visionrs/target/ /usr/src/server/visionrs-build/
 
 EXPOSE 8080:8080
 CMD ["python3", "-m", "http.server", "8080"]
