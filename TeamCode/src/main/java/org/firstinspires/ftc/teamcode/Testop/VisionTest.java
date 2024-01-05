@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testop;
 
+import android.os.Build;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
@@ -22,7 +23,15 @@ public class VisionTest extends Auto {
         timer.reset();
 
         while (opModeIsActive()) {
-            Thread.sleep(10);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Thread.onSpinWait();
+            } else {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 }
