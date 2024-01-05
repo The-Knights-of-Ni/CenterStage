@@ -77,9 +77,9 @@ public class Robot {
         }
         this.timer = timer;
         this.allianceColor = allianceColor;
-        this.visionEnabled = flags.getOrDefault("vision", true);
-        this.webEnabled = flags.getOrDefault("web", false);
-        this.odometryEnabled = flags.getOrDefault("odometry", false);
+        this.visionEnabled = Boolean.TRUE.equals(flags.getOrDefault("vision", true));
+        this.webEnabled = Boolean.TRUE.equals(flags.getOrDefault("web", false));
+        this.odometryEnabled = Boolean.TRUE.equals(flags.getOrDefault("odometry", false));
         Robot.gamepad1 = new GamepadWrapper(gamepad1);
         Robot.gamepad2 = new GamepadWrapper(gamepad2);
         init();
