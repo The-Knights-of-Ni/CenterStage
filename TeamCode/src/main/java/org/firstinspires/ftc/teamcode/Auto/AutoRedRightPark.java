@@ -14,6 +14,7 @@ public class AutoRedRightPark extends Auto {
         //robot.vision.stop();
         waitForStart();
         timer.reset();
+        robot.drive.moveVector(new Vector(0 * mmPerInch, 4 * mmPerInch));
         robot.drive.moveVector(new Vector(50 * mmPerInch, 0));
     }
 }
