@@ -77,9 +77,9 @@ public class Robot {
         }
         this.timer = timer;
         this.allianceColor = allianceColor;
-        this.visionEnabled = Boolean.TRUE.equals(flags.getOrDefault("vision", true));
-        this.webEnabled = Boolean.TRUE.equals(flags.getOrDefault("web", false));
-        this.odometryEnabled = Boolean.TRUE.equals(flags.getOrDefault("odometry", false));
+        this.visionEnabled = flags.getOrDefault("vision", true);
+        this.webEnabled = flags.getOrDefault("web", false);
+        this.odometryEnabled = flags.getOrDefault("odometry", false);
         Robot.gamepad1 = new GamepadWrapper(gamepad1);
         Robot.gamepad2 = new GamepadWrapper(gamepad2);
         init();
@@ -110,7 +110,6 @@ public class Robot {
         motorInit();
         servoInit();
         odometryInit();
-        imuInit();
         logger.info("motor init finished");
         logger.info("imu init finished");
         subsystemInit();
@@ -145,14 +144,10 @@ public class Robot {
         telemetryBroadcast("Status", " IMU calibrating...");
         // make sure the imu gyro is calibrated before continuing.
         while (!imu.isGyroCalibrated()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Thread.onSpinWait();
-            } else {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -187,7 +182,7 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
-        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotorRight, intakeMotor, slideMotorLeft);
+        control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotorRight, slideMotorLeft, intakeMotor, slideMotorLeft);
         logger.info("Control subsystem init finished");
 
         if (visionEnabled) {

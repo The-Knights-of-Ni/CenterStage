@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import android.os.Build;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.GamepadWrapper;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control.CraneState;
 import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
@@ -132,6 +129,11 @@ public class Teleop extends LinearOpMode {
                     robot.control.setLinearSlideMotorPower(slidePowerVel);
                 } else {
                     robot.control.setLinearSlideMotorPower(0);
+                    robot.control.setCraneMotorPower(0);
+                }
+                cranePowerVel = robot.gamepad1.triggerLeft - robot.gamepad1.triggerRight;
+                if (abs(cranePowerVel) >= 0.15) {
+                    robot.control.setCraneMotorPower(cranePowerVel);
                 }
 
                 // April Tag Correction
@@ -193,15 +195,7 @@ public class Teleop extends LinearOpMode {
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Thread.onSpinWait();
-            } else {
-                try {
-                    Thread.sleep(10); // This is currently used until the robot sdk is 33+
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            Thread.sleep(10); // Ten milli sleep so that the CPU doesn't die (this also means 10 ms baseline lag)
         }
     }
 }
