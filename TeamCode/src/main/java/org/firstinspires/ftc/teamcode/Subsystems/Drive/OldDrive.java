@@ -57,7 +57,7 @@ public class OldDrive extends Subsystem {
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
     public final DcMotorEx[] odometry;
-    private final boolean debug = false;
+    private final boolean debug = true;
     private final ElapsedTime timer;
     // State variables for robot position
     private final double robotX;
