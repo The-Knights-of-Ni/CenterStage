@@ -58,11 +58,19 @@ public class MasterLogger {
     }
 
     public void info(String message) {
+        if (telemetry != null) {
+            telemetry.addData(tag, message);
+            telemetry.update();
+        }
         Log.i(tag, message);
         WebLog.info(tag, message);
     }
 
     public void info(String message, Object o) {
+        if (telemetry != null) {
+            telemetry.addData(tag, message, o);
+            telemetry.update();
+        }
         if (o.getClass().isInstance(Throwable.class)) {
             Log.i(tag, message, (Throwable) o);
         } else {
