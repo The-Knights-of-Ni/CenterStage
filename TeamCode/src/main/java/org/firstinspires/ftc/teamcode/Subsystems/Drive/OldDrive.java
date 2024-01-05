@@ -205,10 +205,10 @@ public class OldDrive extends Subsystem {
             currentTime = timer.nanoseconds() - startTime;
 
             // Run a cycle for each
-            fl.cycle(false);
-            fr.cycle(false);
-            rl.cycle(false);
-            rr.cycle(false);
+            fl.cycle();
+            fr.cycle();
+            rl.cycle();
+            rr.cycle();
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
@@ -301,9 +301,7 @@ public class OldDrive extends Subsystem {
             prevCount = currentCount;
         }
 
-        public void cycle(boolean fRbypass) {
-            if (!fRbypass)
-                updateCurrentCount(); // House of cards moment
+        public void cycle() {
             setPower();
             checkMotorDone();
             updateIsNotMoving();
