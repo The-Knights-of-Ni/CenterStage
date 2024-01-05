@@ -203,12 +203,10 @@ public class OldDrive extends Subsystem {
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
-            // if only this got fixed ... then I could simplify the code even more
-            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why
 
             // Run a cycle for each
             fl.cycle(false);
-            fr.cycle(true);
+            fr.cycle(false);
             rl.cycle(false);
             rr.cycle(false);
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
