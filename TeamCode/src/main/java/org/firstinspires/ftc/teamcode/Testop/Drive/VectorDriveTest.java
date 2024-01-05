@@ -21,7 +21,7 @@ public class VectorDriveTest extends Auto {
         initAuto(AllianceColor.RED);
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(12 * mmPerInch, 12 * mmPerInch));
+        robot.drive.moveVector(new Vector(24 * mmPerInch, 24 * mmPerInch));
         sleep(2000);
     }
 }

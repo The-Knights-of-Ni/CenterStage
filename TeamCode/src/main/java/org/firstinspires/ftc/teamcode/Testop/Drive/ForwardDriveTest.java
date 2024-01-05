@@ -21,7 +21,7 @@ public class ForwardDriveTest extends Auto {
         initAuto(AllianceColor.RED);
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(0 * mmPerInch, 12 * mmPerInch));
+        robot.drive.moveVector(new Vector(0 * mmPerInch, 24 * mmPerInch));
         sleep(2000);
     }
 }
