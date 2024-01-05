@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-@Autonomous(name = "Swerve Test", group = "Concept")
+@Autonomous(name = "Curved Strafe Test", group = "Concept")
 public class CurvedStrafeDriveTest extends Auto {
     /**
      * Override of runOpMode()
