@@ -760,7 +760,18 @@ public class MosaicScoreFinder {
 
         }
 
-
+        //bottomleft is the only one part of a mosaic
+        else if(!left.partofMosaic && bottomleft.partofMosaic && !bottomright.partofMosaic && !right.partofMosaic)
+        {
+            if((left.color == PixelColor.Empty || left.color == PixelColor.WHITE) && bottomright.color == PixelColor.WHITE && (right.color == PixelColor.Empty || right.color == PixelColor.WHITE))
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 1;
+                else return 0;
+            }
+            else
+                return 0;
+        }
 
         //all are white or empty
         else if ((left.color == PixelColor.Empty|| left.color == PixelColor.WHITE) &&
