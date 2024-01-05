@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-@Autonomous(name = "Forward Test", group = "Concept")
+@Autonomous(name = "Two Command Drive Test", group = "Concept")
 public class TwoCommandDriveTest extends Auto {
     /**
      * Override of runOpMode()
