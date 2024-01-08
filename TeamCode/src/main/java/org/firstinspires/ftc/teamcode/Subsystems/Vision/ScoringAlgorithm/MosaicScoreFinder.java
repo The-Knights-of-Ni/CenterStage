@@ -763,14 +763,77 @@ public class MosaicScoreFinder {
         //bottomleft is the only one part of a mosaic
         else if(!left.partofMosaic && bottomleft.partofMosaic && !bottomright.partofMosaic && !right.partofMosaic)
         {
-            if((left.color == PixelColor.Empty || left.color == PixelColor.WHITE) && bottomright.color == PixelColor.WHITE && (right.color == PixelColor.Empty || right.color == PixelColor.WHITE))
+            if((left.color == PixelColor.Empty || left.color == PixelColor.WHITE) && (right.color == PixelColor.Empty || right.color == PixelColor.WHITE))
             {
                 if(givenpixel.color != PixelColor.WHITE)
                     return 1;
                 else return 0;
             }
-            else
-                return 0;
+            else if((right.color == PixelColor.Empty || right.color == PixelColor.WHITE))
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 2;
+                else return -2;
+            }
+            else {
+                if(bottomright.color != PixelColor.WHITE)
+                {
+                    if(bottomright.color == right.color)
+                    {
+                        if(givenpixel.color == right.color)
+                            return 3;
+                        else return -3;
+                    }
+                    else{
+                        if(givenpixel.color != PixelColor.WHITE && givenpixel.color != right.color && givenpixel.color != bottomright.color)
+                            return 3;
+                        else return -3;
+                    }
+                }
+                else{
+                    if(givenpixel.color != PixelColor.WHITE)
+                        return 2;
+                    else return -2;
+                }
+            }
+        }
+
+        //bottomright is the only one part of a mosaic
+        else if(!left.partofMosaic && !bottomleft.partofMosaic && bottomright.partofMosaic && !right.partofMosaic)
+        {
+            if((left.color == PixelColor.Empty || left.color == PixelColor.WHITE) && (right.color == PixelColor.Empty || right.color == PixelColor.WHITE))
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 1;
+                else return 0;
+            }
+            else if((left.color == PixelColor.Empty || left.color == PixelColor.WHITE))
+            {
+                if(givenpixel.color != PixelColor.WHITE)
+                    return 2;
+                else return -2;
+            }
+            else {
+                if(bottomleft.color != PixelColor.WHITE)
+                {
+                    if(bottomleft.color == left.color)
+                    {
+                        if(givenpixel.color == left.color)
+                            return 3;
+                        else return -3;
+                    }
+                    else{
+                        if(givenpixel.color != PixelColor.WHITE && givenpixel.color != left.color && givenpixel.color != bottomleft.color)
+                            return 3;
+                        else return -3;
+                    }
+                }
+                else{
+                    if(givenpixel.color != PixelColor.WHITE)
+                        return 2;
+                    else return -2;
+                }
+            }
         }
 
         //all are white or empty
