@@ -368,7 +368,6 @@ public class MosaicScoreFinder {
             return -1000;
     }
 
-    //TODO finish Case 5
     //if pixel is surrounded by 4
     public int scoreFinder_Case5(Pixel givenpixel, Pixel left, Pixel bottomleft, Pixel bottomright, Pixel right) {
         //all are part of mosaics
@@ -956,6 +955,103 @@ public class MosaicScoreFinder {
                 return 2;
             else return -2;
         }
+
+        //bottomleft is the only one white
+        else if ((left.color != PixelColor.Empty && left.color != PixelColor.WHITE) &&
+                (right.color != PixelColor.Empty  && right.color != PixelColor.WHITE) &&
+                bottomleft.color == PixelColor.WHITE && bottomright.color != PixelColor.WHITE)
+        {
+            if(right.color == bottomright.color)
+            {
+                if(givenpixel.color == right.color)
+                    return 3;
+                else return -3;
+            }
+            else{
+                if(givenpixel.color != PixelColor.WHITE && givenpixel.color != right.color && givenpixel.color != bottomright.color)
+                    return 3;
+                else return -3;
+            }
+        }
+        //bottomright is the only one white
+        else if ((left.color != PixelColor.Empty && left.color != PixelColor.WHITE) &&
+                (right.color != PixelColor.Empty  && right.color != PixelColor.WHITE) &&
+                bottomleft.color != PixelColor.WHITE && bottomright.color == PixelColor.WHITE)
+        {
+            if(left.color == bottomleft.color)
+            {
+                if(givenpixel.color == left.color)
+                    return 3;
+                else return -3;
+            }
+            else{
+                if(givenpixel.color != PixelColor.WHITE && givenpixel.color != left.color && givenpixel.color != bottomleft.color)
+                    return 3;
+                else return -3;
+            }
+        }
+        //left is the only one white or empty
+        else if ((left.color == PixelColor.Empty || left.color == PixelColor.WHITE) &&
+                (right.color != PixelColor.Empty  && right.color != PixelColor.WHITE) &&
+                bottomleft.color != PixelColor.WHITE && bottomright.color != PixelColor.WHITE){
+            if(bottomright.color == bottomleft.color)
+            {
+                if(bottomright.color == givenpixel.color)
+                    return 3;
+                else if(bottomright.color == right.color)
+                    return -3;
+                else{
+                    if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                        return 3;
+                    else return -3;
+                }
+            }
+            else
+            {
+                if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != bottomleft.color)
+                    return 3;
+                else if(bottomright.color == right.color)
+                    return -3;
+                else {
+                    if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != right.color)
+                        return 3;
+                    else return -3;
+                }
+
+            }
+        }
+        //right is the only one white or empty
+        else if ((left.color != PixelColor.Empty && left.color != PixelColor.WHITE) &&
+                (right.color == PixelColor.Empty  || right.color == PixelColor.WHITE) &&
+                bottomleft.color != PixelColor.WHITE && bottomright.color != PixelColor.WHITE){
+            if(bottomright.color == bottomleft.color)
+            {
+                if(bottomright.color == givenpixel.color)
+                    return 3;
+                else if(bottomleft.color == left.color)
+                    return -3;
+                else{
+                    if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != left.color)
+                        return 3;
+                    else return -3;
+                }
+            }
+            else
+            {
+                if(givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomright.color && givenpixel.color != bottomleft.color)
+                    return 3;
+                else if(bottomleft.color == left.color)
+                    return -3;
+                else {
+                    if (givenpixel.color != PixelColor.WHITE && givenpixel.color != bottomleft.color && givenpixel.color != left.color)
+                        return 3;
+                    else return -3;
+                }
+
+            }
+        }
+
+
 
         //all are colored
         else if ((left.color != PixelColor.Empty && left.color != PixelColor.WHITE) &&
