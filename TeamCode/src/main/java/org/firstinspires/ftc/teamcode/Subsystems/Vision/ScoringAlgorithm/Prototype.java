@@ -319,7 +319,9 @@ public class Prototype extends Subsystem {
                 countshort++;
             }
         }
+        //setting up bestPixel
         Pixel bestPixel = new Pixel();
+        bestPixel.mosaicPotential = -1000;
 
         //finds best Pixel
         countshort=0;
@@ -332,9 +334,7 @@ public class Prototype extends Subsystem {
                 {
                     if(backdrop.shortRows[countshort][j].available)
                     {
-                        if(countshort == 0 && j == 0)
-                            bestPixel = backdrop.shortRows[countshort][j];
-                        else if((backdrop.shortRows[countshort][j].mosaicPotential*2) +
+                        if((backdrop.shortRows[countshort][j].mosaicPotential*2) +
                                 (backdrop.shortRows[countshort][j].heightPotential*5) >
                                 (bestPixel.mosaicPotential*2) + bestPixel.heightPotential*5)
                             bestPixel = backdrop.shortRows[countshort][j];
