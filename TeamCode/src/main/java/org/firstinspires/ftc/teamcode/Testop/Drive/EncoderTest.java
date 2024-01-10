@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Testop.Drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
@@ -22,7 +23,7 @@ public class EncoderTest extends Auto {
         waitForStart();
         timer.reset();
         while (true) {
-            telemetry.addData("Motor Encoder", "Positions: ", robot.drive.frontLeft.getCurrentPosition(), robot.drive.frontRight.getCurrentPosition(), robot.drive.rearLeft.getCurrentPosition(), robot.drive.rearRight.getCurrentPosition());
+            telemetry.addData("Motor Encoder", "Positions: %d %d %d %d", robot.drive.frontLeft.getCurrentPosition(), robot.drive.frontRight.getCurrentPosition(), robot.drive.rearLeft.getCurrentPosition(), robot.drive.rearRight.getCurrentPosition());
             telemetry.update();
             sleep(10);
         }
