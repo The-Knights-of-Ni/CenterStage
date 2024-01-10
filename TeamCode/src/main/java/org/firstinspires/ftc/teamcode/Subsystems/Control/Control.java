@@ -71,7 +71,6 @@ public class Control extends Subsystem {
 
     public void setLinearSlideMotorPower(double power) {
         slideMotor.setPower(power);
-        craneMotor.setPower(power);
     }
     public void setCraneMotorPower(double power) {
         craneMotor.setPower(power);
