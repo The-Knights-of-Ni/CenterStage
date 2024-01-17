@@ -58,6 +58,7 @@ public class Vision extends Subsystem {
         this.aprilTagDetectionThread.start();
         // Telemetry
         logger.info("Vision init complete");
+        initDetectionPipeline();
     }
 
     public void stopAprilTagDetection() throws InterruptedException {
