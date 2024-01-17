@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.Geometry;
 
-import org.firstinspires.ftc.teamcode.Util.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class Circle {
 //    public Vector center;
 //    public double radius;

@@ -142,7 +142,7 @@ public class Control extends Subsystem {
     public enum CraneState { //TODO: Calibrate crane constants
         UP(0),
         DOWN(0);
-        public double tickCount;
+        public final double tickCount;
 
         CraneState(double tickCount) {
             this.tickCount = tickCount;
@@ -152,7 +152,7 @@ public class Control extends Subsystem {
     public enum SlidePosition { //TODO: Calibrate Slide Constants
         UP(1),
         DOWN(0);
-        public int pos;
+        public final int pos;
 
         SlidePosition(int pos) {
             this.pos = pos;

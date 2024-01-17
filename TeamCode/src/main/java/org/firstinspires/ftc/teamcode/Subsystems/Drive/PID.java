@@ -10,15 +10,21 @@ public class PID {
     protected double integralSum = 0;
     protected double derivative = 0;
     protected double previousDerivative = 0;
-    private double derivativeInverseFilterStrength = 0.7;
+    public static final double derivativeInverseFilterStrength = 0.7; // TODO: Should be configurable
     private final double Kp;
     private final double Ki;
     private final double Kd;
+    private final boolean low_pass;
 
-    public PID(double Kp, double Ki, double Kd) {
+    public PID(double Kp, double Ki, double Kd, boolean low_pass) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
+        this.low_pass = low_pass;
+    }
+
+    public PID(double Kp, double Ki, double Kd) {
+        this(Kp, Ki, Kd, true);
     }
 
     public PID(PIDCoefficients coefficients) {
@@ -69,7 +75,9 @@ public class PID {
     protected double calculateDerivative(double error, double dt) {
         previousDerivative = derivative;
         derivative = (error - previousError) / dt;
-        derivative = derivativeInverseFilterStrength * previousDerivative + derivative * (1 - derivativeInverseFilterStrength);
+        if (low_pass) {
+            derivative = PID.derivativeInverseFilterStrength * previousDerivative + derivative * (1 - PID.derivativeInverseFilterStrength);
+        }
         return derivative;
     }
 

@@ -24,7 +24,6 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
     /**
      * Class instantiation
      *
-     * @see Robot
      * @see Telemetry
      * @see AllianceColor
      */
