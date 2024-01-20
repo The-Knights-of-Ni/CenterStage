@@ -55,6 +55,9 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     @Override
     public Mat processFrame(Mat input) {
+        if(input == null) {
+            return input;
+        }
         Mat mask = new Mat();
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
