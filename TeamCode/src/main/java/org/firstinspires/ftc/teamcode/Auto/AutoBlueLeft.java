@@ -15,26 +15,28 @@ public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.LEFT; //Delete this line and uncomment the previous one once vision is working
         robot.vision.stop();
         waitForStart();
         controlThread.start();
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                //turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.move(new Pose(0, 30 * mmPerInch, -90));
-                //confirms position is reached
+                // turns the robot left 90 degrees after moving the robot 30 in forward
+                robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
+                robot.drive.moveAngle(90);
+                // confirms position is reached
                 controlThread.reachedPosition = true;
-                //moving the robot 30 inches forward
+                // moving the robot 30 inches forward
                 robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
                 break;
             case MIDDLE:
-                //moving the robot 12 inches right
+                // moving the robot 12 inches right
                 robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
-                //confirms position is reached
+                // confirms position is reached
                 controlThread.reachedPosition = true;
-                //turn the robot left 90 degrees after moving it 42 inches left
+                // turn the robot left 90 degrees after moving it 42 inches left
                 robot.drive.move(new Pose(-42, 0, -90));
                 break;
             case RIGHT:
