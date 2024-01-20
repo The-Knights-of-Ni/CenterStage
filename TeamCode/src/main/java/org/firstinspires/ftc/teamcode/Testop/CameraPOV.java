@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testop;
 
+import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -33,19 +34,25 @@ public class CameraPOV extends LinearOpMode {
                     public void onOpened() {
                         telemetry.addLine("Streaming");
                         camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                        telemetry.update();
+                        Log.i("Camera", "Streaming");
                     }
 
                     @Override
                     public void onError(int errorCode) {
-                        telemetry.addLine("Error Streaming, aborting");
+                        telemetry.addData("Error Streaming, aborting. Error:", errorCode);
                         telemetry.update();
+                        Log.i("Camera", "Streaming");
                     }
                 });
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initCamera();
         waitForStart();
+        initCamera();
+        while(opModeIsActive()) {
+            Thread.sleep(10);
+        }
     }
 }
