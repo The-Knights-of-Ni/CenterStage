@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -17,6 +19,11 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @TeleOp(name = "NewCameraPOV", group = "Concept")
 public class NewCameraPOV extends LinearOpMode {
     OpenCvWebcam webcam;
+
+    public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
+    public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
+
+    MarkerDetectionPipeline pipeline = new MarkerDetectionPipeline(AllianceColor.RED, CAMERA_HEIGHT, CAMERA_WIDTH);
 
     @Override
     public void runOpMode() {
@@ -41,7 +48,7 @@ public class NewCameraPOV extends LinearOpMode {
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new SamplePipeline());
+        webcam.setPipeline(pipeline);
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -72,7 +79,7 @@ public class NewCameraPOV extends LinearOpMode {
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -101,6 +108,7 @@ public class NewCameraPOV extends LinearOpMode {
             telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
             telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
             telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
+            telemetry.addData("Camera Size", "j");
             telemetry.update();
 
             /*
@@ -129,7 +137,7 @@ public class NewCameraPOV extends LinearOpMode {
                  * the above "important note".
                  */
                 webcam.stopStreaming();
-                //webcam.closeCameraDevice();
+                webcam.closeCameraDevice();
             }
 
             /*
