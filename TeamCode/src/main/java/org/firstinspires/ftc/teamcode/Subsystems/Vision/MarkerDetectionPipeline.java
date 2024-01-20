@@ -108,10 +108,13 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             Imgproc.approxPolyDP(tempContours, contoursPoly[i], 3, true);
             boundRect[i] = Imgproc.boundingRect(rectContours);
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
-            contours.get(i).release();
-            contoursPoly[i].release();
             tempContours.release();
             rectContours.release();
+        }
+
+        for (int i = 0; i < contours.size(); i++) {
+            contours.get(i).release();
+            contoursPoly[i].release();
         }
 
         double left_x = 0.375 * CAMERA_WIDTH;
