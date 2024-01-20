@@ -109,6 +109,7 @@ public class NewCameraPOV extends LinearOpMode {
             telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
             telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
             telemetry.addData("Camera Size", "j");
+            telemetry.addData("Marker Pos", pipeline.getMarkerLocation());
             telemetry.update();
 
             /*
