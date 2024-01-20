@@ -85,6 +85,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Mat thresh = new Mat();
 
         Core.inRange(crop, lowHSV, highHSV, thresh);
+        crop.release();
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
@@ -137,7 +138,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         if (middle) markerLocation = MarkerLocation.MIDDLE;
         if (right) markerLocation = MarkerLocation.RIGHT;
 
-        return crop;
+        return input;
     }
 
     /**
