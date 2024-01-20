@@ -33,11 +33,12 @@ public class CameraPOV extends LinearOpMode {
                     public void onOpened() {
                         telemetry.addLine("Streaming");
                         camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                        telemetry.update();
                     }
 
                     @Override
                     public void onError(int errorCode) {
-                        telemetry.addLine("Error Streaming, aborting");
+                        telemetry.addData("Error Streaming, aborting. Error:", errorCode);
                         telemetry.update();
                     }
                 });
@@ -45,7 +46,10 @@ public class CameraPOV extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initCamera();
         waitForStart();
+        initCamera();
+        while(opModeIsActive()) {
+            Thread.sleep(10);
+        }
     }
 }
