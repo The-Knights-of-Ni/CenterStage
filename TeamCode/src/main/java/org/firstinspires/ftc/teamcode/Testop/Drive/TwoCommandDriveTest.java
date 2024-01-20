@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-@Autonomous(name = "Forward Test", group = "Concept")
-public class ForwardDriveTest extends Auto {
+@Autonomous(name = "Two Command Drive Test", group = "Concept")
+public class TwoCommandDriveTest extends Auto {
     /**
      * Override of runOpMode()
      *
@@ -22,6 +22,7 @@ public class ForwardDriveTest extends Auto {
         waitForStart();
         timer.reset();
         robot.drive.moveVector(new Vector(0 * mmPerInch, 24 * mmPerInch));
+        robot.drive.moveVector(new Vector(24 * mmPerInch, 0 * mmPerInch));
         sleep(2000);
     }
 }

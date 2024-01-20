@@ -26,7 +26,7 @@ public class DualNum<Param> {
                 array[i] = 0.0;
             }
         }
-        return new DualNum<Param>(array);
+        return new DualNum<>(array);
     }
 
     public DualNum<Param> variable(double x0, int n) {

@@ -56,7 +56,7 @@ public class OldDrive extends Subsystem {
     public final DcMotorEx rearLeft;
     public final DcMotorEx rearRight;
     public final DcMotorEx[] odometry;
-    private final boolean debug = false;
+    private final boolean debug = true;
     private final ElapsedTime timer;
     // State variables for robot position
     private final double robotX;
@@ -182,6 +182,8 @@ public class OldDrive extends Subsystem {
         stop();
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
         // Timeout control (stop loop if motor stalls)
         long currentTime; // current time in nanoseconds
@@ -200,14 +202,12 @@ public class OldDrive extends Subsystem {
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
-            // if only this got fixed ... then I could simplify the code even more
-            fr.currentCount = (int) (fr.motor.getCurrentPosition() / 0.7); // FR is always off, not sure why
 
             // Run a cycle for each
-            fl.cycle(false);
-            fr.cycle(true);
-            rl.cycle(false);
-            rr.cycle(false);
+            fl.cycle();
+            fr.cycle();
+            rl.cycle();
+            rr.cycle();
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
@@ -300,9 +300,7 @@ public class OldDrive extends Subsystem {
             prevCount = currentCount;
         }
 
-        public void cycle(boolean fRbypass) {
-            if (!fRbypass)
-                updateCurrentCount(); // House of cards moment
+        public void cycle() {
             setPower();
             checkMotorDone();
             updateIsNotMoving();

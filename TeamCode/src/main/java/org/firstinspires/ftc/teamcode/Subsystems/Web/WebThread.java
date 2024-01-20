@@ -213,7 +213,7 @@ public class WebThread extends Thread {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
-                System.out.println("Unhandled Error on WebThread, hard exit: " + e.getMessage());
+                System.out.println("Unhandled Error on WebThread, connection terminated without response: " + e.getMessage());
             }
         }
     }

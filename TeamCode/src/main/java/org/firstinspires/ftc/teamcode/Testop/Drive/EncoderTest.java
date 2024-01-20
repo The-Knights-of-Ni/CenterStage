@@ -3,10 +3,9 @@ package org.firstinspires.ftc.teamcode.Testop.Drive;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
-import org.firstinspires.ftc.teamcode.Util.Vector;
 
-@Autonomous(name = "Forward Test", group = "Concept")
-public class ForwardDriveTest extends Auto {
+@Autonomous(name = "Encoder Test", group = "Concept")
+public class EncoderTest extends Auto {
     /**
      * Override of runOpMode()
      *
@@ -18,10 +17,12 @@ public class ForwardDriveTest extends Auto {
     @Override
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE);
         waitForStart();
         timer.reset();
-        robot.drive.moveVector(new Vector(0 * mmPerInch, 24 * mmPerInch));
-        sleep(2000);
+        while (opModeIsActive()) {
+            telemetry.addData("Motor Encoder", "Positions: %d %d %d %d", robot.drive.frontLeft.getCurrentPosition(), robot.drive.frontRight.getCurrentPosition(), robot.drive.rearLeft.getCurrentPosition(), robot.drive.rearRight.getCurrentPosition());
+            telemetry.update();
+        }
     }
 }
