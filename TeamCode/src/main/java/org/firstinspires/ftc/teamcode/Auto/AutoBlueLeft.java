@@ -15,7 +15,8 @@ public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.LEFT; //Delete this line and uncomment the previous one once vision is working
         robot.vision.stop();
         waitForStart();
         controlThread.start();
