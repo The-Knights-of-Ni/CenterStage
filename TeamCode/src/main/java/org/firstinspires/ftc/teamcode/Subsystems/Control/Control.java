@@ -117,11 +117,11 @@ public class Control extends Subsystem {
     }
 
     public void openClawSync() {
-        clawOpenClose.setPosition(1);
+        clawOpenClose.setPosition(0);
     }
 
     public void closeClawSync() {
-        clawOpenClose.setPosition(0);
+        clawOpenClose.setPosition(1);
     }
 
     public void moveCrane(CraneState craneState) {
@@ -151,8 +151,8 @@ public class Control extends Subsystem {
     }
 
     public enum SlidePosition { //TODO: Calibrate Slide Constants
-        UP(1),
-        DOWN(0);
+        UP(2624),
+        DOWN(-94);
         public final int pos;
 
         SlidePosition(int pos) {

@@ -14,8 +14,7 @@ public class AutoBlueRight extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.BLUE);
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        robot.vision.stop();
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE;
         waitForStart();
         controlThread.start();
         timer.reset();
@@ -30,14 +29,13 @@ public class AutoBlueRight extends Auto {
                 robot.drive.moveVector(new Vector(0, 78 * mmPerInch));
                 break;
             case MIDDLE:
-                //moves the robot 12 inches right
-                robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
-                //confirms position reached
+                // moving the robot 12 inches right
+                robot.drive.moveVector(new Vector(0, 30* mmPerInch));
+                // confirms position is reached
                 controlThread.reachedPosition = true;
-                //moves the robot 112 inches left
-                // and turn the robot 90 degrees left
-                robot.drive.moveVector(new Vector(-112, 0), -90);
-                break;
+                // turn the robot left 90 degrees after moving it 42 inches left
+                robot.drive.move(new Pose(-78 * mmPerInch, 0, 89));
+                robot.drive.move(new Pose(-12 * mmPerInch, 0, 0));
             case RIGHT:
                 //moves the robot 12 inches right
                 //and turns the robot 90 degrees right

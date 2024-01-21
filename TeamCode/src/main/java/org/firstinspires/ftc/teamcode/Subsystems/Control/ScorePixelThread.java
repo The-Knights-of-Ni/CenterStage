@@ -14,6 +14,11 @@ public class ScorePixelThread extends Thread {
         control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
         control.extendShoulder();
         control.openClawSync();
+        try {
+            sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         control.closeClawSync();
         control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
     }
