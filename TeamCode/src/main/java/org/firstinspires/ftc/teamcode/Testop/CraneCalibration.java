@@ -21,7 +21,7 @@ public class CraneCalibration extends Auto {
         waitForStart();
         timer.reset();
         while (opModeIsActive()) {
-            telemetry.addData("Motor Encoder", "Crane Position: %d", robot.craneMotor.getCurrentPosition());
+            telemetry.addData("Motor Encoder", "Crane Position: %d", robot.slideMotorRight.getCurrentPosition());
             telemetry.update();
         }
     }
