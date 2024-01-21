@@ -301,6 +301,7 @@ public class OldDrive extends Subsystem {
         }
 
         public void cycle() {
+            updateCurrentCount();
             setPower();
             checkMotorDone();
             updateIsNotMoving();
