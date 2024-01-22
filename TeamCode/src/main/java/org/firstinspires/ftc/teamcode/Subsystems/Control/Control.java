@@ -125,10 +125,24 @@ public class Control extends Subsystem {
 
     public void openClawSync() {
         clawOpenClose.setPosition(0);
+        while (Math.abs(clawOpenClose.getPosition() - 0) > 0.05) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void closeClawSync() {
         clawOpenClose.setPosition(1);
+        while (Math.abs(clawOpenClose.getPosition() - 1) > 0.05) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void moveCrane(CraneState craneState) {
