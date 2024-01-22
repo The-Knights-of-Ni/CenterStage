@@ -26,12 +26,10 @@ public class ArmMovementThread extends Thread {
             control.openClawSync();
             control.closeClawSync();
             control.moveLinearSlideSync(Control.RETRACTED_SLIDE);
-            extended.unlock();
 
             while (!reachedPosition) {
                 Thread.sleep(100);
             }
-            extended.tryLock(500, TimeUnit.MILLISECONDS);
             control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
             control.openClawSync();
             Thread.sleep(200);
