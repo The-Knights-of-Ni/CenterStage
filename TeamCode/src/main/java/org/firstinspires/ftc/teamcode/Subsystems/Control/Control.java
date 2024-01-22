@@ -171,7 +171,7 @@ public class Control extends Subsystem {
         }
     }
 
-    public enum SlidePosition { //TODO: Calibrate Slide Constants
+    public enum SlidePosition {
         UP(2624),
         DOWN(-94);
         public final int pos;
