@@ -65,6 +65,7 @@ public class Control extends Subsystem {
 
     public void moveLinearSlide(SlidePosition pos) {
         slideMotor.setTargetPosition(pos.pos);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
