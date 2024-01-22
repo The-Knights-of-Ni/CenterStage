@@ -67,7 +67,14 @@ public class Control extends Subsystem {
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
-        slideMotor.setTargetPosition(pos.pos);
+        moveLinearSlide(pos);
+        while (Math.abs(slideMotor.getCurrentPosition() - pos.pos) > 25) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void setLinearSlideMotorPower(double power) {
