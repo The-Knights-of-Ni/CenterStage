@@ -45,7 +45,6 @@ public class AutoBlueLeft extends Auto {
                 robot.drive.move(new Pose(0, -60 * mmPerInch, -180));
                 break;
         }
-        new ScorePixelThread(robot.control).start();
         telemetry.addLine("passed switch statement");
     }
 }

@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.GamepadWrapper;
-import org.firstinspires.ftc.teamcode.Subsystems.Control.ScorePixelThread;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -77,12 +76,6 @@ public class Teleop extends LinearOpMode {
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
-
-                // Close claw and score ...
-                // TODO: Fix this
-                if (robot.gamepad1.aButton.isPressed()) {
-                    new ScorePixelThread(robot.control).start();
-                }
 
                 // Paper Drone
 
