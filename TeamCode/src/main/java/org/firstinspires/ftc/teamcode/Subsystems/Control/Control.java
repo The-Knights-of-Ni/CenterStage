@@ -54,6 +54,7 @@ public class Control extends Subsystem {
         //launch plane
         airplaneLauncher.setPosition(1.0);
     }
+
     public void setAirplaneAngle() {
         airplaneLaunchAngle.setPosition(0.870);
     }
