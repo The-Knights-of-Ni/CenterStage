@@ -17,7 +17,7 @@ public class ArmMovementThread extends Thread {
 
     public void run() {
         try {
-            extended.tryLock(500, TimeUnit.MILLISECONDS);
+            extended.tryLock(30, TimeUnit.SECONDS);
             control.moveLinearSlideSync(Control.SCORE_LOW_SLIDE);
             while (!reachedPosition) {
                 Thread.sleep(100);
