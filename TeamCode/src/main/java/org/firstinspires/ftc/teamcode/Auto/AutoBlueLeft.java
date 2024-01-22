@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -15,7 +16,7 @@ public class AutoBlueLeft extends Auto {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
         //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE; //Delete this line and uncomment the previous one once vision is working
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.NOT_FOUND; //Delete this line and uncomment the previous one once vision is working
         waitForStart();
         timer.reset();
         switch (markerPosition) {
@@ -42,7 +43,13 @@ public class AutoBlueLeft extends Auto {
                 //turns the robot right 180 degrees after moving the robot 60 inches backward
                 robot.drive.move(new Pose(0, -60 * mmPerInch, -180));
                 break;
+            default:
+                break;
         }
         telemetry.addLine("passed switch statement");
+        telemetry.update();
+        robot.control.openClawSync();
+        robot.control.moveLinearSlideSync(Control.SlidePosition.UP);
+        robot.control.extendShoulder();
     }
 }

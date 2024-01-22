@@ -105,11 +105,11 @@ public class Control extends Subsystem {
     }
 
     public void openClaw() {
-        clawOpenClose.setPosition(1.0);
+        clawOpenClose.setPosition(0);
     }
 
     public void closeClaw() {
-        clawOpenClose.setPosition(0);
+        clawOpenClose.setPosition(1);
     }
 
     public void extendShoulder() {
@@ -173,8 +173,8 @@ public class Control extends Subsystem {
     }
 
     public enum SlidePosition {
-        UP(2624),
-        DOWN(-94);
+        UP(3010),
+        DOWN(0);
         public final int pos;
 
         SlidePosition(int pos) {
