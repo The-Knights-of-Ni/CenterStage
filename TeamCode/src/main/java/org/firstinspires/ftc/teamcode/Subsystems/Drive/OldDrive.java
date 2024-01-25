@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
+import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
@@ -195,10 +196,11 @@ public class OldDrive extends Subsystem {
         int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
 
         // Initialize motor data wrappers
-        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold);
-        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold);
-        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
-        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
+        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold, logger.telemetry, "frontLeft");
+        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold, logger.telemetry, "frontRight");
+        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold, logger.telemetry, "rearLeft");
+        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold, logger.telemetry, "rearRight");
+
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
@@ -265,9 +267,13 @@ public class OldDrive extends Subsystem {
         int currentCount;
         int prevCount;
         int targetCount;
+        double power;
         int timeOutThreshold;
+        MasterLogger motorLogger;
+        private int noMovementTicks;
+        static final int noMovementThreshold = 3;
 
-        public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold) {
+        public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold, Telemetry telemetry, String name) {
             motor = motorEx;
             moveSystem = mS;
             isNotMoving = false;
@@ -275,20 +281,27 @@ public class OldDrive extends Subsystem {
             prevCount = -1;
             targetCount = targetTickCount;
             this.timeOutThreshold = timeOutThreshold;
+            this.motorLogger = new MasterLogger(telemetry, name);
+            this.noMovementTicks = 0;
         }
 
         public void updateCurrentCount() {
             currentCount = motor.getCurrentPosition();
         }
 
+        public void setPower(double motorPower) {
+            power = motorPower;
+            motor.setPower(power);
+        }
+
         public void setPower() {
-            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
+            setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount))
         }
 
         public void halt() {
             isDone = true;
             isNotMoving = true;
-            motor.setPower(0.0);
+            setPower(0.0);
         }
 
         public void updateIsNotMoving() {
@@ -305,6 +318,14 @@ public class OldDrive extends Subsystem {
             setPower();
             checkMotorDone();
             updateIsNotMoving();
+            if (currentCount == prevCount && power > 0.01) {
+                this.noMovementTicks += 1;
+            } else {
+                this.noMovementTicks = 0;
+            }
+            if (this.noMovementTicks > noMovementThreshold) {
+                this.motorLogger.warning("Motor is not moving");
+            }
             updatePrevCount();
         }
 
