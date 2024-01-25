@@ -102,6 +102,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Rect[] boundRect = new Rect[contours.size()];
 
         Log.w("MarkerDetectionPipeline", "1");
+        Log.w("MarkerDetectionPipeline", Integer.valueOf(contours.size()).toString());
         for (int i = 0; i < contours.size(); i++) {
             Log.w("MarkerDetectionPipeline", "1." + Integer.valueOf(i).toString());
             MatOfPoint2f tempContours = new MatOfPoint2f(contours.get(i).toArray());
