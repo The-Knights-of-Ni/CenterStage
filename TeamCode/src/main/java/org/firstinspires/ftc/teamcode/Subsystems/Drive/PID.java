@@ -3,6 +3,15 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import androidx.core.math.MathUtils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/**
+ * <p>A Generic PID controller</p>
+ * <p><b>Features:</b></p>
+ * <ul>
+ *     <li>Toggleable Low Pass Filter</li>
+ *     <li>Integral Windup Prevention</li>
+ *     <li>Integral Power Cap</li>
+ * </ul>
+ */
 public class PID {
     protected boolean hasRun = false;
     protected ElapsedTime timer = new ElapsedTime();
@@ -14,13 +23,13 @@ public class PID {
     private final double Kp;
     private final double Ki;
     private final double Kd;
-    private final boolean low_pass;
+    private final boolean lowPass;
 
-    public PID(double Kp, double Ki, double Kd, boolean low_pass) {
+    public PID(double Kp, double Ki, double Kd, boolean lowPass) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
-        this.low_pass = low_pass;
+        this.lowPass = lowPass;
     }
 
     public PID(double Kp, double Ki, double Kd) {
@@ -42,11 +51,17 @@ public class PID {
         double dt = getDT();
         double error = calculateError(target, measured);
         double derivative = calculateDerivative(error, dt);
+        if (Math.signum(error) != Math.signum(previousError)) {
+            integralSum = 0; // Prevents integral windup
+        }
         integrate(error, dt);
         previousError = error;
 
-        // Cap output at range (-1,1)
-        return MathUtils.clamp(error * Kp + Math.max(integralSum * Ki, 0.25) + derivative * Kd, -1, 1);
+        // Note that integral sum*ki is capped at 0.25 to not break everything.
+        var iTerm = Math.max(integralSum * Ki, 0.25);
+        // TODO: If sign of kp term is not the same as the integral term, then don't use it and log warning.
+        // Cap output at range (-1,1).
+        return MathUtils.clamp(error * Kp + iTerm + derivative * Kd, -1, 1);
     }
 
     /**
@@ -75,7 +90,7 @@ public class PID {
     protected double calculateDerivative(double error, double dt) {
         previousDerivative = derivative;
         derivative = (error - previousError) / dt;
-        if (low_pass) {
+        if (lowPass) {
             derivative = PID.derivativeInverseFilterStrength * previousDerivative + derivative * (1 - PID.derivativeInverseFilterStrength);
         }
         return derivative;
@@ -83,7 +98,7 @@ public class PID {
 
     @Override
     public String toString() {
-        return "PID{" +
+        return "PID {" +
                 "Kp=" + Kp +
                 ", Ki=" + Ki +
                 ", Kd=" + Kd +
@@ -91,6 +106,6 @@ public class PID {
     }
 
     public void reset() {
-        integralSum = 0; // TODO: test
+        integralSum = 0;
     }
 }
