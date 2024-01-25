@@ -27,6 +27,13 @@ public class NewCameraPOV extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        telemetry.addLine("Waiting for start");
+        telemetry.update();
+
+        /*
+         * Wait for the user to press start on the Driver Station
+         */
+        waitForStart();
         /*
          * Instantiate an OpenCvCamera object for the camera we'll be using.
          * In this sample, we're using a webcam. Note that you will need to
@@ -89,14 +96,6 @@ public class NewCameraPOV extends LinearOpMode {
                  */
             }
         });
-
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
-
-        /*
-         * Wait for the user to press start on the Driver Station
-         */
-        waitForStart();
 
         while (opModeIsActive()) {
             /*
@@ -165,7 +164,7 @@ public class NewCameraPOV extends LinearOpMode {
      * if you're doing something weird where you do need it synchronized with your OpMode thread,
      * then you will need to account for that accordingly.
      */
-    class SamplePipeline extends OpenCvPipeline {
+    class NoopPipeline extends OpenCvPipeline {
         boolean viewportPaused;
 
         /*
