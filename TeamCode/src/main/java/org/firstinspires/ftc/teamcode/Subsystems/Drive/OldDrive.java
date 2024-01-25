@@ -19,7 +19,9 @@ import java.util.Locale;
 
 /**
  * Mecanum drivetrain subsystem
+ * @deprecated Use {@link Drive} instead
  */
+@Deprecated
 public class OldDrive extends Subsystem {
     // mm per inch
     public static final double mmPerInch = 25.4;
@@ -178,12 +180,19 @@ public class OldDrive extends Subsystem {
      * @param tickCount How far each motor should go
      */
     public void allMotorControl(int[] tickCount, PID[] moveSystems) {
+        // Is there a bug in this code? If so, use these debugging steps:
+        // 1. Test if the encoders update with EncoderTest.
+        // 2. Check if MotorControlData gets the tick count.
+        // 3. Make sure the PID works, by looking at the logs.
+        // 4. Check if the motors are set to the correct power by adding a temporary debugging log statement.
+
         logger.info("Moving " + Arrays.toString(tickCount));
         WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
         stop();
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
+        // DO NOT USE RUN_USING_ENCODER OR ANYTHING BUT RUN_WITHOUT_ENCODER as your run mode.
+        // This will mess up the PID and might even use the built-in REV PID.
+        // This will not allow the algo to set raw motor powers.
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
@@ -194,14 +203,15 @@ public class OldDrive extends Subsystem {
         boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
         int timeOutPeriod = 100_000_000;
         double timeOutStartedTime = 0.0;
-        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
+        // If the encoder does not change by at least this number of ticks, the motor is considered to be stuck
+        int timeOutThreshold = 3;
 
         // Initialize motor data wrappers
         MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold, logger.telemetry, "frontLeft");
         MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold, logger.telemetry, "frontRight");
         MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold, logger.telemetry, "rearLeft");
         MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold, logger.telemetry, "rearRight");
-
+        // TODO: This should be a motor generic
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;

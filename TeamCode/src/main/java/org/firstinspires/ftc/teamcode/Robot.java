@@ -18,6 +18,11 @@ import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 import java.util.HashMap;
 
+/**
+ * Glue class for all subsystems
+ * <p>All competition OpModes instantiate this class, as well as some Test OpModes.</p>
+ * <p>This will initialize all subsystems, but certain can be disabled with flags ("vision", and "web")</p>
+ */
 public class Robot {
     public static final double length = 18.0;
     public static final double width = 18.0;
@@ -41,8 +46,19 @@ public class Robot {
     public WebThread web;
 
     /**
+     * @param hardwareMap   The hardware map for the robot
+     * @param telemetry     The telemetry object
      * @param timer         The elapsed time
-     * @param allianceColor the alliance color
+     * @param allianceColor the alliance color of the robot, usually set on a per-opmode basis
+     * @param gamepad1      The first gamepad (the robot movement controller)
+     * @param gamepad2      The second gamepad (control for the arms and claws)
+     * @param flags          A hashmap of flags, used to disable certain subsystems
+     * <p><b>Flags:</b></p>
+     * <ul>
+     *    <li><i>vision</i> - toggles vision subsystem, enabled by default</li>
+     *    <li><i>web</i> - toggles web subsystem, disabled by default</li>
+     *    <li><i>odometry</i> - toggles odometry subsystem, disabled by default</li>
+     * </ul>
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime timer,
                  AllianceColor allianceColor, Gamepad gamepad1, Gamepad gamepad2, HashMap<String, Boolean> flags) {
@@ -90,13 +106,13 @@ public class Robot {
     /**
      * Runs all init operations
      */
-    public void init() {
+    protected void init() {
 //        imuInit();
         logger.info("imu init finished");
         subsystemInit();
     }
 
-    private void imuInit() {
+    protected void imuInit() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -121,7 +137,7 @@ public class Robot {
         }
     }
 
-    public void subsystemInit() {
+    protected void subsystemInit() {
         logger.debug("Drive subsystem init started");
         var frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
         var frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");

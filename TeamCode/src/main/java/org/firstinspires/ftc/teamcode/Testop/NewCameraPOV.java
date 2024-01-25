@@ -58,11 +58,7 @@ public class NewCameraPOV extends LinearOpMode {
         webcam.setPipeline(pipeline);
 
         /*
-         * Open the connection to the camera device. New in v1.4.0 is the ability
-         * to open the camera asynchronously, and this is now the recommended way
-         * to do it. The benefits of opening async include faster init time, and
-         * better behavior when pressing stop during init (i.e. less of a chance
-         * of tripping the stuck watchdog)
+         * Open the connection to the camera device asynchronously.
          *
          * If you really want to open synchronously, the old method is still available.
          */
