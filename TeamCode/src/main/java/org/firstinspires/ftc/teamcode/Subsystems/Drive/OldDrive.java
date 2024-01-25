@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Mecanum drivetrain subsystem
@@ -92,7 +93,7 @@ public class OldDrive extends Subsystem {
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount);
+        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Correct for overshoot
     }
 
     /**
@@ -222,9 +223,7 @@ public class OldDrive extends Subsystem {
                 isTimeOutStarted = false;
             }
             if (debug) {
-                logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-                logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower());
+                logger.verbose(Locale.US, "Motor Info: %f;%f/%f %f;%f/%f %f;%f/%f", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
             }
         }
         WebThread.removeAction("drive");
@@ -289,13 +288,21 @@ public class OldDrive extends Subsystem {
             currentCount = motor.getCurrentPosition();
         }
 
+        /**
+         * Sets the power of the motor
+         * Do not use any other method to set the motor power, including {@link DcMotorEx#setPower(double)},
+         * this will mess up the stall detection, as well as other things.
+         *
+         * <p>TODO: Benchmark {@link DcMotorEx#setPower(double)} to see if this is worth it</p>
+         * @param motorPower The power to set the motor to
+         */
         public void setPower(double motorPower) {
             power = motorPower;
             motor.setPower(power);
         }
 
         public void setPower() {
-            setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount))
+            setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
         }
 
         public void halt() {
