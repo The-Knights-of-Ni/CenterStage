@@ -40,7 +40,7 @@ public class Control extends Subsystem {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         craneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         airplaneLauncher.setDirection(Servo.Direction.REVERSE);
@@ -63,8 +63,8 @@ public class Control extends Subsystem {
     }
 
     public void moveLinearSlide(SlidePosition pos) {
-        slideMotor.setTargetPosition(pos.pos);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setTargetPosition(pos.pos);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
@@ -78,12 +78,22 @@ public class Control extends Subsystem {
         }
     }
 
-    public void setLinearSlideMotorPower(double power) {
-        slideMotor.setPower(power);
+    /**
+     * Moves the crane in a safe way by also moving the slide.
+     * The crane and slide are connected, so they must be moved together.
+     */
+    public void setCraneLinearSlideMotorPower(double power) {
+        slideMotor.setPower(power); // TODO: This can go out of sync really quick, maybe use a PID ...
         craneMotor.setPower(power);
     }
+
+    /**
+     * @deprecated this could break stuff
+     * @param power
+     */
+    @Deprecated
     public void setCraneMotorPower(double power) {
-        craneMotor.setPower(power);
+        craneMotor.setPower(power); // Inherently unsafe
     }
 
     public void setClaw(ClawState clawState) {
