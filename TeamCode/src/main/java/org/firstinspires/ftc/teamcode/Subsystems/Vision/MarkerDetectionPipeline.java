@@ -104,19 +104,25 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Log.w("MarkerDetectionPipeline", "1");
         Log.w("MarkerDetectionPipeline", Integer.valueOf(contours.size()).toString());
         for (int i = 0; i < contours.size(); i++) {
-            Log.w("MarkerDetectionPipeline", "1." + Integer.valueOf(i).toString());
+            Log.w("MarkerDetectionPipeline", "1.1");
             MatOfPoint2f tempContours = new MatOfPoint2f(contours.get(i).toArray());
+            Log.w("MarkerDetectionPipeline", "1.2");
             MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
+            Log.w("MarkerDetectionPipeline", "1.3");
             // IMPORTANT: MatOfPoint2f will prob leak memory, may want to fix
             contoursPoly[i] = new MatOfPoint2f();
+            Log.w("MarkerDetectionPipeline", "1.4");
             Imgproc.approxPolyDP(tempContours, contoursPoly[i], 3, true);
+            Log.w("MarkerDetectionPipeline", "1.5");
             boundRect[i] = Imgproc.boundingRect(rectContours);
+            Log.w("MarkerDetectionPipeline", "1.6");
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
             tempContours.release();
+            Log.w("MarkerDetectionPipeline", "1.7");
             rectContours.release();
+            Log.w("MarkerDetectionPipeline", "1.8");
         }
 
-        Log.w("MarkerDetectionPipeline", "2");
         for (int i = 0; i < contours.size(); i++) {
             contours.get(i).release();
             contoursPoly[i].release();
