@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Vision;
 
+import android.util.Log;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.opencv.core.*;
@@ -55,16 +56,18 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     @Override
     public Mat processFrame(Mat input) {
-        if(input == null) {
-            return input;
+        if (input == null) {
+            return null;
         }
+        Log.w("MarkerDetectionPipeline", "processFrame: " + input.size().toString());
         Mat mask = new Mat();
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
+        Log.w("MarkerDetectionPipeline", "1");
 
         Rect rectCrop = new Rect(0, 720, 1920, 360);
         Mat crop = new Mat(mask, rectCrop);
         mask.release();
-
+        Log.w("MarkerDetectionPipeline", "2");
 
         if (crop.empty()) {
             markerLocation = MarkerLocation.NOT_FOUND;
@@ -82,6 +85,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             lowHSV = new Scalar(89.0, 62.0, 36.0);
             highHSV = new Scalar(117.0, 255.0, 191.0);
         }
+        Log.w("MarkerDetectionPipeline", "3");
         Mat thresh = new Mat();
 
         Core.inRange(crop, lowHSV, highHSV, thresh);
@@ -91,6 +95,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Imgproc.Canny(thresh, edges, 100, 300);
         thresh.release();
 
+        Log.w("MarkerDetectionPipeline", "4");
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -101,6 +106,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
         Rect[] boundRect = new Rect[contours.size()];
 
+        Log.w("MarkerDetectionPipeline", "5");
         for (int i = 0; i < contours.size(); i++) {
             MatOfPoint2f tempContours = new MatOfPoint2f(contours.get(i).toArray());
             MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
@@ -109,12 +115,15 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             Imgproc.approxPolyDP(tempContours, contoursPoly[i], 3, true);
             boundRect[i] = Imgproc.boundingRect(rectContours);
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
+            tempContours.release();
+            rectContours.release();
         }
 
-//        for (int i = 0; i < contours.size(); i++) {
-//            contours.get(i).release();
-//            contoursPoly[i].release();
-//        }
+        Log.w("MarkerDetectionPipeline", "6");
+        for (int i = 0; i < contours.size(); i++) {
+            contours.get(i).release();
+            contoursPoly[i].release();
+        }
 
         double left_x = 0.375 * CAMERA_WIDTH;
         double right_x = 0.625 * CAMERA_WIDTH;
@@ -123,6 +132,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         boolean middle = false;
         boolean right = false;
 
+        Log.w("MarkerDetectionPipeline", "7");
         for (int i = 0; i != boundRect.length; i++) {
             int midpoint = boundRect[i].x + boundRect[i].width / 2;
             if (midpoint < left_x)
