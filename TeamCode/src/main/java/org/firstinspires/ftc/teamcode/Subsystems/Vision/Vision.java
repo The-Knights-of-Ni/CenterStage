@@ -132,7 +132,49 @@ public class Vision extends Subsystem {
                         logger.error("Error Streaming, aborting with error code " + errorCode);
                     }
                 });
+        public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
+        public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
+        public static final String WEBCAM_NAME = "Webcam 1";
+        private OpenCvCamera camera;
+
+        int cameraMonitorViewId =
+                hardwareMap
+                        .appContext
+                        .getResources()
+                        .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        camera =
+                OpenCvCameraFactory.getInstance()
+                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+        camera.openCameraDeviceAsync(
+                new OpenCvCamera.AsyncCameraOpenListener() {
+                    @Override
+                    public void onOpened() {
+                        telemetry.addLine("Streaming");
+                        camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                        telemetry.update();
+                        Log.i("Camera", "Streaming");
+                    }
+
+                });
     }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        waitForStart();
+        initCamera();
+        while(opModeIsActive()) {
+            Thread.sleep(10);
+        }
+    }
+
+    @Override
+    public void onError(int errorCode) {
+        telemetry.addData("Error Streaming, aborting. Error:", errorCode);
+        telemetry.update();
+        Log.i("Camera", "Streaming");
+    }
+
 
     public void stop() {
         // Stop streaming
