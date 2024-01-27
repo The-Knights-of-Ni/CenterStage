@@ -64,7 +64,7 @@ public class Control extends Subsystem {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
 
-    public void airplaneLaunch() throws InterruptedException {
+    public void airplaneLaunch() {
         //launch plane
         airplaneLauncher.setPosition(1.0);
     }
