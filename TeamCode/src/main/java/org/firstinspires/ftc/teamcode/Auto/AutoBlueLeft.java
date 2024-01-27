@@ -56,7 +56,7 @@ public class AutoBlueLeft extends Auto {
         telemetry.addData("Target Position: ", robot.control.slideMotor.getTargetPosition());
         telemetry.addData("Is Busy: ", robot.control.slideMotor.isBusy());
         telemetry.update();
-        robot.control.moveLinearSlideSync(Control.SlidePosition.UP);
+//        robot.control.moveLinearSlideSync(Control.SlidePosition.UP);
         robot.control.extendShoulder();
     }
 }

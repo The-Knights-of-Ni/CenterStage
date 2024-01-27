@@ -42,6 +42,7 @@ public class Control extends Subsystem {
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setTargetPosition(0);
 
         craneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         airplaneLauncher.setDirection(Servo.Direction.REVERSE);
