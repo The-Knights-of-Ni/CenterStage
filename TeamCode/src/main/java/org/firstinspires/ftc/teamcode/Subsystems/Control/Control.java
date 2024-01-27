@@ -65,7 +65,7 @@ public class Control extends Subsystem {
     }
 
     public void airplaneLaunch() {
-        //launch plane
+        // launch plane
         airplaneLauncher.setPosition(1.0);
     }
 
