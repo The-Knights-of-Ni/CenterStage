@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testop;
 
+import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -87,9 +88,7 @@ public class NewCameraPOV extends LinearOpMode {
 
             @Override
             public void onError(int errorCode) {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+                Log.e("Webcam", "Error opening webcam: " + errorCode);
             }
         });
 
