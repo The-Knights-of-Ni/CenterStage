@@ -89,8 +89,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
-        input.release();
-
+        thresh.release();
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -146,7 +145,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             }
         }
 
-        return thresh;
+        return input;
     }
 
     /**
