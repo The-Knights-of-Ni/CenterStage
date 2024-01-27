@@ -16,13 +16,13 @@ public class Control extends Subsystem {
     public static SlidePosition RETRACTED_SLIDE = SlidePosition.DOWN;
     public static SlidePosition SCORE_LOW_SLIDE = SlidePosition.UP;
 
-    private final DcMotorEx slideMotor;
-    private final DcMotorEx intakeMotor;
-    private final DcMotorEx craneMotor;
-    private final Servo airplaneLauncher;
-    private final Servo airplaneLaunchAngle;
-    private final Servo clawOpenClose;
-    private final Servo clawShoulder;
+    public final DcMotorEx slideMotor;
+    public final DcMotorEx intakeMotor;
+    public final DcMotorEx craneMotor;
+    public final Servo airplaneLauncher;
+    public final Servo airplaneLaunchAngle;
+    public final Servo clawOpenClose;
+    public final Servo clawShoulder;
 
 
     public Control(Telemetry telemetry, Servo airplaneLauncher, Servo airplaneLaunchAngle, Servo clawOpenClose, Servo clawShoulder, DcMotorEx slideMotor, DcMotorEx intakeMotor, DcMotorEx craneMotor) {
