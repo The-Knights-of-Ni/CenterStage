@@ -135,6 +135,5 @@ repositories {
 cargo {
     module = "../visionrs"
     libname = "visionrs"
-    extraCargoBuildArguments = ["-vv"]
     targets = ["arm", "arm64"]
 }
