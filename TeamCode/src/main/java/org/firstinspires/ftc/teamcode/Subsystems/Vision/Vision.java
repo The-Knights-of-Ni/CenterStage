@@ -112,7 +112,7 @@ public class Vision extends Subsystem {
         // Obtain camera instance from ID
         camera =
                 OpenCvCameraFactory.getInstance()
-                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME));
 
         // Create a detection pipeline for detecting the position
         pipeline = new MarkerDetectionPipeline(allianceColor, CAMERA_HEIGHT, CAMERA_WIDTH);
