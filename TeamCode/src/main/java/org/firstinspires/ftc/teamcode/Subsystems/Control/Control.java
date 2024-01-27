@@ -96,16 +96,6 @@ public class Control extends Subsystem {
         craneMotor.setPower(power); // Inherently unsafe
     }
 
-    public void setClaw(ClawState clawState) {
-        clawOpenClose.setPosition(clawState.clawPosition);
-        clawShoulder.setPosition(clawState.shoulderPosition);
-    }
-
-    public void setClawSync(ClawState clawState) {
-        clawOpenClose.setPosition(clawState.clawPosition);
-        clawShoulder.setPosition(clawState.shoulderPosition);
-    }
-
     public void runIntake() {
         intakeMotor.setPower(1);
     }
@@ -153,32 +143,6 @@ public class Control extends Subsystem {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    public void moveCrane(CraneState craneState) {
-        // TBD
-    }
-
-    public enum ClawState { //TODO: Calibrate claw constants
-        SCORE(1,1),
-        RETRACT(0,0);
-        private final double clawPosition;
-        private final double shoulderPosition;
-
-        ClawState(double clawPosition, double shoulderPosition) {
-            this.clawPosition = clawPosition;
-            this.shoulderPosition = shoulderPosition;
-        }
-    }
-
-    public enum CraneState { //TODO: Calibrate crane constants
-        UP(0),
-        DOWN(0);
-        public final double tickCount;
-
-        CraneState(double tickCount) {
-            this.tickCount = tickCount;
         }
     }
 
