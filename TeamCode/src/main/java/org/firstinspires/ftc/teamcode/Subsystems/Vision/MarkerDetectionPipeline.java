@@ -62,11 +62,11 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Mat mask = new Mat();
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
-        Rect rectCrop = new Rect(0, 720, 1920, 360);
-        Mat crop = new Mat(mask, rectCrop);
-        mask.release();
+//        Rect rectCrop = new Rect(0, 0, 1920, 720);
+//        Mat crop = new Mat(mask, rectCrop);
+//        mask.release();
 
-        if (crop.empty()) {
+        if (mask.empty()) {
             markerLocation = MarkerLocation.NOT_FOUND;
             return input;
         }
@@ -74,22 +74,22 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Scalar highHSV;
         // Or red
         if (allianceColor == AllianceColor.RED) {
-            lowHSV = new Scalar(163.0, 171.0, 45.0);
-            highHSV = new Scalar(179.0, 255.0, 255.0);
+            lowHSV = new Scalar(100.0, 150.0, 200.0);
+            highHSV = new Scalar(125.0, 255.0, 255.0);
         } else {
             // Default to blue
             // Blue alliance
-            lowHSV = new Scalar(89.0, 62.0, 36.0);
-            highHSV = new Scalar(117.0, 255.0, 191.0);
+            lowHSV = new Scalar(10.0, 100.0, 70.0);
+            highHSV = new Scalar(30.0, 255.0, 255.0);
         }
         Mat thresh = new Mat();
 
-        Core.inRange(crop, lowHSV, highHSV, thresh);
-        crop.release();
+        Core.inRange(mask, lowHSV, highHSV, thresh);
+        mask.release();
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
-        thresh.release();
+        input.release();
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
@@ -105,10 +105,10 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
                 Log.w("MarkerDetectionPipeline", "Null contour");
             } else {
                 MatOfPoint2f tempContours = new MatOfPoint2f(contours.get(i).toArray());
-                MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
                 // IMPORTANT: MatOfPoint2f will prob leak memory, may want to fix
                 contoursPoly[i] = new MatOfPoint2f();
                 Imgproc.approxPolyDP(tempContours, contoursPoly[i], 3, true);
+                MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
                 boundRect[i] = Imgproc.boundingRect(rectContours);
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
                 tempContours.release();
@@ -127,24 +127,26 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         double left_x = 0.375 * CAMERA_WIDTH;
         double right_x = 0.625 * CAMERA_WIDTH;
 
-        boolean left = false;
-        boolean middle = false;
-        boolean right = false;
+        var largest_area = 0.0;
 
         for (int i = 0; i != boundRect.length; i++) {
-            int midpoint = boundRect[i].x + boundRect[i].width / 2;
-            if (midpoint < left_x)
-                left = true;
-            if (left_x <= midpoint && midpoint <= right_x)
-                middle = true;
-            if (right_x < midpoint)
-                right = true;
+            if (boundRect[i] != null) {
+                double area = boundRect[i].area();
+                if (area > largest_area) {
+                    largest_area = area;
+                    int midpoint = boundRect[i].x + boundRect[i].width / 2;
+                    if (midpoint < left_x) {
+                        markerLocation = MarkerLocation.LEFT;
+                    } else if (left_x <= midpoint && midpoint <= right_x) {
+                        markerLocation = MarkerLocation.MIDDLE;
+                    } else if (right_x < midpoint) {
+                        markerLocation = MarkerLocation.RIGHT;
+                    }
+                }
+            }
         }
-        if (left) markerLocation = MarkerLocation.LEFT;
-        if (middle) markerLocation = MarkerLocation.MIDDLE;
-        if (right) markerLocation = MarkerLocation.RIGHT;
 
-        return input;
+        return thresh;
     }
 
     /**
