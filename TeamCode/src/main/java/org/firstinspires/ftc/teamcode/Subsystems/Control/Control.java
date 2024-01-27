@@ -83,7 +83,7 @@ public class Control extends Subsystem {
 
     public void moveLinearSlideSync(SlidePosition pos) {
         moveLinearSlide(pos);
-        while (Math.abs(slideMotor.getCurrentPosition() - pos.pos) > 25) {
+        while (slideMotor.isBusy()) {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
