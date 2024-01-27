@@ -10,14 +10,18 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
+import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Mecanum drivetrain subsystem
+ * @deprecated Use {@link Drive} instead
  */
+@Deprecated
 public class OldDrive extends Subsystem {
     // mm per inch
     public static final double mmPerInch = 25.4;
@@ -91,7 +95,7 @@ public class OldDrive extends Subsystem {
     }
 
     private static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount);
+        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Correct for overshoot
     }
 
     /**
@@ -176,12 +180,19 @@ public class OldDrive extends Subsystem {
      * @param tickCount How far each motor should go
      */
     public void allMotorControl(int[] tickCount, PID[] moveSystems) {
+        // Is there a bug in this code? If so, use these debugging steps:
+        // 1. Test if the encoders update with EncoderTest.
+        // 2. Check if MotorControlData gets the tick count.
+        // 3. Make sure the PID works, by looking at the logs.
+        // 4. Check if the motors are set to the correct power by adding a temporary debugging log statement.
+
         logger.info("Moving " + Arrays.toString(tickCount));
         WebThread.addAction(new WebAction("drive", "Moving " + Arrays.toString(tickCount)));
         // Refresh motors
         stop();
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
+        // DO NOT USE RUN_USING_ENCODER OR ANYTHING BUT RUN_WITHOUT_ENCODER as your run mode.
+        // This will mess up the PID and might even use the built-in REV PID.
+        // This will not allow the algo to set raw motor powers.
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
 
@@ -192,13 +203,15 @@ public class OldDrive extends Subsystem {
         boolean isTimeOutExceeded = false; // If timeout is exceeded pid stops and logs an error
         int timeOutPeriod = 100_000_000;
         double timeOutStartedTime = 0.0;
-        int timeOutThreshold = 3; // If the encoder does not change by at least this number of ticks, motor is "stuck"
+        // If the encoder does not change by at least this number of ticks, the motor is considered to be stuck
+        int timeOutThreshold = 3;
 
         // Initialize motor data wrappers
-        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold);
-        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold);
-        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold);
-        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold);
+        MotorControlData fl = new MotorControlData(frontLeft, moveSystems[0], tickCount[0], timeOutThreshold, logger.telemetry, "frontLeft");
+        MotorControlData fr = new MotorControlData(frontRight, moveSystems[1], tickCount[1], timeOutThreshold, logger.telemetry, "frontRight");
+        MotorControlData rl = new MotorControlData(rearLeft, moveSystems[2], tickCount[2], timeOutThreshold, logger.telemetry, "rearLeft");
+        MotorControlData rr = new MotorControlData(rearRight, moveSystems[3], tickCount[3], timeOutThreshold, logger.telemetry, "rearRight");
+        // TODO: This should be a motor generic
         while (((!fl.isDone) || (!fr.isDone) || (!rl.isDone) || (!rr.isDone)) && (!isTimeOutExceeded)) {
             // Update current variables
             currentTime = timer.nanoseconds() - startTime;
@@ -220,9 +233,7 @@ public class OldDrive extends Subsystem {
                 isTimeOutStarted = false;
             }
             if (debug) {
-                logger.verbose("Target tick: " + fl.targetCount + " " + fr.targetCount + " " + rl.targetCount + " " + rr.targetCount);
-                logger.verbose("Current tick: " + fl.currentCount + " " + fr.currentCount + " " + rl.currentCount + " " + rr.currentCount);
-                logger.verbose("Current power: " + fl.motor.getPower() + " " + fr.motor.getPower() + " " + rl.motor.getPower() + " " + rr.motor.getPower());
+                logger.verbose(Locale.US, "Motor Info: %f;%f/%f %f;%f/%f %f;%f/%f", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
             }
         }
         WebThread.removeAction("drive");
@@ -265,9 +276,13 @@ public class OldDrive extends Subsystem {
         int currentCount;
         int prevCount;
         int targetCount;
+        double power;
         int timeOutThreshold;
+        MasterLogger motorLogger;
+        private int noMovementTicks;
+        static final int noMovementThreshold = 3;
 
-        public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold) {
+        public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold, Telemetry telemetry, String name) {
             motor = motorEx;
             moveSystem = mS;
             isNotMoving = false;
@@ -275,20 +290,35 @@ public class OldDrive extends Subsystem {
             prevCount = -1;
             targetCount = targetTickCount;
             this.timeOutThreshold = timeOutThreshold;
+            this.motorLogger = new MasterLogger(telemetry, name);
+            this.noMovementTicks = 0;
         }
 
         public void updateCurrentCount() {
             currentCount = motor.getCurrentPosition();
         }
 
+        /**
+         * Sets the power of the motor
+         * Do not use any other method to set the motor power, including {@link DcMotorEx#setPower(double)},
+         * this will mess up the stall detection, as well as other things.
+         *
+         * <p>TODO: Benchmark {@link DcMotorEx#setPower(double)} to see if this is worth it</p>
+         * @param motorPower The power to set the motor to
+         */
+        public void setPower(double motorPower) {
+            power = motorPower;
+            motor.setPower(power);
+        }
+
         public void setPower() {
-            motor.setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
+            setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
         }
 
         public void halt() {
             isDone = true;
             isNotMoving = true;
-            motor.setPower(0.0);
+            setPower(0.0);
         }
 
         public void updateIsNotMoving() {
@@ -301,9 +331,18 @@ public class OldDrive extends Subsystem {
         }
 
         public void cycle() {
+            updateCurrentCount();
             setPower();
             checkMotorDone();
             updateIsNotMoving();
+            if (currentCount == prevCount && power > 0.01) {
+                this.noMovementTicks += 1;
+            } else {
+                this.noMovementTicks = 0;
+            }
+            if (this.noMovementTicks > noMovementThreshold) {
+                this.motorLogger.warning("Motor is not moving");
+            }
             updatePrevCount();
         }
 

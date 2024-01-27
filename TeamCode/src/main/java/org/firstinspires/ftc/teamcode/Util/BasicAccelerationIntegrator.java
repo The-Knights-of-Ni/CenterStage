@@ -66,6 +66,7 @@ public class BasicAccelerationIntegrator implements BNO055IMU.AccelerationIntegr
 
     @Override
     public void update(Acceleration linearAcceleration) {
+        // TODO: Massive position/velocity/accleration spikes should be ignored + a max acceleration/max velocity cap
         // We should always be given a timestamp here
         if (linearAcceleration.acquisitionTime != 0) {
             // We can only integrate if we have a previous acceleration to baseline from

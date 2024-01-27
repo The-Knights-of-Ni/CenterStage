@@ -82,7 +82,7 @@ lint/tmp/
 
 # rust
 **/target/
-**/Cargo.lock
+/visionrs/Cargo.lock
 /opencv-build/*
 
 

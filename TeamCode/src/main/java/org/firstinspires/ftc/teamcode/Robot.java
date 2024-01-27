@@ -18,6 +18,11 @@ import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 import java.util.HashMap;
 
+/**
+ * Glue class for all subsystems
+ * <p>All competition OpModes instantiate this class, as well as some Test OpModes.</p>
+ * <p>This will initialize all subsystems, but certain can be disabled with flags ("vision", and "web")</p>
+ */
 public class Robot {
     public static final double length = 18.0;
     public static final double width = 18.0;
@@ -32,22 +37,6 @@ public class Robot {
     private final boolean odometryEnabled;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
-    // DC Motors
-    public DcMotorEx slideMotorRight;
-    public DcMotorEx intakeMotor;
-    public DcMotorEx craneMotor;
-
-    //Servos
-    public Servo airplaneLauncher;
-    public Servo airplaneLaunchAngle;
-    public Servo clawOpenClose;
-    public Servo clawShoulder;
-
-
-    // Odometry
-    public DcMotorEx leftEncoder;
-    public DcMotorEx backEncoder;
-    public DcMotorEx rightEncoder;
 
     public BNO055IMU imu;
     // Subsystems
@@ -57,8 +46,19 @@ public class Robot {
     public WebThread web;
 
     /**
+     * @param hardwareMap   The hardware map for the robot
+     * @param telemetry     The telemetry object
      * @param timer         The elapsed time
-     * @param allianceColor the alliance color
+     * @param allianceColor the alliance color of the robot, usually set on a per-opmode basis
+     * @param gamepad1      The first gamepad (the robot movement controller)
+     * @param gamepad2      The second gamepad (control for the arms and claws)
+     * @param flags          A hashmap of flags, used to disable certain subsystems
+     * <p><b>Flags:</b></p>
+     * <ul>
+     *    <li><i>vision</i> - toggles vision subsystem, enabled by default</li>
+     *    <li><i>web</i> - toggles web subsystem, disabled by default</li>
+     *    <li><i>odometry</i> - toggles odometry subsystem, disabled by default</li>
+     * </ul>
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime timer,
                  AllianceColor allianceColor, Gamepad gamepad1, Gamepad gamepad2, HashMap<String, Boolean> flags) {
@@ -106,28 +106,13 @@ public class Robot {
     /**
      * Runs all init operations
      */
-    public void init() {
-        motorInit();
-        servoInit();
-        odometryInit();
-        logger.info("motor init finished");
+    protected void init() {
+//        imuInit();
         logger.info("imu init finished");
         subsystemInit();
     }
 
-    private void odometryInit() {
-        if (odometryEnabled) {
-            leftEncoder = (DcMotorEx) hardwareMap.dcMotor.get("leftEncoder");
-            backEncoder = (DcMotorEx) hardwareMap.dcMotor.get("backEncoder");
-            rightEncoder = (DcMotorEx) hardwareMap.dcMotor.get("rightEncoder");
-        } else {
-            leftEncoder = null;
-            backEncoder = null;
-            rightEncoder = null;
-        }
-    }
-
-    private void imuInit() {
+    protected void imuInit() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -137,7 +122,7 @@ public class Robot {
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
-        parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Sorry non-US people
+        parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT;
 
         telemetryBroadcast("Status", " IMU initializing...");
         imu.initialize(parameters);
@@ -152,29 +137,16 @@ public class Robot {
         }
     }
 
-    /**
-     * Gets Motors from hardware map
-     */
-    private void motorInit() {
-        slideMotorRight = (DcMotorEx) hardwareMap.dcMotor.get("slideright");
-        intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
-        craneMotor = (DcMotorEx) hardwareMap.dcMotor.get("crane");
-    }
-
-    private void servoInit() {
-        airplaneLauncher = hardwareMap.servo.get("plane");
-        airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
-        clawOpenClose = hardwareMap.servo.get("claw");
-        clawShoulder = hardwareMap.servo.get("clawPivot");
-    }
-
-    public void subsystemInit() {
+    protected void subsystemInit() {
         logger.debug("Drive subsystem init started");
         var frontLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fl");
         var frontRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("fr");
         var rearLeftDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rl");
         var rearRightDriveMotor = (DcMotorEx) hardwareMap.dcMotor.get("rr");
         if (odometryEnabled) {
+            var leftEncoder = (DcMotorEx) hardwareMap.dcMotor.get("leftEncoder");
+            var backEncoder = (DcMotorEx) hardwareMap.dcMotor.get("backEncoder");
+            var rightEncoder = (DcMotorEx) hardwareMap.dcMotor.get("rightEncoder");
             drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
             drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), null, imu, telemetry, timer);
@@ -182,6 +154,13 @@ public class Robot {
         logger.info("Drive subsystem init finished");
 
         logger.debug("Control subsystem init started");
+        var slideMotorRight = (DcMotorEx) hardwareMap.dcMotor.get("slideright");
+        var intakeMotor = (DcMotorEx) hardwareMap.dcMotor.get("intake");
+        var craneMotor = (DcMotorEx) hardwareMap.dcMotor.get("crane");
+        var airplaneLauncher = hardwareMap.servo.get("plane");
+        var airplaneLaunchAngle = hardwareMap.servo.get("planePivot");
+        var clawOpenClose = hardwareMap.servo.get("claw");
+        var clawShoulder = hardwareMap.servo.get("clawPivot");
         control = new Control(telemetry, airplaneLauncher, airplaneLaunchAngle, clawOpenClose, clawShoulder, slideMotorRight, intakeMotor, craneMotor);
         logger.info("Control subsystem init finished");
 

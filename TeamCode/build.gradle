@@ -32,7 +32,7 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-    implementation(group: 'org.openftc', name: 'easyopencv', version: '1.5.2')
+    implementation(group: 'org.openftc', name: 'easyopencv', version: '1.7.2')
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2')
     testImplementation 'org.mockito:mockito-core:5.5.0'
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2')

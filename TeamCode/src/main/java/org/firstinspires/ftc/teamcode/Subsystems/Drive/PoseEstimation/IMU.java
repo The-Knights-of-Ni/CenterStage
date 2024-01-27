@@ -14,7 +14,7 @@ public class IMU implements PoseEstimationMethod {
 
     @Override
     public void start() {
-        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 25), new Velocity(DistanceUnit.MM, 0, 0, 0, 500), 100);
+        imu.startAccelerationIntegration(new Position(DistanceUnit.MM, 0, 0, 0, 1), new Velocity(DistanceUnit.MM, 0, 0, 0, 1), 100);
         startingPose = new Pose(imu.getPosition().toUnit(DistanceUnit.MM).x, imu.getPosition().toUnit(DistanceUnit.MM).y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
     }
 
