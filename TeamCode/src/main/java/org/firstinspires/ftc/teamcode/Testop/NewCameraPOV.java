@@ -51,7 +51,7 @@ public class NewCameraPOV extends LinearOpMode {
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
-        webcam.setPipeline(pipeline);
+//        webcam.setPipeline(pipeline);
 
         /*
          * Open the connection to the camera device asynchronously.

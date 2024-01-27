@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,8 +19,6 @@ import java.util.List;
  */
 public class MarkerDetectionPipeline extends OpenCvPipeline {
     private final AllianceColor allianceColor;
-    private final int CAMERA_HEIGHT;
-    private final int CAMERA_WIDTH;
     private MarkerLocation markerLocation = MarkerLocation.NOT_FOUND;
 
     /**
@@ -30,8 +29,6 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     public MarkerDetectionPipeline(AllianceColor allianceColor, int height, int width) {
         this.allianceColor = allianceColor;
-        this.CAMERA_HEIGHT = height;
-        this.CAMERA_WIDTH = width;
     }
 
     /**
@@ -62,7 +59,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Mat mask = new Mat();
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
-        Rect rectCrop = new Rect(0, 360, CAMERA_WIDTH, CAMERA_HEIGHT - 360);
+        Rect rectCrop = new Rect(0, 0, mask.width(), mask.height());
         Mat crop = new Mat(mask, rectCrop);
         mask.release();
 
@@ -85,11 +82,10 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         Mat thresh = new Mat();
 
         Core.inRange(crop, lowHSV, highHSV, thresh);
-        crop.release();
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
-        thresh.release();
+//        thresh.release();
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -115,18 +111,14 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             }
         }
 
-        for (int i = 0; i < contours.size(); i++) {
-            contours.get(i).release();
-            contoursPoly[i].release();
-        }
+        System.out.println(Arrays.toString(boundRect));
 
-        hierarchy.release();
-        edges.release();
-
-        double left_x = 0.375 * CAMERA_WIDTH;
-        double right_x = 0.625 * CAMERA_WIDTH;
-
+        double left_x = 0.3 * crop.width();
+        double right_x = 0.7 * crop.width();
         var largest_area = 0.0;
+
+        System.out.println("left_x: " + left_x);
+        System.out.println("right_x: " + right_x);
 
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i] != null) {
@@ -134,6 +126,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
                 if (area > largest_area) {
                     largest_area = area;
                     int midpoint = boundRect[i].x + boundRect[i].width / 2;
+                    System.out.println(midpoint);
                     if (midpoint < left_x) {
                         markerLocation = MarkerLocation.LEFT;
                     } else if (left_x <= midpoint && midpoint <= right_x) {
@@ -145,7 +138,15 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             }
         }
 
-        return input;
+        for (int i = 0; i < contours.size(); i++) {
+            contours.get(i).release();
+            contoursPoly[i].release();
+        }
+
+        hierarchy.release();
+        edges.release();
+        crop.release();
+        return thresh;
     }
 
     /**
