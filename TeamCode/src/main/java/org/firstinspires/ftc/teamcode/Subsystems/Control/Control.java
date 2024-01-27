@@ -43,7 +43,8 @@ public class Control extends Subsystem {
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setTargetPosition(0);
 
-        craneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        craneMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setTargetPosition(0);
         airplaneLauncher.setDirection(Servo.Direction.REVERSE);
         airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
         clawOpenClose.setDirection(Servo.Direction.FORWARD);
