@@ -54,7 +54,7 @@ public class Control extends Subsystem {
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         craneMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         craneMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
