@@ -10,7 +10,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebAction;
 import org.firstinspires.ftc.teamcode.Subsystems.Web.WebThread;
-import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
@@ -47,7 +46,7 @@ public class OldDrive extends Subsystem {
     private static final double COUNTS_PER_DEGREE = 1180.0 / 90; // 1000 ticks per 90 degrees
 
     // Default drive speeds
-    private static final double DRIVE_SPEED = 0.60;
+    public static final double DRIVE_SPEED = 0.60;
 
     // PID Constants
     private static final double motorKp = 0.0025;
@@ -94,7 +93,7 @@ public class OldDrive extends Subsystem {
         this.robotTheta = 0;
     }
 
-    private static boolean isMotorDone(int currentCount, int targetCount) {
+    public static boolean isMotorDone(int currentCount, int targetCount) {
         return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Correct for overshoot
     }
 
@@ -266,91 +265,6 @@ public class OldDrive extends Subsystem {
         PID[] pids = {new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd), new PID(motorKp, motorKi, motorKd)};
         allMotorControl(tickCount, pids);
         stop();
-    }
-
-    static class MotorControlData {
-        DcMotorEx motor;
-        PID moveSystem;
-        boolean isNotMoving;
-        boolean isDone;
-        int currentCount;
-        int prevCount;
-        int targetCount;
-        double power;
-        int timeOutThreshold;
-        MasterLogger motorLogger;
-        private int noMovementTicks;
-        static final int noMovementThreshold = 3;
-
-        public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold, Telemetry telemetry, String name) {
-            motor = motorEx;
-            moveSystem = mS;
-            isNotMoving = false;
-            isDone = false;
-            prevCount = -1;
-            targetCount = targetTickCount;
-            this.timeOutThreshold = timeOutThreshold;
-            this.motorLogger = new MasterLogger(telemetry, name);
-            this.noMovementTicks = 0;
-        }
-
-        public void updateCurrentCount() {
-            currentCount = motor.getCurrentPosition();
-        }
-
-        /**
-         * Sets the power of the motor
-         * Do not use any other method to set the motor power, including {@link DcMotorEx#setPower(double)},
-         * this will mess up the stall detection, as well as other things.
-         *
-         * <p>TODO: Benchmark {@link DcMotorEx#setPower(double)} to see if this is worth it</p>
-         * @param motorPower The power to set the motor to
-         */
-        public void setPower(double motorPower) {
-            power = motorPower;
-            motor.setPower(power);
-        }
-
-        public void setPower() {
-            setPower(DRIVE_SPEED * moveSystem.calculate(targetCount, currentCount));
-        }
-
-        public void halt() {
-            isDone = true;
-            isNotMoving = true;
-            setPower(0.0);
-        }
-
-        public void updateIsNotMoving() {
-            if (prevCount != -1)
-                isNotMoving = Math.abs(currentCount - prevCount) < timeOutThreshold;
-        }
-
-        public void updatePrevCount() {
-            prevCount = currentCount;
-        }
-
-        public void cycle() {
-            updateCurrentCount();
-            setPower();
-            checkMotorDone();
-            updateIsNotMoving();
-            if (currentCount == prevCount && power > 0.01) {
-                this.noMovementTicks += 1;
-            } else {
-                this.noMovementTicks = 0;
-            }
-            if (this.noMovementTicks > noMovementThreshold) {
-                this.motorLogger.warning("Motor is not moving");
-            }
-            updatePrevCount();
-        }
-
-        public void checkMotorDone() {
-            if (isMotorDone(currentCount, targetCount)) {
-                halt();
-            }
-        }
     }
 
     public void move(Pose pose) {
