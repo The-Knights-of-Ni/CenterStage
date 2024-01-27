@@ -42,7 +42,7 @@ public abstract class Auto extends LinearOpMode {
         flags.put("vision", false);
         flags.put("web", true);
         this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
-        robot.control.initDevices();
+        robot.control.initDevicesAuto();
         controlThread = new ArmMovementThread(robot.control);
         telemetry.addData("Waiting for start", "");
         telemetry.update();

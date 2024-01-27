@@ -47,7 +47,7 @@ public class Teleop extends LinearOpMode {
         initOpMode();
 
         ElapsedTime timer = new ElapsedTime();
-        robot.control.initDevices();
+        robot.control.initDevicesTeleop();
         waitForStart();
 
         telemetry.clearAll();
