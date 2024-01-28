@@ -16,7 +16,7 @@ public class AutoBlueLeft extends Auto {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
         //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE; //Delete this line and uncomment the previous one once vision is working
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.NOT_FOUND; //Delete this line and uncomment the previous one once vision is working
         waitForStart();
         timer.reset();
         switch (markerPosition) {
