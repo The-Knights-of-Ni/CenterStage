@@ -33,7 +33,7 @@ public class AutoBlueLeft extends Auto {
                 robot.drive.moveVector(new Vector(0, 32 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.move(new Pose(-40 * mmPerInch, 0, 90));
+                robot.drive.move(new Pose(-36 * mmPerInch, 0, 90));
                 break;
             case RIGHT:
                 //turns the robot right 90 degrees after moving it 12 inches right
@@ -48,6 +48,7 @@ public class AutoBlueLeft extends Auto {
                 break;
         }
         telemetry.addLine("passed switch statement");
+        telemetry.update();
         robot.control.openClawSync();
         robot.control.moveLinearSlide(Control.SlidePosition.UP);
 //        robot.control.extendShoulder();
