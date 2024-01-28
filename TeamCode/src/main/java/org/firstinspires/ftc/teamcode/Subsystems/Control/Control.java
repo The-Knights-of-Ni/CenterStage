@@ -73,7 +73,7 @@ public class Control extends Subsystem {
     }
 
     public void resetAirplaneAngle() {
-        airplaneLaunchAngle.setPosition(0);
+        airplaneLaunchAngle.setPosition(0.859);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
