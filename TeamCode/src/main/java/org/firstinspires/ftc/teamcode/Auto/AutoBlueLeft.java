@@ -16,7 +16,7 @@ public class AutoBlueLeft extends Auto {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
         //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.NOT_FOUND; //Delete this line and uncomment the previous one once vision is working
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE; //Delete this line and uncomment the previous one once vision is working
         waitForStart();
         timer.reset();
         switch (markerPosition) {
@@ -30,11 +30,12 @@ public class AutoBlueLeft extends Auto {
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
-                robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, 32 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.move(new Pose(-36 * mmPerInch, 0, 0));
-                robot.drive.moveAngle(-90);
+                robot.drive.move(new Pose(-40 * mmPerInch, 0, 90));
+                robot.control.extendShoulder();
+                robot.control.openClaw();
                 robot.drive.move(new Pose(-12 * mmPerInch, 0, 0));
                 break;
             case RIGHT:

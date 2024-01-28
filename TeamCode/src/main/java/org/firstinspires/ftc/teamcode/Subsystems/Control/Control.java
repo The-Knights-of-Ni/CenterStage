@@ -40,11 +40,8 @@ public class Control extends Subsystem {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setTargetPosition(0);
 
-        craneMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setTargetPosition(0);
+        craneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         airplaneLauncher.setDirection(Servo.Direction.REVERSE);
         airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
         clawOpenClose.setDirection(Servo.Direction.FORWARD);
@@ -79,6 +76,8 @@ public class Control extends Subsystem {
 
     public void moveLinearSlide(SlidePosition pos) {
         slideMotor.setTargetPosition(pos.pos);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(0.6);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {
