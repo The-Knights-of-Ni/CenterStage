@@ -19,7 +19,7 @@ public class VisionTest extends Auto {
     @Override
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE);
         waitForStart();
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
         timer.reset();
