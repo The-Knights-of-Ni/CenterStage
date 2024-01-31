@@ -54,15 +54,6 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         Log.v("MarkerDetectionPipeline", "Processing frame of size " + input.width() + "x" + input.height());
-        var sum = 0;
-        for (int i = 0; i < input.width(); i++) {
-            for (int j = 0; j < input.height(); j++) {
-                sum += (int) input.get(j, i)[0];
-                sum += (int) input.get(j, i)[1];
-                sum += (int) input.get(j, i)[2];
-            }
-        }
-        Log.i("MarkerDetectionPipeline", "Sum: " + sum);
         var oldMarkerLocation = markerLocation;
         if (input == null) {
             return null;
@@ -130,7 +121,9 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
 
         Log.i("MarkerDetectionPipeline", "left_x: " + left_x);
         Log.i("MarkerDetectionPipeline", "right_x: " + right_x);
-
+        Log.i("MarkerDetectionPipeline", "crop.width: " + crop.width());
+        Log.i("MarkerDetectionPipeline", "crop.height: " + crop.height());
+        Log.i("MarkerDetectionPipeline", "boundRect.length: " + boundRect.length);
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i] != null) {
                 double area = boundRect[i].area();
