@@ -68,6 +68,9 @@ public class MotorControlData {
     }
 
     public void cycle() {
+        if (isDone)
+            return;
+
         updateCurrentCount();
         setPower();
         checkMotorDone();
