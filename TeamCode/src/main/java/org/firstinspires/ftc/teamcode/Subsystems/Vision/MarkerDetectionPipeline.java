@@ -116,12 +116,6 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         double left_x = 0.3 * crop.width();
         double right_x = 0.7 * crop.width();
         var largest_area = 0.0;
-
-        Log.i("MarkerDetectionPipeline", "left_x: " + left_x);
-        Log.i("MarkerDetectionPipeline", "right_x: " + right_x);
-        Log.i("MarkerDetectionPipeline", "crop.width: " + crop.width());
-        Log.i("MarkerDetectionPipeline", "crop.height: " + crop.height());
-        Log.i("MarkerDetectionPipeline", "boundRect.length: " + boundRect.length);
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i] != null) {
                 double area = boundRect[i].area();

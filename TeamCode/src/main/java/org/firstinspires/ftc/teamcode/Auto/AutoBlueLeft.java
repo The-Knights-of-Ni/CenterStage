@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
@@ -15,9 +16,9 @@ public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
-        //MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE; //Delete this line and uncomment the previous one once vision is working
         waitForStart();
+        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
+        Log.d("Marker Location", String.valueOf(markerPosition));
         timer.reset();
         switch (markerPosition) {
             case LEFT:
@@ -30,10 +31,11 @@ public class AutoBlueLeft extends Auto {
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
-                robot.drive.moveVector(new Vector(0, 32 * mmPerInch));
+                robot.drive.moveVector(new Vector(-8, 29 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, -2 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.moveVector(new Vector(-36 * mmPerInch, 0));
+                robot.drive.moveVector(new Vector(-30 * mmPerInch, 0));
                 robot.drive.moveAngle(90);
                 break;
             case RIGHT:
