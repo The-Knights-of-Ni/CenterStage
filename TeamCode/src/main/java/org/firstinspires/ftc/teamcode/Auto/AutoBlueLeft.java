@@ -23,16 +23,16 @@ public class AutoBlueLeft extends Auto {
         switch (markerPosition) {
             case LEFT:
                 // turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
-                robot.drive.moveAngle(90);
+                robot.drive.moveVector(new Vector(-13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // moving the robot 30 inches forward
-                robot.drive.moveVector(new Vector(0, 30 * mmPerInch));
+                robot.drive.moveVector(new Vector(-26 * mmPerInch, 15 * mmPerInch));
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
-                robot.drive.moveVector(new Vector(-8, 29 * mmPerInch));
-                robot.drive.moveVector(new Vector(0, -2 * mmPerInch));
+                robot.drive.moveVector(new Vector(-8 * mmPerInch, 27 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
                 robot.drive.moveVector(new Vector(-30 * mmPerInch, 0));
@@ -40,12 +40,11 @@ public class AutoBlueLeft extends Auto {
                 break;
             case RIGHT:
                 //turns the robot right 90 degrees after moving it 12 inches right
-                robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
-                robot.drive.moveAngle(90);
+                robot.drive.moveVector(new Vector(13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 //confirms position is reached
                 //turns the robot right 180 degrees after moving the robot 60 inches backward
-                robot.drive.moveVector(new Vector(0, -60 * mmPerInch));
-                robot.drive.moveAngle(180);
+                robot.drive.moveVector(new Vector(-36 * mmPerInch, 15 * mmPerInch));
                 break;
             default:
                 break;
