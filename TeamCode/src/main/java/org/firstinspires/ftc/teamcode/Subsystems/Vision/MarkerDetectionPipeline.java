@@ -71,13 +71,11 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         }
         Scalar lowHSV;
         Scalar highHSV;
-        // Or red
         if (allianceColor == AllianceColor.RED) {
             lowHSV = new Scalar(100.0, 130.0, 150.0);
             highHSV = new Scalar(140.0, 255.0, 255.0);
         } else {
             // Default to blue
-            // Blue alliance
             lowHSV = new Scalar(75.0, 150.0, 150.0);
             highHSV = new Scalar(125.0, 255.0, 255.0);
         }
