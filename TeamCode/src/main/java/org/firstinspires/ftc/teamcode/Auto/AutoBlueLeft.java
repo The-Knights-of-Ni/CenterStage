@@ -16,6 +16,7 @@ public class AutoBlueLeft extends Auto {
     public void runOpMode() throws InterruptedException {
         //robot begins to function
         initAuto(AllianceColor.BLUE);
+        robot.control.closeClaw();
         waitForStart();
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
         Log.d("Marker Location", String.valueOf(markerPosition));
@@ -51,8 +52,8 @@ public class AutoBlueLeft extends Auto {
         }
         telemetry.addLine("passed switch statement");
         telemetry.update();
-        robot.control.openClawSync();
+        robot.control.retractShoulder();
         robot.control.moveLinearSlide(Control.SlidePosition.UP);
-//        robot.control.extendShoulder();
+        robot.control.extendShoulder();
     }
 }
