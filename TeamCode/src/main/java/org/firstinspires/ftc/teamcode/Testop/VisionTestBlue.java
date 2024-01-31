@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
-@Autonomous(name = "Vision Test", group = "Concept")
-public class VisionTest extends Auto {
+@Autonomous(name = "Vision Test Blue", group = "Concept")
+public class VisionTestBlue extends Auto {
     /**
      * Override of runOpMode()
      *
