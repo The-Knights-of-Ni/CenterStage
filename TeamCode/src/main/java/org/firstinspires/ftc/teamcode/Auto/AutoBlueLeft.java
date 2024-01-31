@@ -38,11 +38,11 @@ public class AutoBlueLeft extends Auto {
                 break;
             case RIGHT:
                 //turns the robot right 90 degrees after moving it 12 inches right
-                robot.drive.move(new Pose(12 * mmPerInch, 0, 0));
+                robot.drive.moveVector(new Vector(12 * mmPerInch, 0));
                 robot.drive.moveAngle(90);
                 //confirms position is reached
                 //turns the robot right 180 degrees after moving the robot 60 inches backward
-                robot.drive.move(new Pose(0, -60 * mmPerInch, 0));
+                robot.drive.moveVector(new Vector(0, -60 * mmPerInch));
                 robot.drive.moveAngle(180);
                 break;
             default:
