@@ -53,6 +53,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     @Override
     public Mat processFrame(Mat input) {
+        Log.v("MarkerDetectionPipeline", "Processing frame of size " + input.width() + "x" + input.height());
         var oldMarkerLocation = markerLocation;
         if (input == null) {
             return null;
