@@ -53,6 +53,8 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     @Override
     public Mat processFrame(Mat input) {
+        Log.v("MarkerDetectionPipeline", "Processing frame");
+        var oldMarkerLocation = markerLocation;
         if (input == null) {
             return null;
         }
@@ -146,6 +148,11 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         hierarchy.release();
         edges.release();
         crop.release();
+
+        if (oldMarkerLocation != markerLocation) {
+            Log.i("MarkerDetectionPipeline", "Marker Location: " + markerLocation.name());
+        }
+
         return thresh;
     }
 
