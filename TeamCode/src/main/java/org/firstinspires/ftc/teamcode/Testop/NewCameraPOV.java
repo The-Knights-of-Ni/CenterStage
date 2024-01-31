@@ -24,7 +24,7 @@ public class NewCameraPOV extends LinearOpMode {
     public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
     public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
 
-    MarkerDetectionPipeline pipeline = new MarkerDetectionPipeline(AllianceColor.RED, CAMERA_HEIGHT, CAMERA_WIDTH);
+    MarkerDetectionPipeline pipeline = new MarkerDetectionPipeline(AllianceColor.RED);
 
     @Override
     public void runOpMode() {

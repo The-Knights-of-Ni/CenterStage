@@ -27,7 +27,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      * @see Telemetry
      * @see AllianceColor
      */
-    public MarkerDetectionPipeline(AllianceColor allianceColor, int height, int width) {
+    public MarkerDetectionPipeline(AllianceColor allianceColor) {
         this.allianceColor = allianceColor;
     }
 

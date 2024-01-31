@@ -11,7 +11,7 @@ public class VisionTest {
     @Test
     public void testPixelDetection() {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        MarkerDetectionPipeline pixelDetectionPipeline = new MarkerDetectionPipeline(AllianceColor.RED, 1920, 720);
+        MarkerDetectionPipeline pixelDetectionPipeline = new MarkerDetectionPipeline(AllianceColor.RED);
 
         // Reading the Image from the file
         String file = "D:/Documents/Programming/CenterStage/test_resources/red_test.jpg";
