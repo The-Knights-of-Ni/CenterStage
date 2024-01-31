@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class AutoRedRight extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE); // Using Blue marker for all autos
         waitForStart();
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
         Log.d("Marker Location", String.valueOf(markerPosition));
@@ -23,15 +23,15 @@ public class AutoRedRight extends Auto {
         switch (markerPosition) {
             case LEFT:
                 // turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.moveVector(new Vector(-13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(-13 * mmPerInch, 15 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // moving the robot 30 inches forward
-                robot.drive.moveVector(new Vector(26 * mmPerInch, 15 * mmPerInch));
+                robot.drive.moveVector(new Vector(36 * mmPerInch, 15 * mmPerInch));
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
-                robot.drive.moveVector(new Vector(-8 * mmPerInch, 27 * mmPerInch));
+                robot.drive.moveVector(new Vector(8 * mmPerInch, 28 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
@@ -44,7 +44,7 @@ public class AutoRedRight extends Auto {
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 //confirms position is reached
                 //turns the robot right 180 degrees after moving the robot 60 inches backward
-                robot.drive.moveVector(new Vector(36 * mmPerInch, 15 * mmPerInch));
+                robot.drive.moveVector(new Vector(26 * mmPerInch, 15 * mmPerInch));
                 break;
             default:
                 break;

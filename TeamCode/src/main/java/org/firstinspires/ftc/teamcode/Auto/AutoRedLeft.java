@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class AutoRedLeft extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE); // Using Blue marker for all autos
         waitForStart();
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
         Log.d("Marker Location", String.valueOf(markerPosition));
