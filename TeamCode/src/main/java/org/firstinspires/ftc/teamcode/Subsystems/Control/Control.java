@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Control;
 
+import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -40,17 +42,14 @@ public class Control extends Subsystem {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setTargetPosition(0);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        craneMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setTargetPosition(0);
+        craneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         airplaneLauncher.setDirection(Servo.Direction.REVERSE);
         airplaneLaunchAngle.setDirection(Servo.Direction.REVERSE);
         clawOpenClose.setDirection(Servo.Direction.FORWARD);
         clawShoulder.setDirection(Servo.Direction.REVERSE);
     }
-
     public void initDevicesTeleop() {
         clawShoulder.setDirection(Servo.Direction.REVERSE);
 
@@ -74,11 +73,19 @@ public class Control extends Subsystem {
     }
 
     public void resetAirplaneAngle() {
-        airplaneLaunchAngle.setPosition(0);
+        airplaneLaunchAngle.setPosition(0.859);
     }
 
     public void moveLinearSlide(SlidePosition pos) {
-        slideMotor.setTargetPosition(pos.pos);
+        slideMotor.setPower(-0.8);
+        while (slideMotor.getCurrentPosition() < pos.pos) {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                Log.e("moveLinearSlide failed", e.toString());
+            }
+        }
+        slideMotor.setPower(0);
     }
 
     public void moveLinearSlideSync(SlidePosition pos) {

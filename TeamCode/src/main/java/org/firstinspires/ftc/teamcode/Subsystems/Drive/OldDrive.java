@@ -231,9 +231,9 @@ public class OldDrive extends Subsystem {
             } else {
                 isTimeOutStarted = false;
             }
-            if (debug) {
-                logger.verbose(Locale.US, "Motor Info: %f;%f/%f %f;%f/%f %f;%f/%f", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
-            }
+//            if (debug) {
+//                logger.verbose(Locale.US, "Motor Info: %f;%f/%f %f;%f/%f %f;%f/%f", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
+//            }
         }
         WebThread.removeAction("drive");
     }

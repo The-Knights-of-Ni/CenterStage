@@ -44,6 +44,7 @@ public abstract class Auto extends LinearOpMode {
         this.robot = new Robot(hardwareMap, telemetry, timer, allianceColor, gamepad1, gamepad2, flags);
         robot.control.initDevicesAuto();
         controlThread = new ArmMovementThread(robot.control);
+        robot.control.closeClaw();
         telemetry.addData("Waiting for start", "");
         telemetry.update();
     }
