@@ -75,6 +75,8 @@ public class MotorControlData {
         updateCurrentCount();
         setPower();
         checkMotorDone();
+        if (isDone)
+            return;
         updateIsNotMoving();
         if (Math.abs(currentCount - prevCount) < 5 && Math.abs(power) > 0.01) {
             this.noMovementTicks += 1;
