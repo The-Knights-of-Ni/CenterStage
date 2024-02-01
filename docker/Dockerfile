@@ -36,7 +36,7 @@ RUN mkdir /opt/android/cmdline-tools
 RUN unzip -d /opt/android/cmdline-tools /tmp/commandlinetools-linux-6200805_latest.zip
 
 ## Install
-RUN yes Y | /opt/android/cmdline-tools/tools/bin/sdkmanager --install "build-tools;33.0.1" "platform-tools" "ndk;26.0.10792818" "platforms;android-33"
+RUN yes Y | /opt/android/cmdline-tools/tools/bin/sdkmanager --install "build-tools;33.0.3" "platform-tools" "ndk;26.0.10792818" "platforms;android-33"
 
 ## License
 RUN yes Y | /opt/android/cmdline-tools/tools/bin/sdkmanager --licenses

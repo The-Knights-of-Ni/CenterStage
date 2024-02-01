@@ -4,9 +4,9 @@ FROM android-dev AS build
 ARG GRADLE_HOME="/opt/gradle/gradle-8.4"
 RUN export GRADLE_HOME="/opt/gradle/gradle-8.4"
 RUN export PATH=${GRADLE_HOME}/bin:${PATH}
+
 ARG ANDROID_HOME="/opt/android"
 ARG ANDROID_NDK_HOME="/opt/android/ndk/21.1.6352462"
-
 WORKDIR /usr/src/CenterStage
 COPY . .
 
