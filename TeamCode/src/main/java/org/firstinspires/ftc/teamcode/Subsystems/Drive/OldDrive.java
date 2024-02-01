@@ -96,7 +96,7 @@ public class OldDrive extends Subsystem {
     }
 
     public static boolean isMotorDone(int currentCount, int targetCount) {
-        return Math.abs(currentCount) >= Math.abs(targetCount); // TODO: Correct for overshoot
+        return Math.abs(currentCount - targetCount) < 25;
     }
 
     /**
