@@ -24,7 +24,7 @@ public class VisionTest {
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
             Mat output = pixelDetectionPipeline.processFrame(image);
             System.out.println(pixelDetectionPipeline.getMarkerLocation());
-            String file2 = "D:/Documents/Programming/CenterStage/test_resources/output.webp";
+            String file2 = "D:/Documents/Programming/CenterStage/test_resources/output.jpg";
             // Writing the image
             Imgcodecs.imwrite(file2, output);
         }
