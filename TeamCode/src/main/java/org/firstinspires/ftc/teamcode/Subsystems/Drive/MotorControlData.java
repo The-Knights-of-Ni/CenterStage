@@ -54,8 +54,8 @@ public class MotorControlData {
 
     public void halt() {
         isDone = true;
-        isNotMoving = true;
         setPower(0.0);
+        isNotMoving = true;
     }
 
     public void updateIsNotMoving() {
@@ -88,6 +88,7 @@ public class MotorControlData {
 
     public void checkMotorDone() {
         if (OldDrive.isMotorDone(currentCount, targetCount)) {
+            isDone = true;
             halt();
         }
     }
