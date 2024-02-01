@@ -17,6 +17,7 @@ public class MotorControlData {
     MasterLogger motorLogger;
     private int noMovementTicks;
     static final int noMovementThreshold = 3;
+    private boolean warned = false;
 
     public MotorControlData(DcMotorEx motorEx, PID mS, int targetTickCount, int timeOutThreshold, Telemetry telemetry, String name) {
         motor = motorEx;
@@ -80,11 +81,12 @@ public class MotorControlData {
         } else {
             this.noMovementTicks = 0;
         }
-        if (this.noMovementTicks > noMovementThreshold) {
+        if (this.noMovementTicks > noMovementThreshold && !warned) {
             this.motorLogger.warning("Motor is not moving");
             if (currentCount < 5 && power > 0.05) {
                 this.motorLogger.warning("Motor Encoder is likely broken");
             }
+            warned = true;
         }
         updatePrevCount();
     }
