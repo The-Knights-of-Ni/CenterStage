@@ -15,10 +15,10 @@ public class VisionTest {
     @Test
     public void testMarkerDetection() {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        MarkerDetectionPipeline pixelDetectionPipeline = new MarkerDetectionPipeline(AllianceColor.BLUE);
+        MarkerDetectionPipeline pixelDetectionPipeline = new MarkerDetectionPipeline(AllianceColor.RED);
 
         // Reading the Image from the file
-        String file = "D:/Documents/Programming/CenterStage/test_resources/blue_test.jpg";
+        String file = "D:/Documents/Programming/CenterStage/test_resources/red_test.jpg";
         Mat image = Imgcodecs.imread(file);
         assert !image.empty();
         try (MockedStatic<Log> mocked = mockStatic(Log.class)) {
