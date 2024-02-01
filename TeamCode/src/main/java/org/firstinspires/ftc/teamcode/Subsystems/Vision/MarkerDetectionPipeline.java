@@ -76,8 +76,8 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             highHSV = new Scalar(140.0, 255.0, 255.0);
         } else {
             // Default to blue
-            lowHSV = new Scalar(75.0, 150.0, 150.0);
-            highHSV = new Scalar(125.0, 255.0, 255.0);
+            lowHSV = new Scalar(0.0, 150.0, 120.0);
+            highHSV = new Scalar(30.0, 255.0, 255.0);
         }
         Mat thresh = new Mat();
 
