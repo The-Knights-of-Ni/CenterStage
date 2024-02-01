@@ -82,6 +82,9 @@ public class MotorControlData {
         }
         if (this.noMovementTicks > noMovementThreshold) {
             this.motorLogger.warning("Motor is not moving");
+            if (currentCount < 5 && power > 0.05) {
+                this.motorLogger.warning("Motor Encoder is likely broken");
+            }
         }
         updatePrevCount();
     }
