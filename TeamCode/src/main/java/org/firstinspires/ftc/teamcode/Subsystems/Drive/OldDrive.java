@@ -234,7 +234,8 @@ public class OldDrive extends Subsystem {
                 isTimeOutStarted = false;
             }
             if (debug) {
-                logger.verbose(Locale.US, "Motor Info: %.2f;%d/%d %.2f;%d/%d %.2f;%d/%d %.2f;%d/%d", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
+                logger.verbose(Locale.US, "Current Tick Count Check: %d %d %d %d", frontLeft.getCurrentPosition(), frontRight.getCurrentPosition(), rearLeft.getCurrentPosition(), rearRight.getCurrentPosition());
+                logger.debug(Locale.US, "Motor Info: %.2f;%d/%d %.2f;%d/%d %.2f;%d/%d %.2f;%d/%d", fl.power, fl.currentCount, fl.targetCount, fr.power, fr.currentCount, fr.targetCount, rl.power, rl.currentCount, rl.targetCount, rr.power, rr.currentCount, rr.targetCount);
             }
         }
         WebThread.removeAction("drive");
