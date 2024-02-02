@@ -90,6 +90,9 @@ public class MotorControlData {
             }
             warned = true;
         }
+        if (this.noMovementTicks > noMovementThreshold * 5) {
+            halt();
+        }
         updatePrevCount();
     }
 
