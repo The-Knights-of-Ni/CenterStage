@@ -134,7 +134,10 @@ public class Control extends Subsystem {
     }
 
     public void extendShoulder() {
+        clawShoulder.setPosition(0);
+        Log.d("Shoulder Position Before", String.valueOf(clawShoulder.getPosition()));
         clawShoulder.setPosition(0.66); // Do not change constant, trial and error somehow worked
+        Log.d("Shoulder Position After", String.valueOf(clawShoulder.getPosition()));
     }
 
     public void pickupPosShoulder() {
@@ -168,7 +171,7 @@ public class Control extends Subsystem {
     }
 
     public enum SlidePosition {
-        UP(3010),
+        UP(2110),
         DOWN(0);
         public final int pos;
 

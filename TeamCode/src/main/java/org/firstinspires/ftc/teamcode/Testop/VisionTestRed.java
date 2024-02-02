@@ -26,6 +26,7 @@ public class VisionTestRed extends Auto {
 
         while (opModeIsActive()) {
             telemetry.addData("Marker Position: ", markerPosition.name());
+            telemetry.update();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Thread.onSpinWait();
             } else {

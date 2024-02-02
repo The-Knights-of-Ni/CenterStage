@@ -28,7 +28,7 @@ public class AutoBlueLeft extends Auto {
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // moving the robot 30 inches forward
-                robot.drive.moveVector(new Vector(-26 * mmPerInch, 15 * mmPerInch));
+                robot.drive.moveVector(new Vector(-25 * mmPerInch, 15 * mmPerInch));
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
@@ -36,7 +36,7 @@ public class AutoBlueLeft extends Auto {
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.moveVector(new Vector(-30 * mmPerInch, 0));
+                robot.drive.moveVector(new Vector(-28 * mmPerInch, 0));
                 robot.drive.moveAngle(90);
                 break;
             case RIGHT:
@@ -52,8 +52,9 @@ public class AutoBlueLeft extends Auto {
         }
         telemetry.addLine("passed switch statement");
         telemetry.update();
-        robot.control.retractShoulder();
         robot.control.moveLinearSlide(Control.SlidePosition.UP);
         robot.control.extendShoulder();
+        Thread.sleep(1000);
+        robot.control.openClaw();
     }
 }

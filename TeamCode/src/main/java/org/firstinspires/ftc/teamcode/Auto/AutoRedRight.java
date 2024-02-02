@@ -52,7 +52,10 @@ public class AutoRedRight extends Auto {
         }
         telemetry.addLine("passed switch statement");
         telemetry.update();
-        robot.control.openClawSync();
         robot.control.moveLinearSlide(Control.SlidePosition.UP);
+        robot.control.extendShoulder();
+        Thread.sleep(1000);
+        robot.control.openClaw();
+
     }
 }

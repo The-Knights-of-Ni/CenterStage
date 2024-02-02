@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -48,5 +49,11 @@ public class AutoRedLeft extends Auto {
             default:
                 break;
         }
+        telemetry.addLine("passed switch statement");
+        telemetry.update();
+        robot.control.moveLinearSlide(Control.SlidePosition.UP);
+        robot.control.extendShoulder();
+        Thread.sleep(1000);
+        robot.control.openClaw();
     }
 }
