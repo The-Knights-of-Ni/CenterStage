@@ -58,7 +58,7 @@ public class PID {
         previousError = error;
 
         // Note that integral sum*ki is capped at 0.25 to not break everything.
-        var iTerm = Math.max(integralSum * Ki, 0.25);
+        var iTerm = integralSum.signum() * Math.max(Math.abs(integralSum) * Ki, 0.25);
         // TODO: If sign of kp term is not the same as the integral term, then don't use it and log warning.
         // Cap output at range (-1,1).
         return MathUtils.clamp(error * Kp + iTerm + derivative * Kd, -1, 1);
