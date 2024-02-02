@@ -222,10 +222,6 @@ public class OldDrive extends Subsystem {
             fr.cycle();
             rl.cycle();
             rr.cycle();
-            Log.v("FL isDone", (fl.isDone) ? "true" : "false");
-            Log.v("FR isDone", (fr.isDone) ? "true" : "false");
-            Log.v("RL isDone", (rl.isDone) ? "true" : "false");
-            Log.v("RR isDone", (rr.isDone) ? "true" : "false");
             if (fl.isNotMoving && fr.isNotMoving && rl.isNotMoving && rr.isNotMoving) {
                 if (isTimeOutStarted && currentTime - timeOutStartedTime > timeOutPeriod) {
                     isTimeOutExceeded = true;
