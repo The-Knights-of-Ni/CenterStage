@@ -102,6 +102,8 @@ public class PID {
                 "Kp=" + Kp +
                 ", Ki=" + Ki +
                 ", Kd=" + Kd +
+                ", lowPass=" + lowPass +
+                ", dump=" + previousError + "|" + derivative + "|" + integralSum +
                 '}';
     }
 
