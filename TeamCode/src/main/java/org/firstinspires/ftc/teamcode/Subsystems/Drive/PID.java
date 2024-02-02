@@ -51,14 +51,14 @@ public class PID {
         double dt = getDT();
         double error = calculateError(target, measured);
         double derivative = calculateDerivative(error, dt);
-        if (Math.signum(error) != Math.signum(previousError)) {
-            integralSum = 0; // Prevents integral windup
-        }
+//        if (Math.signum(error) != Math.signum(previousError)) {
+//            integralSum = 0; // Prevents integral windup
+//        }
         integrate(error, dt);
         previousError = error;
 
         // Note that integral sum*ki is capped at 0.25 to not break everything.
-        var iTerm = integralSum.signum() * Math.max(Math.abs(integralSum) * Ki, 0.25);
+        var iTerm = integralSum * Ki;
         // TODO: If sign of kp term is not the same as the integral term, then don't use it and log warning.
         // Cap output at range (-1,1).
         return MathUtils.clamp(error * Kp + iTerm + derivative * Kd, -1, 1);
