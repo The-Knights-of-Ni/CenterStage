@@ -59,7 +59,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
             return null;
         }
         Mat mask = new Mat();
-        Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, mask, (allianceColor == AllianceColor.RED) ? Imgproc.COLOR_BGR2HSV : Imgproc.COLOR_RGB2HSV);
 
         Rect rectCrop = new Rect(0, 0, mask.width(), mask.height());
         Mat crop = new Mat(mask, rectCrop);
