@@ -23,7 +23,7 @@ public class AutoBlueRight extends Auto {
         switch (markerPosition) {
             case LEFT:
                 // turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.moveVector(new Vector(-13 * mmPerInch, 15 * mmPerInch));
+                robot.drive.moveVector(new Vector(-14 * mmPerInch, 20 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // moving the robot 30 inches forward
@@ -40,7 +40,7 @@ public class AutoBlueRight extends Auto {
                 break;
             case RIGHT:
                 //turns the robot right 90 degrees after moving it 12 inches right
-                robot.drive.moveVector(new Vector(13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(14 * mmPerInch, 20 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 //confirms position is reached
                 //turns the robot right 180 degrees after moving the robot 60 inches backward

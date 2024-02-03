@@ -20,6 +20,9 @@ import java.util.List;
 public class MarkerDetectionPipeline extends OpenCvPipeline {
     private final AllianceColor allianceColor;
     private MarkerLocation markerLocation = MarkerLocation.NOT_FOUND;
+    private int markerLeftDetected = 0;
+    private int markerMiddleDetected = 0;
+    private int markerRightDetected = 0;
 
     /**
      * Class instantiation
@@ -116,22 +119,48 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         double left_x = 0.3 * crop.width();
         double right_x = 0.7 * crop.width();
         var largest_area = 0.0;
+        double right_area = 0.0;
+        double middle_area = 0.0;
+        double left_area = 0.0;
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i] != null) {
                 double area = boundRect[i].area();
-                if (area > largest_area) {
-                    largest_area = area;
-                    int midpoint = boundRect[i].x + boundRect[i].width / 2;
-                    System.out.println(midpoint);
-                    if (midpoint < left_x) {
-                        markerLocation = MarkerLocation.LEFT;
-                    } else if (left_x <= midpoint && midpoint <= right_x) {
-                        markerLocation = MarkerLocation.MIDDLE;
-                    } else if (right_x < midpoint) {
-                        markerLocation = MarkerLocation.RIGHT;
-                    }
+                int midpoint = boundRect[i].x + boundRect[i].width / 2;
+                System.out.println(midpoint);
+                if (midpoint < left_x) {
+                    left_area += area;
+                } else if (left_x <= midpoint && midpoint <= right_x) {
+                    middle_area += area;
+                } else if (right_x < midpoint) {
+                    right_area += area;
                 }
             }
+        }
+
+        if (right_area > largest_area) {
+            largest_area = right_area;
+            markerLocation = MarkerLocation.RIGHT;
+        }
+        if (middle_area > largest_area) {
+            largest_area = middle_area;
+            markerLocation = MarkerLocation.MIDDLE;
+        }
+        if (left_area > largest_area) {
+            markerLocation = MarkerLocation.LEFT;
+        }
+
+        switch (markerLocation) {
+            case LEFT:
+                markerLeftDetected++;
+                break;
+            case MIDDLE:
+                markerMiddleDetected++;
+                break;
+            case RIGHT:
+                markerRightDetected++;
+                break;
+            default:
+                break;
         }
 
         for (int i = 0; i < contours.size(); i++) {
@@ -157,7 +186,22 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      * @see MarkerLocation
      */
     public MarkerLocation getMarkerLocation() {
-        return markerLocation;
+        MarkerLocation mostDetected = MarkerLocation.NOT_FOUND;
+        int mostDetectedCount = 0;
+        if (markerLeftDetected > mostDetectedCount) {
+            mostDetectedCount = markerLeftDetected;
+            mostDetected = MarkerLocation.LEFT;
+        }
+        if (markerMiddleDetected > mostDetectedCount) {
+            mostDetectedCount = markerMiddleDetected;
+            mostDetected = MarkerLocation.MIDDLE;
+        }
+        if (markerRightDetected > mostDetectedCount) {
+            mostDetectedCount = markerRightDetected;
+            mostDetected = MarkerLocation.RIGHT;
+        }
+
+        return mostDetected;
     }
 
     public enum MarkerLocation {

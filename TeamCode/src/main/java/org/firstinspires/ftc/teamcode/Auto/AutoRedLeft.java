@@ -15,15 +15,16 @@ import java.util.concurrent.TimeUnit;
 public class AutoRedLeft extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.BLUE); // Using Blue marker for all autos
+        initAuto(AllianceColor.RED);
         waitForStart();
+        Thread.sleep(5000);
         MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
         Log.d("Marker Location", String.valueOf(markerPosition));
         timer.reset();
         switch (markerPosition) {
             case LEFT:
                 // turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.moveVector(new Vector(-13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(-13 * mmPerInch, 20 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 // confirms position is reached
                 // moving the robot 30 inches forward
@@ -40,7 +41,7 @@ public class AutoRedLeft extends Auto {
                 break;
             case RIGHT:
                 //turns the robot right 90 degrees after moving it 12 inches right
-                robot.drive.moveVector(new Vector(13 * mmPerInch, 16 * mmPerInch));
+                robot.drive.moveVector(new Vector(13 * mmPerInch, 20 * mmPerInch));
                 robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
                 //confirms position is reached
                 //turns the robot right 180 degrees after moving the robot 60 inches backward
