@@ -6,13 +6,13 @@ import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 
 public class MotorControlData {
     DcMotorEx motor;
-    PID moveSystem;
-    boolean isNotMoving;
-    boolean isDone;
-    int currentCount;
+    public PID moveSystem;
+    public boolean isNotMoving;
+    public boolean isDone;
+    public int currentCount;
     int prevCount;
-    int targetCount;
-    double power;
+    public int targetCount;
+    public double power;
     int timeOutThreshold;
     MasterLogger motorLogger;
     private int noMovementTicks;

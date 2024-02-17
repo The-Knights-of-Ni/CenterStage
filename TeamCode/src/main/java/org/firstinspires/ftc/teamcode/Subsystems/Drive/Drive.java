@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfi
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.IMU;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.Odometry;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.PoseEstimationMethod;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.StaticTargeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter.Targeter;
 import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
@@ -55,8 +56,7 @@ public class Drive extends Subsystem {
     public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
     public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.00010, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
-    public final MotorGeneric<DcMotorEx> motors;
-    private final Localizer localizer = new MecanumLocalizer();
+    private final MecanumLocalizer localizer;
     public PoseEstimationMethod poseEstimator;
     public static Pose currentPose = new Pose(0, 0, 0);
 
@@ -81,22 +81,23 @@ public class Drive extends Subsystem {
         } else {
             throw new IllegalArgumentException("Pose estimation method not implemented");
         }
-        // Set motors
-        this.motors = motors;
+
+        localizer = new MecanumLocalizer(motors.frontLeft, motors.frontRight, motors.rearLeft, motors.rearRight);
 
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Init motor directions
         // Motor directions are guaranteed to be forward if not specified
-        this.motors.frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
-        this.motors.rearRight.setDirection(DcMotorEx.Direction.REVERSE);
+        this.localizer.frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        this.localizer.rearRight.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Set zero power behavior
-        this.motors.frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.motors.frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.motors.rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.motors.rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.localizer.frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.localizer.frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.localizer.rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.localizer.rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
     }
 
     /**
@@ -106,10 +107,10 @@ public class Drive extends Subsystem {
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
-        this.motors.frontLeft.setZeroPowerBehavior(mode);
-        this.motors.frontRight.setZeroPowerBehavior(mode);
-        this.motors.rearLeft.setZeroPowerBehavior(mode);
-        this.motors.rearRight.setZeroPowerBehavior(mode);
+        this.localizer.frontLeft.setZeroPowerBehavior(mode);
+        this.localizer.frontRight.setZeroPowerBehavior(mode);
+        this.localizer.rearLeft.setZeroPowerBehavior(mode);
+        this.localizer.rearRight.setZeroPowerBehavior(mode);
     }
 
     /**
@@ -119,10 +120,10 @@ public class Drive extends Subsystem {
      * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
-        this.motors.frontLeft.setMode(mode);
-        this.motors.frontRight.setMode(mode);
-        this.motors.rearLeft.setMode(mode);
-        this.motors.rearRight.setMode(mode);
+        this.localizer.frontLeft.setMode(mode);
+        this.localizer.frontRight.setMode(mode);
+        this.localizer.rearLeft.setMode(mode);
+        this.localizer.rearRight.setMode(mode);
     }
 
     /**
@@ -132,10 +133,10 @@ public class Drive extends Subsystem {
      * @see DcMotorEx#setPower(double)
      */
     public void setDrivePowers(MotorGeneric<Double> powers) {
-        this.motors.frontLeft.setPower(powers.frontLeft);
-        this.motors.frontRight.setPower(powers.frontRight);
-        this.motors.rearLeft.setPower(powers.rearLeft);
-        this.motors.rearRight.setPower(powers.rearRight);
+        this.localizer.frontLeft.setPower(powers.frontLeft);
+        this.localizer.frontRight.setPower(powers.frontRight);
+        this.localizer.rearLeft.setPower(powers.rearLeft);
+        this.localizer.rearRight.setPower(powers.rearRight);
     }
 
     public void setDrivePowers(double power) {
@@ -188,20 +189,17 @@ public class Drive extends Subsystem {
             poseEstimator.update();
             currentPose = poseEstimator.getPose();
             // Feeds pose into targeter to get target ...
-            var target = targeter.getTarget(currentPose);
-            logger.verbose("Current", currentPose);
-            logger.debug("Target", target);
-            logger.verbose("Heading", currentPose.heading);
+            var targetPose = targeter.getTarget(currentPose);
+            logger.debug("Current", currentPose);
+            logger.debug("Target", targetPose);
+            logger.debug("Heading", currentPose.heading);
             if (Math.abs(currentPose.heading - previousPosition.heading) > 25) {
                 positionController.resetHeadingPID();
             }
             // Feeds target into controller to get motor powers
-            MotorGeneric<Double> motorPowers = localizer.localize(positionController.calculate(currentPose, target));
-            logger.verbose("Motor Powers", motorPowers.toString());
-            // sets the motor powers
-            setDrivePowers(motorPowers);
+            localizer.setPowers(positionController.calculate(currentPose, targetPose));
             // Checks if the robot is stuck
-            currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
+            currentTickCounts = new MotorGeneric<>(localizer.frontLeft.getCurrentPosition(), localizer.frontRight.getCurrentPosition(), localizer.rearLeft.getCurrentPosition(), localizer.rearRight.getCurrentPosition());
             if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {
                 timeoutManager.start();
             } else {
@@ -274,11 +272,11 @@ public class Drive extends Subsystem {
     }
 
     public void purePursuit(Path path) {
-//        motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
+        motorController(new PurePursuit(path, PURE_PURSUIT_LOOKAHEAD_DISTANCE), getHolonomicController());
     }
 
 
-    public void followProfile(MotionProfile profile, VAController vaController, PositionController positionController) {
+    public void followProfile(MotionProfile profile, PositionController positionController) {
         poseEstimator.start();
         var timeoutManager = new TimeoutManager(100_000_000);
         var timer = new ElapsedTime();
@@ -294,10 +292,8 @@ public class Drive extends Subsystem {
             var positionMotorPowers = positionController.calculate(currentPose, new Pose(target.x.position,
                     target.y.position,
                     target.heading.position)); // TODO: deal with angles properly
-            var feedforwardMotorPowers = vaController.calculate(currentPose.heading, target);
-            var motorPowers = localizer.mix(positionMotorPowers, feedforwardMotorPowers, 1, 4);
-            setDrivePowers(motorPowers);
-            currentTickCounts = new MotorGeneric<>(motors.frontLeft.getCurrentPosition(), motors.frontRight.getCurrentPosition(), motors.rearLeft.getCurrentPosition(), motors.rearRight.getCurrentPosition());
+            localizer.setPowers(positionMotorPowers);
+            currentTickCounts = new MotorGeneric<>(localizer.frontLeft.getCurrentPosition(), localizer.frontRight.getCurrentPosition(), localizer.rearLeft.getCurrentPosition(), localizer.rearRight.getCurrentPosition());
             if (Math.abs(currentTickCounts.frontLeft - previousTickCounts.frontLeft) > timeOutThreshold || Math.abs(currentTickCounts.frontRight - previousTickCounts.frontRight) > timeOutThreshold || Math.abs(currentTickCounts.rearLeft - previousTickCounts.rearLeft) > timeOutThreshold || Math.abs(currentTickCounts.rearRight - previousTickCounts.rearRight) > timeOutThreshold) {
                 timeoutManager.start();
             } else {

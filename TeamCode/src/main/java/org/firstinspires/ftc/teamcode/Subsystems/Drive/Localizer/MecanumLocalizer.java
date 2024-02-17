@@ -1,11 +1,20 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 
 public class MecanumLocalizer extends Localizer {
-    public MecanumLocalizer() {
+    public DcMotorEx frontLeft;
+    public DcMotorEx frontRight;
+    public DcMotorEx rearLeft;
+    public DcMotorEx rearRight;
 
+    public MecanumLocalizer(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx rearLeft, DcMotorEx rearRight) {
+        this.frontLeft = frontLeft;
+        this.frontRight = frontRight;
+        this.rearLeft = rearLeft;
+        this.rearRight = rearRight;
     }
 
     public MotorGeneric<Double> localize(ControllerOutput output) {
@@ -21,5 +30,14 @@ public class MecanumLocalizer extends Localizer {
                         xRotated - yRotated - thetaPower,
                         xRotated + yRotated - thetaPower)
         );
+    }
+
+    @Override
+    public void setPowers(ControllerOutput output) {
+        var powers = localize(output);
+        frontLeft.setPower(powers.frontLeft);
+        frontRight.setPower(powers.frontRight);
+        rearLeft.setPower(powers.rearLeft);
+        rearRight.setPower(powers.rearRight);
     }
 }
