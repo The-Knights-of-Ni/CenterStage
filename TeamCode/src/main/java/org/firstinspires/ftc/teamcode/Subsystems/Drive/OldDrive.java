@@ -86,6 +86,12 @@ public class OldDrive extends Subsystem {
         motors.frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motors.rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        // DO NOT USE RUN_USING_ENCODER OR ANYTHING BUT RUN_WITHOUT_ENCODER as your run mode.
+        // This will mess up the PID and might even use the built-in REV PID.
+        // This will not allow the algo to set raw motor powers.
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Makes sure that the starting tick count is 0
+
         // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

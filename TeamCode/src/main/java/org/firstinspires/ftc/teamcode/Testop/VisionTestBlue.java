@@ -25,6 +25,7 @@ public class VisionTestBlue extends Auto {
         timer.reset();
 
         while (opModeIsActive()) {
+            markerPosition = robot.vision.detectMarkerRun();
             telemetry.addData("Marker Position: ", markerPosition.name());
             telemetry.update();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

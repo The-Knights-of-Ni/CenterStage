@@ -171,7 +171,7 @@ public class Control extends Subsystem {
     }
 
     public enum SlidePosition {
-        UP(2110),
+        UP(2222),
         DOWN(0);
         public final int pos;
 
