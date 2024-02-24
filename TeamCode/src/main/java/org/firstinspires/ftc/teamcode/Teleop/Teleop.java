@@ -83,7 +83,7 @@ public class Teleop extends LinearOpMode {
             //gets the motor powers for drive from gamepad1
             //y button activates low speed mode
             //it gets the x and y positioning from the left stick and turns based on the right stick's x
-            //calcMotorPowers creates another MotorGeneric called a ControllerOutput
+            //calcMotorPowers creates a MotorGeneric
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
                 if (!Robot.gamepad1.yButton.toggle) {
@@ -92,7 +92,7 @@ public class Teleop extends LinearOpMode {
                     motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * Robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
-                //gets the robot to actually move from the ControllerOutput
+                //gets the robot to actually move from the newly created MotorGeneric
                 robot.drive.setDrivePowers(motorPowers);
 
                 // Paper Drone
