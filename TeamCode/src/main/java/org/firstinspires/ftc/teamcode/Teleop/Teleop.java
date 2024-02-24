@@ -32,6 +32,11 @@ public class Teleop extends LinearOpMode {
 
         telemetry.addData("Waiting for start", "...");
         telemetry.update();
+
+        List<LynxModule> allHubs = Robot.hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
     }
 
     /**
@@ -61,6 +66,9 @@ public class Teleop extends LinearOpMode {
         double cranePowerVel;
 
         while (opModeIsActive()) {
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
+            }
             Robot.updateGamepads();
 
             timeCurrent = timer.nanoseconds();
