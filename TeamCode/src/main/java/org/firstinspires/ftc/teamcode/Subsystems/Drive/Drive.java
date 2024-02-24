@@ -172,15 +172,6 @@ public class Drive extends Subsystem {
         return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, 0));
     }
 
-    public static double normalizeAngle(double angle) { // TODO: Move to util
-        if (angle > 180) {
-            return angle - 360;
-        } else if (angle < -180) {
-            return angle + 360;
-        }
-        return angle;
-    }
-
     public void motorController(Targeter targeter, PositionController positionController) {
         poseEstimator.start();
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders)

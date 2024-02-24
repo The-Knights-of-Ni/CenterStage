@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.Util.Pose;
 import org.firstinspires.ftc.teamcode.Util.Vector;
 
-import static org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive.normalizeAngle;
+import static org.firstinspires.ftc.teamcode.Util.MathUtil.normalizeAngle;
 
 public class Odometry implements PoseEstimationMethod {
     private final DcMotorEx odL;

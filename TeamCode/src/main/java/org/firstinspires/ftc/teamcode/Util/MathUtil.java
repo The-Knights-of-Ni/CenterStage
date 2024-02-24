@@ -99,4 +99,13 @@ public class MathUtil {
         }
         return result;
     }
+
+    public static double normalizeAngle(double angle) {
+        if (angle > 180) {
+            return angle - 360;
+        } else if (angle < -180) {
+            return angle + 360;
+        }
+        return angle;
+    }
 }
