@@ -33,6 +33,7 @@ public class Teleop extends LinearOpMode {
         telemetry.addData("Waiting for start", "...");
         telemetry.update();
 
+        //activates bulk reading, an faster way of reading data
         List<LynxModule> allHubs = Robot.hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -66,14 +67,23 @@ public class Teleop extends LinearOpMode {
         double cranePowerVel;
 
         while (opModeIsActive()) {
+            //clears cache to prevent overflow
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
+
+            //get data from gamepads
             Robot.updateGamepads();
 
+            //get current time
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
+
+            //gets the motor powers for drive from gamepad1
+            //y button activates low speed mode
+            //it gets the x and y positioning from the left stick and turns based on the right stick's x
+            //calcMotorPowers creates another MotorGeneric called a ControllerOutput
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
                 if (!Robot.gamepad1.yButton.toggle) {
@@ -82,6 +92,7 @@ public class Teleop extends LinearOpMode {
                     motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * Robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
+                //gets the robot to actually move from the ControllerOutput
                 robot.drive.setDrivePowers(motorPowers);
 
                 // Paper Drone
