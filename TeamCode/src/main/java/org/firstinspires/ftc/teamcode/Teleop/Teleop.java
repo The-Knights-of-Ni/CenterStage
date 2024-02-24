@@ -68,6 +68,8 @@ public class Teleop extends LinearOpMode {
         while (opModeIsActive()) {
             robot.drive.poseEstimator.update();
             Pose pose = robot.drive.poseEstimator.getPose();
+            var requestedVector = Vector(robot.gamepad1.leftStickX, robot.gampade1.leftStickY);
+            var actualVector = requestedVector.rotate(-pose.heading());
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
@@ -78,13 +80,12 @@ public class Teleop extends LinearOpMode {
             timePre = timeCurrent;
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
-                double stickAngle = Math.atan2(robot.gamepad1.leftStickY, robot.gampad1.leftStickX);
                 if (!Robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * Robot.gamepad1.leftStickX,
-                            sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * actualVector.get(0),
+                            sensitivityHighPower * actualVector.get(1), sensitivityHighPower * robot.gamepad1.rightStickX);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * Robot.gamepad1.leftStickX,
-                            sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * actualVector.get(0),
+                            sensitivityLowPower * actualVector.get(1), sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
