@@ -33,7 +33,7 @@ public class Teleop extends LinearOpMode {
         telemetry.addData("Waiting for start", "...");
         telemetry.update();
 
-        List<LynxModule> allHubs = Robot.hardwareMap.getAll(LynxModule.class);
+        List<LynxModule> allHubs = robot.hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -66,6 +66,8 @@ public class Teleop extends LinearOpMode {
         double cranePowerVel;
 
         while (opModeIsActive()) {
+            robot.drive.poseEstimator.update();
+            Pose pose = robot.drive.poseEstimator.getPose();
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
@@ -76,10 +78,13 @@ public class Teleop extends LinearOpMode {
             timePre = timeCurrent;
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
+                double stickAngle = Math.atan2(robot.gamepad1.leftStickY, robot.gampad1.leftStickX);
                 if (!Robot.gamepad1.yButton.toggle) {
-                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * Robot.gamepad1.leftStickX, sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * Robot.gamepad1.leftStickX,
+                            sensitivityHighPower * robot.gamepad1.leftStickY, sensitivityHighPower * robot.gamepad1.rightStickX);
                 } else {
-                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * Robot.gamepad1.leftStickX, sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
+                    motorPowers = robot.drive.calcMotorPowers(sensitivityLowPower * Robot.gamepad1.leftStickX,
+                            sensitivityLowPower * robot.gamepad1.leftStickY, sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
                 robot.drive.setDrivePowers(motorPowers);
