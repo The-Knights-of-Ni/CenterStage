@@ -50,9 +50,13 @@ public class AutoBlueLeft extends Auto {
                 break;
         }
         telemetry.addLine("passed switch statement");
-        telemetry.update();
         robot.control.openClawSync();
-        robot.control.moveLinearSlideSync(Control.SlidePosition.UP);
+        telemetry.addData("RunMode: ", robot.control.slideMotor.getMode());
+        telemetry.addData("Current Position: ", robot.control.slideMotor.getCurrentPosition());
+        telemetry.addData("Target Position: ", robot.control.slideMotor.getTargetPosition());
+        telemetry.addData("Is Busy: ", robot.control.slideMotor.isBusy());
+        telemetry.update();
+//        robot.control.moveLinearSlideSync(Control.SlidePosition.UP);
         robot.control.extendShoulder();
     }
 }

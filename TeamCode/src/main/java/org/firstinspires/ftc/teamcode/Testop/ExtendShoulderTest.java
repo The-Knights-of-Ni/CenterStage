@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
-@Autonomous(name = "Vision Test", group = "Concept")
-public class VisionTest extends Auto {
+@Autonomous(name = "Extend Shoulder Test", group = "Concept")
+public class ExtendShoulderTest extends Auto {
     /**
      * Override of runOpMode()
      *
@@ -19,22 +19,9 @@ public class VisionTest extends Auto {
     @Override
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
-        initAuto(AllianceColor.RED);
+        initAuto(AllianceColor.BLUE);
         waitForStart();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun();
-        timer.reset();
-
-        while (opModeIsActive()) {
-            telemetry.addData("Marker Position: ", markerPosition.name());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Thread.onSpinWait();
-            } else {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
+        robot.control.extendShoulder();
+        Thread.sleep(500);
     }
 }

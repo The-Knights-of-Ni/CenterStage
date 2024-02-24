@@ -54,8 +54,8 @@ public class Vision extends Subsystem {
         super(telemetry, "vision");
         this.hardwareMap = hardwareMap;
         this.allianceColor = allianceColor;
-        this.aprilTagDetectionThread = new AprilTagDetectionThread(this.hardwareMap.get(WebcamName.class, WEBCAM_NAME));
-        this.aprilTagDetectionThread.start();
+//        this.aprilTagDetectionThread = new AprilTagDetectionThread(this.hardwareMap.get(WebcamName.class, WEBCAM_NAME));
+//        this.aprilTagDetectionThread.start();
         // Telemetry
         logger.info("Vision init complete");
         initDetectionPipeline();
@@ -112,10 +112,10 @@ public class Vision extends Subsystem {
         // Obtain camera instance from ID
         camera =
                 OpenCvCameraFactory.getInstance()
-                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+                        .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME));
 
         // Create a detection pipeline for detecting the position
-        pipeline = new MarkerDetectionPipeline(allianceColor, CAMERA_HEIGHT, CAMERA_WIDTH);
+        pipeline = new MarkerDetectionPipeline(allianceColor);
         camera.setPipeline(pipeline);
 
         // Create listeners for the camera

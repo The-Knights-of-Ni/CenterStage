@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,9 +19,10 @@ import java.util.List;
  */
 public class MarkerDetectionPipeline extends OpenCvPipeline {
     private final AllianceColor allianceColor;
-    private final int CAMERA_HEIGHT;
-    private final int CAMERA_WIDTH;
     private MarkerLocation markerLocation = MarkerLocation.NOT_FOUND;
+    private int markerLeftDetected = 0;
+    private int markerMiddleDetected = 0;
+    private int markerRightDetected = 0;
 
     /**
      * Class instantiation
@@ -28,10 +30,8 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      * @see Telemetry
      * @see AllianceColor
      */
-    public MarkerDetectionPipeline(AllianceColor allianceColor, int height, int width) {
+    public MarkerDetectionPipeline(AllianceColor allianceColor) {
         this.allianceColor = allianceColor;
-        this.CAMERA_HEIGHT = height;
-        this.CAMERA_WIDTH = width;
     }
 
     /**
@@ -56,13 +56,15 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      */
     @Override
     public Mat processFrame(Mat input) {
+        Log.v("MarkerDetectionPipeline", "Processing frame of size " + input.width() + "x" + input.height());
+        var oldMarkerLocation = markerLocation;
         if (input == null) {
             return null;
         }
         Mat mask = new Mat();
-        Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, mask, (allianceColor == AllianceColor.RED) ? Imgproc.COLOR_BGR2HSV : Imgproc.COLOR_RGB2HSV);
 
-        Rect rectCrop = new Rect(0, 720, 1920, 360);
+        Rect rectCrop = new Rect(0, 0, mask.width(), mask.height());
         Mat crop = new Mat(mask, rectCrop);
         mask.release();
 
@@ -72,25 +74,21 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
         }
         Scalar lowHSV;
         Scalar highHSV;
-        // Or red
         if (allianceColor == AllianceColor.RED) {
-            lowHSV = new Scalar(163.0, 171.0, 45.0);
-            highHSV = new Scalar(179.0, 255.0, 255.0);
+            lowHSV = new Scalar(109.0, 147.0, 156.0);
+            highHSV = new Scalar(132.0, 255.0, 255.0);
         } else {
             // Default to blue
-            // Blue alliance
-            lowHSV = new Scalar(89.0, 62.0, 36.0);
-            highHSV = new Scalar(117.0, 255.0, 191.0);
+            lowHSV = new Scalar(75.0, 150.0, 150.0);
+            highHSV = new Scalar(125.0, 255.0, 255.0);
         }
         Mat thresh = new Mat();
 
         Core.inRange(crop, lowHSV, highHSV, thresh);
-        crop.release();
 
         Mat edges = new Mat();
         Imgproc.Canny(thresh, edges, 100, 300);
-        thresh.release();
-
+//        thresh.release();
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -105,15 +103,64 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
                 Log.w("MarkerDetectionPipeline", "Null contour");
             } else {
                 MatOfPoint2f tempContours = new MatOfPoint2f(contours.get(i).toArray());
-                MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
                 // IMPORTANT: MatOfPoint2f will prob leak memory, may want to fix
                 contoursPoly[i] = new MatOfPoint2f();
                 Imgproc.approxPolyDP(tempContours, contoursPoly[i], 3, true);
+                MatOfPoint rectContours = new MatOfPoint(contoursPoly[i].toArray());
                 boundRect[i] = Imgproc.boundingRect(rectContours);
 //            Imgproc.contourArea(contoursPoly[i]); // TODO Maybe implement contour area check for next tourney
                 tempContours.release();
                 rectContours.release();
             }
+        }
+
+        System.out.println(Arrays.toString(boundRect));
+
+        double left_x = 0.3 * crop.width();
+        double right_x = 0.7 * crop.width();
+        var largest_area = 0.0;
+        double right_area = 0.0;
+        double middle_area = 0.0;
+        double left_area = 0.0;
+        for (int i = 0; i != boundRect.length; i++) {
+            if (boundRect[i] != null) {
+                double area = boundRect[i].area();
+                int midpoint = boundRect[i].x + boundRect[i].width / 2;
+                System.out.println(midpoint);
+                if (midpoint < left_x) {
+                    left_area += area;
+                } else if (left_x <= midpoint && midpoint <= right_x) {
+                    middle_area += area;
+                } else if (right_x < midpoint) {
+                    right_area += area;
+                }
+            }
+        }
+
+        if (right_area > largest_area) {
+            largest_area = right_area;
+            markerLocation = MarkerLocation.RIGHT;
+        }
+        if (middle_area > largest_area) {
+            largest_area = middle_area;
+            markerLocation = MarkerLocation.MIDDLE;
+        }
+        if (left_area > largest_area) {
+            markerLocation = MarkerLocation.LEFT;
+        }
+
+        switch (markerLocation) {
+            case LEFT:
+                markerLeftDetected++;
+                break;
+            case MIDDLE:
+                markerMiddleDetected++;
+                break;
+            case RIGHT:
+                markerRightDetected++;
+                break;
+            default:
+                break;
         }
 
         for (int i = 0; i < contours.size(); i++) {
@@ -123,28 +170,13 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
 
         hierarchy.release();
         edges.release();
+        crop.release();
 
-        double left_x = 0.375 * CAMERA_WIDTH;
-        double right_x = 0.625 * CAMERA_WIDTH;
-
-        boolean left = false;
-        boolean middle = false;
-        boolean right = false;
-
-        for (int i = 0; i != boundRect.length; i++) {
-            int midpoint = boundRect[i].x + boundRect[i].width / 2;
-            if (midpoint < left_x)
-                left = true;
-            if (left_x <= midpoint && midpoint <= right_x)
-                middle = true;
-            if (right_x < midpoint)
-                right = true;
+        if (oldMarkerLocation != markerLocation) {
+            Log.i("MarkerDetectionPipeline", "Marker Location: " + markerLocation.name());
         }
-        if (left) markerLocation = MarkerLocation.LEFT;
-        if (middle) markerLocation = MarkerLocation.MIDDLE;
-        if (right) markerLocation = MarkerLocation.RIGHT;
 
-        return input;
+        return thresh;
     }
 
     /**
@@ -154,7 +186,22 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      * @see MarkerLocation
      */
     public MarkerLocation getMarkerLocation() {
-        return markerLocation;
+        MarkerLocation mostDetected = MarkerLocation.NOT_FOUND;
+        int mostDetectedCount = 0;
+        if (markerLeftDetected > mostDetectedCount) {
+            mostDetectedCount = markerLeftDetected;
+            mostDetected = MarkerLocation.LEFT;
+        }
+        if (markerMiddleDetected > mostDetectedCount) {
+            mostDetectedCount = markerMiddleDetected;
+            mostDetected = MarkerLocation.MIDDLE;
+        }
+        if (markerRightDetected > mostDetectedCount) {
+            mostDetectedCount = markerRightDetected;
+            mostDetected = MarkerLocation.RIGHT;
+        }
+
+        return mostDetected;
     }
 
     public enum MarkerLocation {

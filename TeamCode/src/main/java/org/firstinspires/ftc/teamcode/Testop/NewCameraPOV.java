@@ -24,7 +24,7 @@ public class NewCameraPOV extends LinearOpMode {
     public static final int CAMERA_WIDTH = 1920; // width of wanted camera resolution
     public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
 
-    MarkerDetectionPipeline pipeline = new MarkerDetectionPipeline(AllianceColor.RED, CAMERA_HEIGHT, CAMERA_WIDTH);
+    MarkerDetectionPipeline pipeline = new MarkerDetectionPipeline(AllianceColor.RED);
 
     @Override
     public void runOpMode() {
@@ -51,12 +51,7 @@ public class NewCameraPOV extends LinearOpMode {
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
-        /*
-         * Specify the image processing pipeline we wish to invoke upon receipt
-         * of a frame from the camera. Note that switching pipelines on-the-fly
-         * (while a streaming session is in flight) *IS* supported.
-         */
-        webcam.setPipeline(pipeline);
+//        webcam.setPipeline(pipeline);
 
         /*
          * Open the connection to the camera device asynchronously.

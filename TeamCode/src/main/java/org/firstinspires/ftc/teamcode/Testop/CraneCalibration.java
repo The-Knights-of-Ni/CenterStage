@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Testop;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Auto.Auto;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 
@@ -20,8 +21,9 @@ public class CraneCalibration extends Auto {
         initAuto(AllianceColor.BLUE);
         waitForStart();
         timer.reset();
+        robot.control.slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
-            telemetry.addData("Motor Encoder", "Crane Position: %d", robot.control.slideMotor.getCurrentPosition());
+            telemetry.addData("Slide Position", "%d", robot.control.slideMotor.getCurrentPosition());
             telemetry.update();
         }
     }

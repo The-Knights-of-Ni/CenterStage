@@ -18,19 +18,5 @@ public abstract class Localizer {
                 powers.rearLeft * scalingFactor, powers.rearRight * scalingFactor);
     }
 
-    public abstract MotorGeneric<Double> localize(ControllerOutput output);
-
-    public MotorGeneric<Double> mix(ControllerOutput first, ControllerOutput second, int firstMultiplier, int secondMultiplier) {
-        var firstMotorPowers = localize(first);
-        var secondMotorPowers = localize(second);
-        return cropMotorPowers(new MotorGeneric<>(firstMotorPowers.frontLeft * firstMultiplier + secondMotorPowers.frontLeft * secondMultiplier,
-                firstMotorPowers.frontRight * firstMultiplier + secondMotorPowers.frontRight * secondMultiplier,
-                firstMotorPowers.rearLeft * firstMultiplier + secondMotorPowers.rearLeft * secondMultiplier,
-                firstMotorPowers.rearRight * firstMultiplier + secondMotorPowers.rearRight * secondMultiplier
-        ));
-    }
-
-    public MotorGeneric<Double> mix(ControllerOutput first, ControllerOutput second) {
-        return mix(first, second, 1, 1);
-    }
+    public abstract void setPowers(ControllerOutput output);
 }
