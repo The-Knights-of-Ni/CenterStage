@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.GamepadWrapper;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
+import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.teamcode.Robot;
 
 import java.util.HashMap;
@@ -68,8 +69,6 @@ public class Teleop extends LinearOpMode {
         while (opModeIsActive()) {
             robot.drive.poseEstimator.update();
             Pose pose = robot.drive.poseEstimator.getPose();
-            var requestedVector = Vector(robot.gamepad1.leftStickX, robot.gampade1.leftStickY);
-            var actualVector = requestedVector.rotate(-pose.heading());
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
@@ -80,6 +79,11 @@ public class Teleop extends LinearOpMode {
             timePre = timeCurrent;
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
+                var requestedVector = Vector(robot.gamepad1.leftStickX, robot.gampade1.leftStickY);
+                var requestedVectorMagnitude = requestedVector.magnitude();
+                var actualAngle = requestedVector.angle() - pose.angle;
+                var actualVector = new Vector(requestedVectorMagnitude * Math.cos(actualAngle), requestedVectorMagnitude * Math.sin(actualAngle));
+
                 if (!Robot.gamepad1.yButton.toggle) {
                     motorPowers = robot.drive.calcMotorPowers(sensitivityHighPower * actualVector.get(0),
                             sensitivityHighPower * actualVector.get(1), sensitivityHighPower * robot.gamepad1.rightStickX);
