@@ -108,6 +108,11 @@ public class Robot {
      */
     protected void init() {
 //        imuInit();
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
         logger.info("imu init finished");
         subsystemInit();
     }
@@ -195,5 +200,11 @@ public class Robot {
             WebThread.addLog(new WebLog(caption, value, WebLog.LogSeverity.INFO));
         }
         Log.i(caption, value);
+    }
+
+    public void clearCaches(){
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
     }
 }
