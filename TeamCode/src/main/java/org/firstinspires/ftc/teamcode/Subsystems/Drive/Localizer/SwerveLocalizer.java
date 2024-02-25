@@ -16,6 +16,14 @@ public class SwerveLocalizer extends Localizer {
         this.angles = new MotorGeneric<>(0.0, 0.0, 0.0, 0.0);
     }
 
+    public MotorGeneric<Double> getAngles(ControllerOutput output) {
+        return null;
+    }
+
+    public MotorGeneric<Double> getPowers(ControllerOutput output) {
+        return null;
+    }
+
     public MotorGeneric<SwerveGeneric<Double, Double>> localize(ControllerOutput output) {
         var movement = new Vector(output.x, output.y);
         return null;

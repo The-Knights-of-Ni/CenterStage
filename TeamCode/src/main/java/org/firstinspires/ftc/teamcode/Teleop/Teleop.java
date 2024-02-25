@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Robot;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -32,12 +34,6 @@ public class Teleop extends LinearOpMode {
 
         telemetry.addData("Waiting for start", "...");
         telemetry.update();
-
-        //activates bulk reading, an faster way of reading data
-        List<LynxModule> allHubs = Robot.hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
     }
 
     /**
@@ -51,6 +47,12 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode();
+
+        // Activates bulk reading, a faster way of reading data
+        List<LynxModule> allHubs = robot.hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         ElapsedTime timer = new ElapsedTime();
         robot.control.initDevicesTeleop();

@@ -35,7 +35,7 @@ public class Robot {
     private final AllianceColor allianceColor;
     private final boolean webEnabled;
     private final boolean odometryEnabled;
-    private final HardwareMap hardwareMap;
+    public final HardwareMap hardwareMap;
     private final Telemetry telemetry;
 
     public BNO055IMU imu;
