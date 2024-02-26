@@ -68,8 +68,8 @@ public class Drive extends Subsystem {
      * @param poseEstimationMethodChoice The choice of how to estimate a pose, which represents the
      *                                   robot's position
      * @param imu An imu is a gyro with an accelerometer that it built into the hub. However, our
-     *            team does not typiically use it, due to its inaccuracy.
-     * @param telemetry Telemetry is one way to log what's going on as the code is excecuting, so
+     *            team does not typically use it, due to its inaccuracy.
+     * @param telemetry Telemetry is one way to log what's going on as the code is executing, so
      *                  that the driver can see these notifications.
      */
     public Drive(MotorGeneric<DcMotorEx> motors, @Nullable DcMotorEx[] odometry, PoseEstimationMethodChoice poseEstimationMethodChoice, BNO055IMU imu, Telemetry telemetry) {
@@ -107,8 +107,9 @@ public class Drive extends Subsystem {
 
     /**
      * Sets the zero power behavior (what motors will do when their power is 0) of all drive motors
-     * @param mode The zero power mode, choosing from the enums UNKKNOW, BREAK, AND FLOAT
+     * @param mode The zero power mode, choosing from the enums UNKNOWN, BREAK, AND FLOAT
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
+     * @see DcMotor.ZeroPowerBehavior
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
         this.localizer.frontLeft.setZeroPowerBehavior(mode);
@@ -121,7 +122,8 @@ public class Drive extends Subsystem {
      * Sets the run mode (the way in which the motors will run, including RUN_USING_ENCODER AND
      * RUN_TO_POSITION) of all drive motors
      * @param mode The enum run mode
-     * @see DcMotorEx#setMode(DcMotor.RunMode)
+     * @see DcMotorEx#setMode(DcMotor.RunMode)\
+     * @see DcMotor.RunMode
      */
     public void setRunMode(DcMotor.RunMode mode) {
         this.localizer.frontLeft.setMode(mode);
@@ -136,6 +138,7 @@ public class Drive extends Subsystem {
      * @param powers The powers to set each of the motors to, stored in a data structure called a
      *               MotorGeneric, which functions similarly to an array but with more features
      * @see DcMotorEx#setPower(double)
+     * @see MotorGeneric
      */
     public void setDrivePowers(MotorGeneric<Double> powers) {
         this.localizer.frontLeft.setPower(powers.frontLeft);
