@@ -251,26 +251,32 @@ public class Drive extends Subsystem {
         return new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
     }
 
-
+    /**
+     * Moves the robot to a given position, it uses a {@link StaticTargeter} internally.
+     * @param p The position to move to, the positive y-axis points forward,
+     *          the x-axis points right,
+     *          and heading is in degrees clockwise.
+     *
+     * @see Pose
+     */
     public void move(Pose p) {
         motorController(new StaticTargeter(new Pose(p.x, p.y, p.heading)), getHolonomicController());
     }
 
-    public void moveVector(Vector vector) {
+    /**
+     * @param vector Moves the robot to a given position, without turning, this called {@link #move(Pose)} internally.
+     *
+     * @see #move(Pose)
+     */
+    public void move(Vector vector) {
         move(new Pose(vector, 0));
     }
 
     /**
-     * @param vector
-     * @param angle
-     * @deprecated use {@link #move(Pose)} instead
+     * Turns the robot clockwise by a given angle, using {@link #move(Pose)} internally.
+     * @param angle the angle to turn by, in degrees
      */
-    @Deprecated
-    public void moveVector(Vector vector, double angle) {
-        move(new Pose(vector, angle));
-    }
-
-    public void moveAngle(int angle) {
+    public void move(double angle) {
         move(new Pose(0, 0, angle));
     }
 
