@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Control.Control;
 import org.firstinspires.ftc.teamcode.Subsystems.Vision.MarkerDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Util.AllianceColor;
 import org.firstinspires.ftc.teamcode.Util.Pose;
@@ -16,38 +14,43 @@ public class AutoBlueRight extends Auto {
     @SuppressWarnings("RedundantThrows")
     public void runOpMode() throws InterruptedException {
         initAuto(AllianceColor.BLUE);
+        MarkerDetectionPipeline.MarkerLocation markerPosition = MarkerDetectionPipeline.MarkerLocation.MIDDLE;
         waitForStart();
-        MarkerDetectionPipeline.MarkerLocation markerPosition = robot.vision.detectMarkerRun(); //Delete this line and uncomment the previous one once vision is working
-        Log.d("Marker Location", String.valueOf(markerPosition));
+        controlThread.start();
         timer.reset();
         switch (markerPosition) {
             case LEFT:
-                // turns the robot left 90 degrees after moving the robot 30 in forward
-                robot.drive.moveVector(new Vector(-14 * mmPerInch, 20 * mmPerInch));
-                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
-                // confirms position is reached
-                // moving the robot 30 inches forward
-                robot.drive.moveVector(new Vector(-26 * mmPerInch, 15 * mmPerInch));
+                //moves the robot 12 inches right, 24 inches forward,
+                // and turns left 90 degrees
+                robot.drive.move(new Pose(12 * mmPerInch, 24 * mmPerInch, -90));
+                //confirms position reached
+                controlThread.reachedPosition = true;
+                //moves the robot forward 78 inches
+                robot.drive.moveVector(new Vector(0, 78 * mmPerInch));
                 break;
             case MIDDLE:
                 // moving the robot 12 inches right
-                robot.drive.moveVector(new Vector(-8 * mmPerInch, 27 * mmPerInch));
-                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
+                robot.drive.moveVector(new Vector(0, 30* mmPerInch));
                 // confirms position is reached
+                controlThread.reachedPosition = true;
                 // turn the robot left 90 degrees after moving it 42 inches left
-                robot.drive.moveVector(new Vector(-30 * mmPerInch, 0));
-                robot.drive.moveAngle(90);
-                break;
+                robot.drive.move(new Pose(-78 * mmPerInch, 0, 89));
+                robot.drive.move(new Pose(-12 * mmPerInch, 0, 0));
             case RIGHT:
-                //turns the robot right 90 degrees after moving it 12 inches right
-                robot.drive.moveVector(new Vector(14 * mmPerInch, 20 * mmPerInch));
-                robot.drive.moveVector(new Vector(0, -4 * mmPerInch));
-                //confirms position is reached
-                //turns the robot right 180 degrees after moving the robot 60 inches backward
-                robot.drive.moveVector(new Vector(-36 * mmPerInch, 15 * mmPerInch));
-                break;
-            default:
+                //moves the robot 12 inches right
+                //and turns the robot 90 degrees right
+                robot.drive.moveVector(new Vector(12 * mmPerInch, 0), 90);
+                //confirms position reached
+                controlThread.reachedPosition = true;
+                //moves the robot 100 inches backward
+                // and turns the robot left 180 degrees
+                robot.drive.moveVector(new Vector(0, -100 * mmPerInch), -180);
                 break;
         }
+
+        adjustPosition(markerPosition);
+        controlThread.reachedPosition = true;
+        controlThread.extended.tryLock(100, TimeUnit.SECONDS);
+        robot.drive.moveVector(new Vector(-24, 0));
     }
 }

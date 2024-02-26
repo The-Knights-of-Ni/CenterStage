@@ -10,6 +10,7 @@ public class MotorGeneric<T> {
     public T rearLeft;
     public T rearRight;
 
+
     public MotorGeneric(T frontLeft, T frontRight, T rearLeft, T rearRight) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;

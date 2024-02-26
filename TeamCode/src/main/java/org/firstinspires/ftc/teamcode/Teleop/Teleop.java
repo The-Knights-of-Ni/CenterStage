@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Util.Vector;
 import org.firstinspires.ftc.teamcode.Robot;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -33,11 +35,6 @@ public class Teleop extends LinearOpMode {
 
         telemetry.addData("Waiting for start", "...");
         telemetry.update();
-
-        List<LynxModule> allHubs = robot.hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
     }
 
     /**
@@ -51,6 +48,12 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode();
+
+        // Activates bulk reading, a faster way of reading data
+        List<LynxModule> allHubs = robot.hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         ElapsedTime timer = new ElapsedTime();
         robot.control.initDevicesTeleop();
@@ -69,14 +72,23 @@ public class Teleop extends LinearOpMode {
         while (opModeIsActive()) {
             robot.drive.poseEstimator.update();
             Pose pose = robot.drive.poseEstimator.getPose();
+            // Clears cache to prevent overflow
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
+
+            //get data from gamepads
             Robot.updateGamepads();
 
+            //get current time
             timeCurrent = timer.nanoseconds();
             deltaT = timeCurrent - timePre;
             timePre = timeCurrent;
+
+            //gets the motor powers for drive from gamepad1
+            //y button activates low speed mode
+            //it gets the x and y positioning from the left stick and turns based on the right stick's x
+            //calcMotorPowers creates a MotorGeneric
             if (twoGamepads) {
                 MotorGeneric<Double> motorPowers;
                 var requestedVector = Vector(robot.gamepad1.leftStickX, robot.gampade1.leftStickY);
@@ -92,6 +104,7 @@ public class Teleop extends LinearOpMode {
                             sensitivityLowPower * actualVector.get(1), sensitivityLowPower * robot.gamepad1.rightStickX);
                 }
 
+                //gets the robot to actually move from the newly created MotorGeneric
                 robot.drive.setDrivePowers(motorPowers);
 
                 // Paper Drone

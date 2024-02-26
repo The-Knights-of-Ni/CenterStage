@@ -60,13 +60,26 @@ public class Drive extends Subsystem {
 
 
     /**
-     * Initializes the drive subsystem
-     *
-     * @param motors      The motors ...
-     * @param telemetry   The telemetry
+     * Initializes the drive subsystem, and all related instance variables.
+     * @param motors This is a data structure that stores the 4 drive motors for the wheels, similar
+     *               to an array but with more functionalities.
+     * @param odometry A representation of the odometry wheels, which are extra wheels not used to
+     *                 drive the robot but only to estimate the robot's position
+     * @param poseEstimationMethodChoice The choice of how to estimate a pose, which represents the
+     *                                   robot's position
+     * @param imu An imu is a gyro with an accelerometer that it built into the hub. However, our
+     *            team does not typiically use it, due to its inaccuracy.
+     * @param telemetry Telemetry is one way to log what's going on as the code is excecuting, so
+     *                  that the driver can see these notifications.
      */
     public Drive(MotorGeneric<DcMotorEx> motors, @Nullable DcMotorEx[] odometry, PoseEstimationMethodChoice poseEstimationMethodChoice, BNO055IMU imu, Telemetry telemetry) {
+        /*Because this is a subclass, it must call its superclass, which is the abstract class
+        Subsystem.java. It also takes in a tag, "drive" in this case, that is used to identify that
+        this is from drive when messages are displayed to the logs.*/
         super(telemetry, "drive");
+
+        /*Establishes a poseEstimator with the given choice of how pose estimation should be done,
+        as given by the parameter poseEstimationMethodChoice*/
         if (poseEstimationMethodChoice == PoseEstimationMethodChoice.IMU) {
             this.poseEstimator = new IMU(imu);
         } else if (poseEstimationMethodChoice == PoseEstimationMethodChoice.ODOMETRY) {
@@ -80,28 +93,21 @@ public class Drive extends Subsystem {
             throw new IllegalArgumentException("Pose estimation method not implemented");
         }
 
+        /*Sets the instance variable localizer equal to a new MecanumLocalizer. A MecanumLocalizer
+        ultimately is what controls all motors, by converting a vector into motor powers.*/
         localizer = new MecanumLocalizer(motors.frontLeft, motors.frontRight, motors.rearLeft, motors.rearRight);
 
-        // Motors will brake/stop when power is set to zero (locks the motors, so they don't roll around)
+        //Motors will brake/stop when power is set to zero (locks the motors, so they don't roll)
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Init motor directions
-        // Motor directions are guaranteed to be forward if not specified
+        //Initializes motor directions. Motor directions default to foward, but we want them to be in reverse
         this.localizer.frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
         this.localizer.rearRight.setDirection(DcMotorEx.Direction.REVERSE);
-
-        // Set zero power behavior
-        this.localizer.frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.localizer.frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.localizer.rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.localizer.rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
     }
 
     /**
-     * Uniformly sets zero power behavior of all drive motors
-     *
-     * @param mode Zero Power Mode
+     * Sets the zero power behavior (what motors will do when their power is 0) of all drive motors
+     * @param mode The zero power mode, choosing from the enums UNKKNOW, BREAK, AND FLOAT
      * @see DcMotorEx#setZeroPowerBehavior(DcMotor.ZeroPowerBehavior)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior mode) {
@@ -112,9 +118,9 @@ public class Drive extends Subsystem {
     }
 
     /**
-     * Uniformly sets run mode of all drive motors
-     *
-     * @param mode Run mode
+     * Sets the run mode (the way in which the motors will run, including RUN_USING_ENCODER AND
+     * RUN_TO_POSITION) of all drive motors
+     * @param mode The enum run mode
      * @see DcMotorEx#setMode(DcMotor.RunMode)
      */
     public void setRunMode(DcMotor.RunMode mode) {
@@ -125,9 +131,10 @@ public class Drive extends Subsystem {
     }
 
     /**
-     * Sets the drive power of each motor individually.
-     *
-     * @param powers the powers to set each of the motors to
+     * Overloaded method - this version sets the power of each driving motor individually to a
+     * (potentially) different power.
+     * @param powers The powers to set each of the motors to, stored in a data structure called a
+     *               MotorGeneric, which functions similarly to an array but with more features
      * @see DcMotorEx#setPower(double)
      */
     public void setDrivePowers(MotorGeneric<Double> powers) {
@@ -137,37 +144,32 @@ public class Drive extends Subsystem {
         this.localizer.rearRight.setPower(powers.rearRight);
     }
 
+    /**
+     * Overloaded method - this method sets the power of all drive motors to be the same.
+     * @param power The power all motors should be set to
+     */
     public void setDrivePowers(double power) {
         setDrivePowers(new MotorGeneric<>(power, power, power, power));
     }
 
     /**
-     * Sets all drive motor powers to zero
+     * Stops the robot by setting all drive motor powers to zero
      */
     private void stop() {
         setDrivePowers(0.0);
     }
 
     /**
-     * Calculates the motor powers when given the position o the left and right sticks
-     *
-     * @param leftStickX  left joystick x position
-     * @param leftStickY  left joystick y position
-     * @param rightStickX right joystick x position for turning
-     * @return A list with the motor powers
+     * Calculates the motor powers based on the given positions of the left and right sticks of
+     * gamepad 1.
+     * @param leftStickX  The x-position of the left
+     * @param leftStickY  The y-position of the left joystick
+     * @param rightStickX The x-position of the right joystick (used for turning)
+     * @return A list containing each the powers of the four driving motors, in the order front
+     * left, front right, rear left, rear right.
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
         return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, 0));
-    }
-
-
-    public static double normalizeAngle(double angle) { // TODO: Move to util
-        if (angle > 180) {
-            return angle - 360;
-        } else if (angle < -180) {
-            return angle + 360;
-        }
-        return angle;
     }
 
     public void motorController(Targeter targeter, PositionController positionController) {
