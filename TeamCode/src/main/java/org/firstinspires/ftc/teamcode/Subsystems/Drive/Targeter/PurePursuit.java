@@ -8,6 +8,14 @@ import org.firstinspires.ftc.teamcode.Util.Pose;
 
 import java.util.Comparator;
 
+/**
+ * A pure pursuit targeter. This targeter uses a lookahead distance to find the target point on a path.
+ * <p>
+ * The targeter draws a circle around the robot with the lookahead distance as the radius.
+ * It then finds the furthest intersection of the circle with the path, and sends the robot in that direction.
+ * This way the robot can follow a straight path while moving in a curve,
+ * this is very useful for non-holonomic drives like swerve.
+ */
 public class PurePursuit implements Targeter {
     Path path;
     double lookaheadDistance;

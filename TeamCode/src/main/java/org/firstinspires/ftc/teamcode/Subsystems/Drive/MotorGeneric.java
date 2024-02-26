@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
 /**
- * A generic class for storing motor values, a replacement for an array.
+ * A generic class for storing values that correspond to motors, a replacement for a four-element array.
+ *
  * @param <T> The type of the motor value.
  */
 public class MotorGeneric<T> {

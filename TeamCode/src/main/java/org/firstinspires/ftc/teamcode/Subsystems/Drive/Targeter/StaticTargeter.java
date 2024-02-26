@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive.Targeter;
 
 import org.firstinspires.ftc.teamcode.Util.Pose;
 
+/**
+ * A targeter that always returns the same target.
+ *
+ * @see Targeter
+ */
 public class StaticTargeter implements Targeter {
     Pose target;
 

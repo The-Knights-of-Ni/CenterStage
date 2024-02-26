@@ -40,8 +40,6 @@ public class MotorControlData {
      * Do not use any other method to set the motor power, including {@link DcMotorEx#setPower(double)},
      * this will mess up the stall detection, as well as other things.
      *
-     * <p>TODO: Benchmark {@link DcMotorEx#setPower(double)} to see if this is worth it</p>
-     *
      * @param motorPower The power to set the motor to
      */
     public void setPower(double motorPower) {

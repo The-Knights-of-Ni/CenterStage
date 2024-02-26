@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 /**
  * {@link org.firstinspires.ftc.teamcode.Util.BasicAccelerationIntegrator} provides a very naive implementation of
  * an acceleration integration algorithm. It just does the basic physics.
- * TODO: Better integration algorithm
+ * TODO: Better integration algorithm. This is very susceptible to noise.
  */
 public class BasicAccelerationIntegrator implements BNO055IMU.AccelerationIntegrator {
     //------------------------------------------------------------------------------------------
