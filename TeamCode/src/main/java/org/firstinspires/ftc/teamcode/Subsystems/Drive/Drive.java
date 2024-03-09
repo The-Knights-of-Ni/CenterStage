@@ -51,8 +51,8 @@ public class Drive extends Subsystem {
     public static double COUNTS_PER_DEGREE = 1180.0 / 90; // 1000 ticks per 90 degrees
 
     // Move PID coefficients
-    public static PIDCoefficients xyPIDCoefficients = new PIDCoefficients(0.0025, 0.000175, 0.0003); // TODO: calibrate
-    public static PIDCoefficients thetaPIDCoefficients = new PIDCoefficients(0.00010, 0.000500, 0.00015); // TODO: calibrate
+    public static PIDCoefficients<Double> xyPIDCoefficients = new PIDCoefficients<>(0.0025, 0.000175, 0.0003); // TODO: calibrate
+    public static PIDCoefficients<Double> thetaPIDCoefficients = new PIDCoefficients<>(0.00010, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
     private final MecanumLocalizer localizer;
     public PoseEstimationMethod poseEstimator;
@@ -264,16 +264,16 @@ public class Drive extends Subsystem {
     }
 
     /**
-     * @param vector Moves the robot to a given position, without turning, this called {@link #move(Pose)} internally.
+     * @param vector Moves the robot to a given position, without turning, this called {@link Drive#move(Pose)} internally.
      *
-     * @see #move(Pose)
+     * @see Drive#move(Pose)
      */
     public void move(Vector vector) {
         move(new Pose(vector, 0));
     }
 
     /**
-     * Turns the robot clockwise by a given angle, using {@link #move(Pose)} internally.
+     * Turns the robot clockwise by a given angle, using {@link Drive#move(Pose)} internally.
      * @param angle the angle to turn by, in degrees
      */
     public void move(double angle) {

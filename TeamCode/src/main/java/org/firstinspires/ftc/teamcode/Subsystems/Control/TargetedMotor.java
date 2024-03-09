@@ -10,7 +10,8 @@ import org.firstinspires.ftc.teamcode.Util.MasterLogger;
 import java.util.Locale;
 
 /**
- * A linear slide with a custom PID controller
+ * Turns any motor into a precise targeter, kind of like a servo.
+ * This is useful for control, when {@link DcMotorEx.RunMode#RUN_TO_POSITION} is not viable.
  * @param <I> The constants for the linear slide {@link TargetedMotorConstants}
  */
 public class TargetedMotor<I extends TargetedMotorConstants> {

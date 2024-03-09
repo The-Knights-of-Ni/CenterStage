@@ -49,7 +49,7 @@ public class MarkerDetectionPipeline extends OpenCvPipeline {
      *
      * @param input A Mask (the class is called {@link Mat})
      * @return The marker location
-     * @see #allianceColor
+     * @see MarkerDetectionPipeline#allianceColor
      * @see Mat
      * @see Scalar
      * @see MarkerLocation

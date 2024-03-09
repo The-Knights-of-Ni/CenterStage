@@ -9,14 +9,25 @@ import java.util.List;
 public class DualNum<Param> {
     double[] values;
 
+    /**
+     * Initialize the autodifferentiation with a list of values, the public alternative is {@link #DualNum(List)}
+     * @param values
+     */
     private DualNum(double[] values) {
         this.values = values;
     }
 
+    /**
+     * Store the values in a list and call the private constructor
+     * @param values
+     */
     public DualNum(List<Double> values) {
         this(values.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
+    /**
+     * Make a DualNum that is a constant. The derivative of a constant is 0, so it's just a list of the constant and 0s.
+     */
     public <Param> DualNum<Param> constant(double c, int n) {
         double[] array = new double[n];
         for (int i = 0; i < n; i++) {

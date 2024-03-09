@@ -24,15 +24,22 @@ public class QuinticSpline1D {
     public double[] get(double t, int n) {
         double[] result = new double[n];
         for (int i = 0; i < n; i++) {
-            result[i] = switch (i) {
-                case 0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f;
-                case 1 -> (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e;
-                case 2 -> ((20.0 * a * t + 12.0 * b) * t + 6.0 * c) * t + 2.0 * d;
-                case 3 -> (60.0 * a * t + 24.0 * b) * t + 6.0 * c;
-                case 4 -> 120.0 * a * t + 24.0 * b;
-                case 5 -> 120.0 * a;
-                default -> 0;
-            };
+            switch (i) {
+                case 0:
+                    result[i] = ((((a * t + b) * t + c) * t + d) * t + e) * t + f;
+                case 1:
+                    result[i] = (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e;
+                case 2:
+                    result[i] = ((20.0 * a * t + 12.0 * b) * t + 6.0 * c) * t + 2.0 * d;
+                case 3:
+                    result[i] = (60.0 * a * t + 24.0 * b) * t + 6.0 * c;
+                case 4:
+                    result[i] = 120.0 * a * t + 24.0 * b;
+                case 5:
+                    result[i] = 120.0 * a;
+                default:
+                    result[i] = 0;
+            }
         }
         return result;
     }

@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-public class PIDCoefficients {
-    public double kP;
-    public double kI;
-    public double kD;
+public class PIDCoefficients<V>{
+    public V kP;
+    public V kI;
+    public V kD;
 
-    public PIDCoefficients(double kP, double kI, double kD) {
+    public PIDCoefficients(V kP, V kI, V kD) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;

@@ -10,8 +10,8 @@ public class Vector extends Vector2D {
      *
      * @param x abscissa
      * @param y ordinate
-     * @see #getX()
-     * @see #getY()
+     * @see Vector#getX()
+     * @see Vector#getY()
      */
     public Vector(double x, double y) {
         super(x, y);
@@ -23,7 +23,7 @@ public class Vector extends Vector2D {
      *
      * @param v coordinates array
      * @throws DimensionMismatchException if the array does not have two elements
-     * @see #toArray()
+     * @see Vector#toArray()
      */
     public Vector(double[] v) throws DimensionMismatchException {
         super(v);

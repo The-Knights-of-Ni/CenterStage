@@ -36,7 +36,7 @@ public class PID {
         this(Kp, Ki, Kd, true);
     }
 
-    public PID(PIDCoefficients coefficients) {
+    public PID(PIDCoefficients<Double> coefficients) {
         this(coefficients.kP, coefficients.kI, coefficients.kD);
     }
 
@@ -57,9 +57,8 @@ public class PID {
         integrate(error, dt);
         previousError = error;
 
-        // Note that integral sum*ki is capped at 0.25 to not break everything.
+        // TODO: the abs of the integral sum*ki should be capped at 0.25 to not break everything.
         var iTerm = integralSum * Ki;
-        // TODO: If sign of kp term is not the same as the integral term, then don't use it and log warning.
         // Cap output at range (-1,1).
         return MathUtils.clamp(error * Kp + iTerm + derivative * Kd, -1, 1);
     }
