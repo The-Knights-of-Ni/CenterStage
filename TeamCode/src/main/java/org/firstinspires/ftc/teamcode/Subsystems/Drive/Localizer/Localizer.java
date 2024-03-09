@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 
+/**
+ * A localizer is a class that takes in a controller output and sets the powers of the motors from that.
+ */
 public abstract class Localizer {
     public MotorGeneric<Double> cropMotorPowers(MotorGeneric<Double> powers) {
         var max = Math.max(Math.max(Math.abs(powers.frontLeft), Math.abs(powers.frontRight)),

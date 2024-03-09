@@ -172,7 +172,7 @@ public class Drive extends Subsystem {
      * left, front right, rear left, rear right.
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, 0));
+        return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, new Pose(0, 0, 0)));
     }
 
     public void motorController(Targeter targeter, PositionController positionController) {
