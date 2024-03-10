@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Geometry.Path;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.PositionController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicControllerOutput;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPIDController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotionProfile.MotionProfile;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PoseEstimation.IMU;
@@ -172,10 +172,10 @@ public class Drive extends Subsystem {
      * left, front right, rear left, rear right.
      */
     public MotorGeneric<Double> calcMotorPowers(double leftStickX, double leftStickY, double rightStickX) {
-        return localizer.localize(new ControllerOutput(leftStickX, leftStickY, rightStickX, new Pose(0, 0, 0)));
+        return localizer.localize(new HolonomicControllerOutput(leftStickX, leftStickY, rightStickX, new Pose(0, 0, 0)));
     }
 
-    public void motorController(Targeter targeter, PositionController positionController) {
+    public void motorController(Targeter targeter, HolonomicController positionController) {
         poseEstimator.start();
         // Makes sure that the starting tick count is 0 (just in case we're using dead reckoning, which relies on tick counts from the motor encoders)
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -247,8 +247,8 @@ public class Drive extends Subsystem {
         }
     }
 
-    private HolonomicPositionController getHolonomicController() {
-        return new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+    private HolonomicPIDController getHolonomicController() {
+        return new HolonomicPIDController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
     }
 
     /**
@@ -285,7 +285,7 @@ public class Drive extends Subsystem {
     }
 
 
-    public void followProfile(MotionProfile profile, PositionController positionController) {
+    public void followProfile(MotionProfile profile, HolonomicController positionController) {
         poseEstimator.start();
         var timeoutManager = new TimeoutManager(100_000_000);
         var timer = new ElapsedTime();

@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import android.util.Log;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPositionController;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicControllerOutput;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicPIDController;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.Localizer;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.HolonomicLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.PID;
@@ -102,8 +102,8 @@ class DriveTest {
 
     @Test
     void testHolonomicMecanumController() {
-        HolonomicPositionController controller = new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
-        Localizer localizer = new MecanumLocalizer();
+        HolonomicPIDController controller = new HolonomicPIDController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+        HolonomicLocalizer localizer = new MecanumLocalizer();
         MotorGeneric<Double> powers = localizer.localize(controller.calculate(new Pose(0, 0, 0), new Pose(0, 0, 0)));
         assertEquals(0, powers.frontLeft, 0.01);
         assertEquals(0, powers.frontRight, 0.01);
@@ -113,15 +113,15 @@ class DriveTest {
 
     @Test
     void testHolonomicController() {
-        HolonomicPositionController controller = new HolonomicPositionController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
+        HolonomicPIDController controller = new HolonomicPIDController(new PID(xyPIDCoefficients), new PID(xyPIDCoefficients), new PID(thetaPIDCoefficients));
         var powers = controller.calculate(new Pose(0, 0, 0), new Pose(1000, 0, 0));
         assertEquals(1, powers.x, 0.3);
     }
 
     @Test
     void testMecanumLocalizer() {
-        Localizer localizer = new MecanumLocalizer();
-        var resp = localizer.localize(new ControllerOutput(0, 1, 0, 0));
+        HolonomicLocalizer localizer = new MecanumLocalizer();
+        var resp = localizer.localize(new HolonomicControllerOutput(0, 1, 0, 0));
         assertEquals(1, resp.frontLeft);
         assertEquals(1, resp.frontRight);
         assertEquals(1, resp.rearLeft);

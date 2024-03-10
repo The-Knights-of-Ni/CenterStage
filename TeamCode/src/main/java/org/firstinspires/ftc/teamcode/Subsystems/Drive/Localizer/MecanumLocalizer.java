@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive.Localizer;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.ControllerOutput;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller.HolonomicControllerOutput;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive.MotorGeneric;
 
-public class MecanumLocalizer extends Localizer {
+public class MecanumLocalizer extends HolonomicLocalizer {
     public DcMotorEx frontLeft;
     public DcMotorEx frontRight;
     public DcMotorEx rearLeft;
@@ -17,12 +17,12 @@ public class MecanumLocalizer extends Localizer {
         this.rearRight = rearRight;
     }
 
-    public MotorGeneric<Double> localize(ControllerOutput output) {
+    public MotorGeneric<Double> localize(HolonomicControllerOutput output) {
         var xPower = output.x;
         var yPower = output.y;
         var thetaPower = output.heading;
-        var yRotated = xPower * Math.cos(output.actualHeading) - yPower * Math.sin(output.actualHeading); // Inverted bc api
-        var xRotated = xPower * Math.sin(output.actualHeading) + yPower * Math.cos(output.actualHeading);
+        var yRotated = xPower * Math.cos(output.currentPose.heading) - yPower * Math.sin(output.currentPose.heading); // Inverted bc api
+        var xRotated = xPower * Math.sin(output.currentPose.heading) + yPower * Math.cos(output.currentPose.heading);
         return cropMotorPowers(
                 new MotorGeneric<>(
                         xRotated + yRotated + thetaPower,
@@ -33,7 +33,7 @@ public class MecanumLocalizer extends Localizer {
     }
 
     @Override
-    public void setPowers(ControllerOutput output) {
+    public void setPowers(HolonomicControllerOutput output) {
         var powers = localize(output);
         frontLeft.setPower(powers.frontLeft);
         frontRight.setPower(powers.frontRight);

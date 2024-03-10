@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Drive.Controller;
 
-public interface ControllerOutput {
+public interface Controller {
+    ControllerOutput calculate();
 }
