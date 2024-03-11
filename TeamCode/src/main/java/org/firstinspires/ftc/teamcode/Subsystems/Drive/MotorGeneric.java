@@ -28,4 +28,13 @@ public class MotorGeneric<T> {
                 ", rearRight=" + rearRight +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MotorGeneric) {
+            MotorGeneric<?> other = (MotorGeneric<?>) obj;
+            return this.frontLeft.equals(other.frontLeft) && this.frontRight.equals(other.frontRight) && this.rearLeft.equals(other.rearLeft) && this.rearRight.equals(other.rearRight);
+        }
+        return false;
+    }
 }

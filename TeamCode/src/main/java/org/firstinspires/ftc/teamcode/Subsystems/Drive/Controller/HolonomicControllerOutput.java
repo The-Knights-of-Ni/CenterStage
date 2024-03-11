@@ -14,7 +14,7 @@ public class HolonomicControllerOutput implements ControllerOutput {
     public final Pose currentPose;
 
     /**
-     * Constructor for the ControllerOutput class.
+     * Constructor for the SwerveControllerOutput class.
      *
      * @param x The x-coordinate for the controller output.
      * @param y The y-coordinate for the controller output.

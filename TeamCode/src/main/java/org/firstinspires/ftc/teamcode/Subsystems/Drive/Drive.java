@@ -54,7 +54,7 @@ public class Drive extends Subsystem {
     public static PIDCoefficients<Double> xyPIDCoefficients = new PIDCoefficients<>(0.0025, 0.000175, 0.0003); // TODO: calibrate
     public static PIDCoefficients<Double> thetaPIDCoefficients = new PIDCoefficients<>(0.00010, 0.000500, 0.00015); // TODO: calibrate
     // Drive-train motors
-    private final MecanumLocalizer localizer;
+    public final MecanumLocalizer localizer;
     public PoseEstimationMethod poseEstimator;
     public static Pose currentPose = new Pose(0, 0, 0);
 
