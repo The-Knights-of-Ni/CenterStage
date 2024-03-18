@@ -40,7 +40,7 @@ public class Robot {
 
     public BNO055IMU imu;
     // Subsystems
-    public OldDrive drive;
+    public Drive drive;
     public Control control;
     public Vision vision;
     public WebThread web;
@@ -147,9 +147,9 @@ public class Robot {
             var leftEncoder = (DcMotorEx) hardwareMap.dcMotor.get("leftEncoder");
             var backEncoder = (DcMotorEx) hardwareMap.dcMotor.get("backEncoder");
             var rightEncoder = (DcMotorEx) hardwareMap.dcMotor.get("rightEncoder");
-            drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
+            drive = new Drive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), new DcMotorEx[]{leftEncoder, backEncoder, rightEncoder}, imu, telemetry, timer);
         } else {
-            drive = new OldDrive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), null, imu, telemetry, timer);
+            drive = new Drive(new MotorGeneric<>(frontLeftDriveMotor, frontRightDriveMotor, rearLeftDriveMotor, rearRightDriveMotor), null, imu, telemetry, timer);
         }
         logger.info("Drive subsystem init finished");
 
